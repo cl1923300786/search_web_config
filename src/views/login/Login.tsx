@@ -40,6 +40,7 @@ const LoginForm = (props: any) => {
       }
     })
     setLoading(false)
+    console.log(res)
     if (res.data) {
       props.history.push('/')
     }

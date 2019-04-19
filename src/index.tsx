@@ -9,8 +9,10 @@ import zh_CN from 'antd/lib/locale-provider/zh_CN'
 import moment from 'moment'
 // tslint:disable-next-line:no-import-side-effect
 import 'moment/locale/zh-cn'
+import Mock from './mock/mock'
 
 moment.locale('zh-cn')
+Mock.bootstrap()
 
 const store = makeStore()
 
