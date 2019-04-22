@@ -1,10 +1,11 @@
 import React, { useState, useCallback } from 'react'
-import { Row, Col, Form, Input, Button, Icon } from 'antd'
+import { Row, Col, Form, Input, Button, Icon, notification } from 'antd'
 import { requestFn } from '../../utils/request'
 import { useDispatch, IState, useMappedState } from '../../store/Store'
 import { Dispatch } from 'redux'
 import Actions from '../../store/Actions'
 import styles from './Login.module.scss'
+import { setStore } from '../../utils/util'
 
 interface IParams {
   userName: string
@@ -40,10 +41,32 @@ const LoginForm = (props: any) => {
       }
     })
     setLoading(false)
-    console.log(res)
-    if (res.data) {
+    if (res && res.status === 200 && res.data) {
+      setStore('user', res.data.user)
+      setStore('token', 'token')
       props.history.push('/')
+    } else {
+      errorTips(
+        '登录失败',
+        res && res.data && res.data.msg
+          ? res.data.msg
+          : '请求错误，请重试！'
+      )
     }
+  }
+
+  const errorTips = (message = '', description = '') => {
+    notification.error({
+      message,
+      description
+    })
+  }
+
+  const successTips = (message = '', description = '') => {
+    notification.success({
+      message,
+      description
+    })
   }
 
   return (
@@ -64,7 +87,7 @@ const LoginForm = (props: any) => {
                 prefix={
                   <Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />
                 }
-                placeholder="用户名"
+                placeholder="用户名:admin"
               />
             )}
           </Form.Item>
@@ -77,7 +100,7 @@ const LoginForm = (props: any) => {
                   <Icon type="lock" style={{ color: 'rgba(0,0,0,.25)' }} />
                 }
                 type="password"
-                placeholder="密码"
+                placeholder="密码:admin"
               />
             )}
           </Form.Item>

@@ -16,11 +16,11 @@ export default {
     mock.onGet('/v1/users').reply(200, { code: 200, msg: '请求成功', users })
 
     mock.onPost('/v1/login').reply((config) => {
-      const { userName, password } = JSON.parse(config.data)
+      const { username, password } = JSON.parse(config.data)
       let user = {}
       const hasUser = loginUser.some((userItem: ILoginUser) => {
-        if (userItem.name === userName && userItem.password === password) {
-          user = JSON.parse(JSON.stringify(userItem))
+        if (userItem.name === username && userItem.password === password) {
+          user = {...userItem}
           return true
         } else {
           return false
