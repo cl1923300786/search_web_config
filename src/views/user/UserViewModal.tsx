@@ -1,6 +1,6 @@
 import React from 'react'
 import { Row, Col, Modal, Button } from 'antd'
-import styles from './UserViewModal.module.scss'
+import styles from './UserViewModal.module.less'
 
 const UserViewModal = (props: any) => {
 

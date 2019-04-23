@@ -6,7 +6,7 @@ import { Dispatch } from 'redux'
 import Actions from '../../store/Actions'
 import UserModal from './UserModal'
 import moment from 'moment'
-import styles from './User.module.scss'
+import styles from './User.module.less'
 import {
   SearchComponent,
   IParams

@@ -1,7 +1,7 @@
 import React from 'react'
 import { Form, Input, Button } from 'antd'
 import { FormComponentProps } from 'antd/lib/form'
-import styles from './SearchComponent.module.scss'
+import styles from './SearchComponent.module.less'
 
 export interface IParams {
   name: string

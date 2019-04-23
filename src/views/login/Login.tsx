@@ -4,7 +4,7 @@ import { requestFn } from '../../utils/request'
 import { useDispatch, IState, useMappedState } from '../../store/Store'
 import { Dispatch } from 'redux'
 import Actions from '../../store/Actions'
-import styles from './Login.module.scss'
+import styles from './Login.module.less'
 import { setStore } from '../../utils/util'
 
 interface IParams {
