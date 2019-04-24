@@ -31,35 +31,62 @@ const LoginForm = (props: any) => {
     })
   }
 
-  const LoginRequest = async (fieldValue: IParams) => {
-    const { res } = await requestFn(dispatch, state, {
-      url: '/v1/login',
-      method: 'post',
-      data: {
-        username: fieldValue.userName,
-        password: fieldValue.password
-      }
-    })
-    setLoading(false)
-    if (res && res.status === 200 && res.data) {
-      setStore('user', res.data.user)
-      setStore('token', 'token')
-      props.history.push('/')
-    } else {
-      errorTips(
-        '登录失败',
-        res && res.data && res.data.msg
-          ? res.data.msg
-          : '请求错误，请重试！'
-      )
-    }
-  }
+  // const LoginRequest = async (fieldValue: IParams) => {
+  //   const { res } = await requestFn(dispatch, state, {
+  //     url: '/v1/login',
+  //     method: 'post',
+  //     data: {
+  //       username: fieldValue.userName,
+  //       password: fieldValue.password
+  //     }
+  //   })
+  //   setLoading(false)
+  //   if (res && res.status === 200 && res.data) {
+  //     setStore('user', res.data.user)
+  //     setStore('token', 'token')
+  //     props.history.push('/')
+  //   } else {
+  //     errorTips(
+  //       '登录失败',
+  //       res && res.data && res.data.msg
+  //         ? res.data.msg
+  //         : '请求错误，请重试！'
+  //     )
+  //   }
+  // }
 
-  const errorTips = (message = '', description = '') => {
-    notification.error({
-      message,
-      description
-    })
+  const LoginRequest = (fieldValue: IParams) => {
+    setStore('user', 'user')
+    setStore('token', 'token')
+    props.history.push('/')
+  //   const { res } = await requestFn(dispatch, state, {
+  //     url: '/v1/login',
+  //     method: 'post',
+  //     data: {
+  //       username: fieldValue.userName,
+  //       password: fieldValue.password
+  //     }
+  //   })
+  //   setLoading(false)
+  //   if (res && res.status === 200 && res.data) {
+  //     setStore('user', res.data.user)
+  //     setStore('token', 'token')
+  //     props.history.push('/')
+  //   } else {
+  //     errorTips(
+  //       '登录失败',
+  //       res && res.data && res.data.msg
+  //         ? res.data.msg
+  //         : '请求错误，请重试！'
+  //     )
+  //   }
+  // }
+
+  // const errorTips = (message = '', description = '') => {
+  //   notification.error({
+  //     message,
+  //     description
+  //   })
   }
 
   const successTips = (message = '', description = '') => {

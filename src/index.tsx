@@ -13,7 +13,7 @@ import Mock from './mock/mock'
 
 moment.locale('zh-cn')
 // mock请求启动，若有接口，可注释此行。请求代理在package.json中proxy字段
-Mock.bootstrap()
+// Mock.bootstrap()
 
 const store = makeStore()
 

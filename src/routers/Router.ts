@@ -1,5 +1,7 @@
 import Home from '../views/home/Home'
 import User from '../views/user/User'
+import Words from '../views/words/Words'
+import EsSearch from '../views/esSearch/EsSearch'
 import UserLog from '../views/logs/userLog/UserLog'
 
 const routes = [
@@ -34,6 +36,22 @@ const routes = [
     path: '/user',
     iconType: 'user',
     name: '用户管理',
+    hasMenu: true,
+    hidden: false
+  },
+  {
+    component: Words,
+    path: '/words',
+    iconType: 'words',
+    name: '词表',
+    hasMenu: true,
+    hidden: false
+  },
+  {
+    component: EsSearch,
+    path: '/esSearch',
+    iconType: 'esSearch',
+    name: 'ES搜索',
     hasMenu: true,
     hidden: false
   }

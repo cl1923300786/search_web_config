@@ -9,6 +9,7 @@ import { Modal } from 'antd'
 
 export interface IParams {
   url: string
+  api: string
   method?: string
   params?: object
   data?: object
@@ -62,7 +63,7 @@ export const requestFn = (
       .request({
         url: params.url,
         method: params.method || 'get',
-        baseURL: `${API_URL}/api`,
+        baseURL: params.api,
         params: params.params || {},
         paramsSerializer: (arg) => {
           return Qs.stringify(arg, { arrayFormat: 'brackets' })

@@ -4,36 +4,36 @@ import { requestFn } from '../../utils/request'
 import { useDispatch, IState, useMappedState } from '../../store/Store'
 import { Dispatch } from 'redux'
 import Actions from '../../store/Actions'
-import UserModal from './UserModal'
+import WordsModal from './WordsModal'
 import moment from 'moment'
-import styles from './User.module.less'
+import styles from './Words.module.less'
 import {
   SearchComponent,
   IParams
 } from '../../components/search/SearchComponent'
-import UserViewModal from './UserViewModal'
+import WordsViewModal from './WordsViewModal'
 import { API_URL } from '../../config/Constant'
 
-const defaultUserForm = {
+const defaultWordsForm = {
   id: '',
-  name: '',
-  birthDay: moment().format('YYYY-MM-DD HH:mm:ss'),
-  city: ''
+  word: '',
+  wordPos: '',
+  freshTime: moment().format('YYYY-MM-DD HH:mm:ss')
 }
 
 const defaultPageParams = {
-  number: 0,
-  size: 10,
+  pageNumber: 0,
+  pageCount: 10,
   total: 500,
   name: ''
 }
 
-const User = () => {
+const Words = () => {
   const [loading, setLoading] = useState(false)
   const [visible, setVisible] = useState(false)
-  const [userForm, setUserForm] = useState(defaultUserForm)
-  const [modalTitle, setModalTitle] = useState('新增用户')
-  const [viewUserModal, setViewUserModal] = useState(false)
+  const [wordsForm, setWordsForm] = useState(defaultWordsForm)
+  const [modalTitle, setModalTitle] = useState('新增词')
+  const [viewWordsModal, setViewWordsModal] = useState(false)
   const [pageParams, setPageParams] = useState(defaultPageParams)
 
   const state: IState = useMappedState(
@@ -50,21 +50,22 @@ const User = () => {
       width: '14%'
     },
     {
-      title: '姓名',
-      dataIndex: 'name',
-      key: 'name',
+      title: '词',
+      dataIndex: 'word',
+      key: 'word',
       width: '14&'
     },
     {
-      title: '生日',
-      dataIndex: 'birthDay',
-      key: 'birthDay',
-      width: '20%'
-    },
+        title: '词性',
+        dataIndex: 'wordPos',
+        key: 'wordPos',
+        width: '14&'
+      },
     {
-      title: '住址',
-      dataIndex: 'city',
-      key: 'city'
+      title: '时间',
+      dataIndex: 'freshTime',
+      key: 'freshTime',
+      width: '20%'
     },
     {
       title: '操作',
@@ -75,12 +76,12 @@ const User = () => {
         <div>
           <a
             style={{ color: 'rgba(0, 0, 0, .45)' }}
-            onClick={() => viewUser(record)}
+            onClick={() => viewWords(record)}
           >
             查看
           </a>
           <Divider type="vertical" />
-          <a style={{ color: '#1890ff' }} onClick={() => editUser(record)}>
+          <a style={{ color: '#1890ff' }} onClick={() => editWords(record)}>
             编辑
           </a>
           <Divider type="vertical" />
@@ -93,25 +94,54 @@ const User = () => {
   ]
 
   useEffect(() => {
-    getUsers({ number: 0, size: 10 })
+    getWords({ pageNumber: 0, pageCount: 10 })
   }, [])
 
+
+  /**
+   *  根据词查询
+   */
+  const searchWord = async (param: any) => {
+    setLoading(true)
+    const { res } = await requestFn(dispatch, state, {
+      url: '/words/queryByWord',
+      api: API_URL,
+      method: 'post',
+      data: {
+        ...param
+      },
+    })
+    setLoading(false)
+    console.log("###")
+    console.log(res.data.data)
+    if (res && res.status === 200 && res.data) {
+      setData(res.data.data)
+    }else{
+      console.log("请求错误")
+    }
+  }
+
+
+  
   /**
    * 获取用户列表
    */
-  const getUsers = async (param: any) => {
+  const getWords = async (param: any) => {
     setLoading(true)
     const { res } = await requestFn(dispatch, state, {
-      url: '/v1/users',
+      url: '/words/fetchWordsByTime',
       api: API_URL,
-      method: 'get',
-      params: {
-        ...param
-      }
+      method: 'post',
+      data: {
+        ...param,
+        time: moment().format('YYYY-MM-DD')
+      },
     })
     setLoading(false)
     if (res && res.status === 200 && res.data) {
-      setData(res.data.users)
+      setData(res.data.data)
+    }else{
+      console.log("请求错误")
     }
   }
 
@@ -119,7 +149,7 @@ const User = () => {
    * 点击查询
    */
   const search = (searchParams: IParams) => {
-    getUsers({ number: 0, size: 10, name: searchParams.name })
+    searchWord({"word": searchParams.name})
   }
 
   /**
@@ -127,29 +157,30 @@ const User = () => {
    */
   const resetList = () => {
     setPageParams(defaultPageParams)
-    getUsers({ number: 0, size: 10 })
+    getWords({ pageNumber: 0, pageCount: 10 })
   }
 
   /**
    * 新增/编辑用户请求
    */
-  const saveUsers = async (param: any) => {
+  const saveWords = async (param: any) => {
+    console.log(param)
     setLoading(true)
     const { res } = await requestFn(dispatch, state, {
-      url: param.id ? `/v1/users/${param.id}` : '/v1/users',
+      url: '/words/updateWord',
       api: API_URL,
-      method: param.id ? 'patch' : 'post',
+      method: 'post',
       data: {
         ...param
       }
     })
     setLoading(false)
     if (res && res.status === 200 && res.data) {
-      successTips(param.id ? '编辑用户成功' : '新增用户成功', '')
-      getUsers({ number: 0, size: 10 })
+      successTips(param.id ? '编辑词表成功' : '新增词表成功', '')
+      getWords({ pageNumber: 0, pageCount: 10 })
     } else {
       errorTips(
-        param.id ? '编辑用户失败' : '新增用户失败',
+        param.id ? '编辑词表失败' : '新增词表失败',
         res && res.data && res.data.msg ? res.data.msg : '网络异常，请重试！'
       )
     }
@@ -158,17 +189,17 @@ const User = () => {
   /**
    * 查看用户
    */
-  const viewUser = (item: any) => {
-    setUserForm(item)
-    setViewUserModal(true)
+  const viewWords = (item: any) => {
+    setWordsForm(item)
+    setViewWordsModal(true)
   }
 
   /**
-   * 编辑用户
+   * 编辑词表
    */
-  const editUser = (item: any) => {
-    setUserForm(item)
-    setModalTitle('编辑用户')
+  const editWords = (item: any) => {
+    setWordsForm(item)
+    setModalTitle('编辑词')
     setVisible(true)
   }
 
@@ -177,7 +208,7 @@ const User = () => {
       title: '确定要删除这条记录吗?',
       content: '删除后不可恢复',
       onOk() {
-        deleteUser(item.id)
+        deleteWords(item.id)
       },
       onCancel() {
         console.log('Cancel')
@@ -188,7 +219,7 @@ const User = () => {
   /**
    * 删除用户请求
    */
-  const deleteUser = async (id: string) => {
+  const deleteWords = async (id: string) => {
     setLoading(true)
     const { res } = await requestFn(dispatch, state, {
       url: `/v1/users/${id}`,
@@ -198,7 +229,7 @@ const User = () => {
     setLoading(false)
     if (res && res.status === 204 && res.data) {
       successTips('删除用户成功')
-      getUsers({ number: 0, size: 10 })
+      getWords({ pageNumber: 0, pageCount: 10 })
     } else {
       errorTips(
         '删除用户失败',
@@ -229,24 +260,22 @@ const User = () => {
   }
 
   /**
-   * 新增/编辑用户模态窗，点击确定
+   * 新增/编辑词表模态窗，点击确定
    */
   const handleSubmit = (params: any) => {
     handleCancel()
     const param = {
-      ...(userForm.id ? { id: userForm.id } : {}),
-      name: params.name,
-      birthDay: moment(params.birthDay).format('YYYY-MM-DD'),
-      city: params.city
+      ...params,
+      id: wordsForm.id
     }
-    saveUsers(param)
+    saveWords(param)
   }
 
   /**
    * 新增用户
    */
-  const addUser = () => {
-    setUserForm(defaultUserForm)
+  const addWords = () => {
+    setWordsForm(defaultWordsForm)
     setVisible(true)
   }
 
@@ -257,13 +286,14 @@ const User = () => {
     setLoading(true)
     const params = {
       ...pageParams,
-      number: pageNumber - 1,
+      pageNumber: pageNumber,
+      time: moment().format('YYYY-MM-DD'),
       name: pageParams.name
     }
     setPageParams(params)
-    getUsers({
-      number: pageNumber - 1,
-      size: pageParams.size,
+    getWords({
+      pageNumber: pageNumber - 1,
+      pageCount: pageParams.pageCount,
       name: pageParams.name
     })
   }
@@ -273,7 +303,7 @@ const User = () => {
       <SearchComponent onSearch={search} reset={resetList} />
       <Row className={styles.buttonRow}>
         <Col span={6}>
-          <Button type="primary" icon="plus-circle" onClick={addUser}>
+          <Button type="primary" icon="plus-circle" onClick={addWords}>
             新增
           </Button>
         </Col>
@@ -285,27 +315,27 @@ const User = () => {
         pagination={{
           showQuickJumper: true,
           defaultCurrent: 1,
-          current: pageParams.number + 1,
+          current: pageParams.pageNumber,
           total: pageParams.total,
-          pageSize: pageParams.size,
+          pageSize: pageParams.pageCount,
           showTotal: (dataCount) => `共 ${dataCount} 条数据`,
           onChange: onPageChange
         }}
       />
-      <UserModal
+      <WordsModal
         visible={visible}
         title={modalTitle}
-        property={userForm}
+        property={wordsForm}
         cancel={handleCancel}
         submit={handleSubmit}
       />
-      <UserViewModal
-        visible={viewUserModal}
+      <WordsViewModal
+        visible={viewWordsModal}
         title="查看"
-        property={userForm}
-        close={() => setViewUserModal(false)}/>
+        property={wordsForm}
+        close={() => setViewWordsModal(false)}/>
     </>
   )
 }
 
-export default User
+export default Words
