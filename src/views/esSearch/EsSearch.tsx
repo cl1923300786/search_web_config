@@ -11,7 +11,7 @@ import {
   SearchComponent,
   IParams
 } from '../../components/search/SearchComponent'
-import { API_URL } from '../../config/Constant';
+import { API_URL } from '../../config/Constant'
 import { any } from 'prop-types';
 
 const defaultConfigForm = {
@@ -33,7 +33,7 @@ const searchedItemForm = {
 const defaultPageParams = {
   pageNumber: 0,
   pageCount: 10,
-  total: 500,
+  total: 1,
   name: ''
 }
 
@@ -64,13 +64,21 @@ const EsSearch = () => {
       title: '标题',
       dataIndex: 'title',
       key: 'title',
-      width: '14&'
+      width: '14&',
+      className: styles.contentHighLight,
+        render: (text: string) => (
+          <div dangerouslySetInnerHTML={{__html: text}} />
+        )
     },
     {
         title: '正文',
         dataIndex: 'content',
         key: 'content',
-        width: '14&'
+        width: '14&',
+        className: styles.contentHighLight,
+        render: (text: string) => (
+          <div dangerouslySetInnerHTML={{__html: text}} />
+        )
     },
     {
       title: '时间',
@@ -113,8 +121,10 @@ const EsSearch = () => {
     })
     setLoading(false)
     console.log("11: ")
-    console.log(res.data.result.hits)
+    console.log(res.data)
     if (res && res.status === 200 && res.data) {
+      defaultPageParams.total=res.data.result.totalHits,
+      setPageParams(defaultPageParams),
       setData(formatHits(res.data.result.hits))
     }else{
       console.log("请求错误")
@@ -122,8 +132,7 @@ const EsSearch = () => {
   }
 
   const formatHits = (hits: any[]) => {
-    return hits.map(i => {
-      console.log(i.highlight.title!='')
+    return hits.map(i => { 
       return {
         id: i.doc.id,
         title: i.highlight.title!=null? i.highlight.title :i.doc.title,
@@ -246,13 +255,13 @@ const EsSearch = () => {
   return (
     <>
       <SearchComponent onSearch={search} reset={resetList} />
-      <Row className={styles.buttonRow}>
+      {/* <Row className={styles.buttonRow}>
         <Col span={6}>
           <Button type="primary" icon="plus-circle" onClick={addDataBaseConfig}>
             数据源配置
           </Button>
         </Col>
-      </Row>
+      </Row> */}
       <Table
         columns={columns}
         dataSource={data}
@@ -278,8 +287,9 @@ const EsSearch = () => {
         visible={viewEsSearchModal}
         title="查看"
         property={itemForm}
-        close={() => setViewEsSearchModal(false)}/>  
-      />
+        close={() => setViewEsSearchModal(false)}
+        />  
+      
       
     </>
   )

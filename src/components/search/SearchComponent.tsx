@@ -36,7 +36,7 @@ const FormComponent = (props: IProps) => {
       <Form layout="inline" onSubmit={handleSubmit}>
         <Form.Item>
           {getFieldDecorator('name', {})(
-            <Input placeholder="请输入姓名" allowClear />
+            <Input placeholder="请输入关键字" allowClear />
           )}
         </Form.Item>
         <Form.Item>

@@ -4,15 +4,14 @@ import { requestFn } from '../../utils/request'
 import { useDispatch, IState, useMappedState } from '../../store/Store'
 import { Dispatch } from 'redux'
 import Actions from '../../store/Actions'
-import WordsModal from './WordsModal'
 import moment from 'moment'
-import styles from './Words.module.less'
-import ContentParseModal from './ContentParseModal'
+import AddSourceConfigModal from './AddSourceConfigModal'
+import styles from './SourceConfig.module.less'
 import {
   SearchComponent,
   IParams
 } from '../../components/search/SearchComponent'
-import WordsViewModal from './WordsViewModal'
+
 import { API_URL } from '../../config/Constant'
 import { async } from 'q';
 import { any } from 'prop-types';
@@ -37,7 +36,7 @@ const defaultPageParams = {
   name: ''
 }
 
-const Words = () => {
+const SourceConfig = () => {
   const [loading, setLoading] = useState(false)
   const [visible, setVisible] = useState(false)
   const [wordsForm, setWordsForm] = useState(defaultWordsForm)
@@ -61,22 +60,34 @@ const Words = () => {
       width: '14%'
     },
     {
-      title: '词',
-      dataIndex: 'word',
-      key: 'word',
+      title: '数据源类型',
+      dataIndex: 'sourceType',
+      key: 'sourceType',
       width: '14&'
     },
     {
-        title: '词性',
-        dataIndex: 'wordPos',
-        key: 'wordPos',
+        title: '数据库类型',
+        dataIndex: 'databaseType',
+        key: 'databaseType',
         width: '14&'
-      },
+    },
     {
-      title: '时间',
-      dataIndex: 'freshTime',
-      key: 'freshTime',
+        title: 'ip',
+        dataIndex: 'ip',
+        key: 'ip',
+        width: '20%'
+    },
+    {
+      title: '数据库名',
+      dataIndex: 'databaseName',
+      key: 'databaseName',
       width: '20%'
+    },
+    {
+        title: '表名',
+        dataIndex: 'tableName',
+        key: 'tableName',
+        width: '20%'
     },
     {
       title: '操作',
@@ -409,15 +420,11 @@ const Words = () => {
       <SearchComponent onSearch={search} reset={resetList} />
       <Row className={styles.buttonRow}>
         <Col span={6}>
-          <Button type="primary" icon="plus-circle" onClick={addWords}>
-            新增
+          <Button type="primary" icon="plus-circle" onClick={addSourceCinfig()}>
+            配置数据源
           </Button>
         </Col>
-        <Col span={6}>
-          <Button type="primary"  onClick={showParseTextModal}>
-            解析文本
-          </Button>
-        </Col>
+        
       </Row>
       <Table
         columns={columns}
@@ -433,28 +440,15 @@ const Words = () => {
           onChange: onPageChange
         }}
       />
-      <WordsModal
+      <AddSourceConfigModal
         visible={visible}
         title={modalTitle}
-        property={wordsForm}
+        property={configForm}
         cancel={handleCancel}
         submit={handleSubmit}
-      />
-      <WordsViewModal
-        visible={viewWordsModal}
-        title="查看"
-        property={wordsForm}
-        close={() => setViewWordsModal(false)}
-      />
-       <ContentParseModal
-        visible={parseContentModal}
-        title="解析文本"
-        property={viewParseModal}
-        parseText={parseText}
-        close={() => setParseContentModal(false)}
       />
     </>
   )
 }
 
-export default Words
+export default SourceConfig

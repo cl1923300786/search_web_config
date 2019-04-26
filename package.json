@@ -151,4 +151,6 @@
     "tslint-react": "^4.0.0"
   },
   "proxy": "http://10.168.3.247:8080/webservice"
+
 }
+
