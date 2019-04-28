@@ -16,12 +16,37 @@ import { API_URL } from '../../config/Constant'
 import { async } from 'q';
 import { any } from 'prop-types';
 
+const defaultDataSourceConfigForm = {
+  dataSourceType:'',
+  currentStep:0,
+  databaseConfig:{
+    ip:'',
+    port:'',
+    dbName:'',
+    username:'',
+    password:'',
+    tableName:''
+  }
+}
+
+const defaultDatabaseConfig = {
+  dbType:'',
+  ip:'',
+  port:'',
+  dbName:'',
+  username:'',
+  password:'',
+  tableName:''
+}
+
 const defaultWordsForm = {
   id: '',
   word: '',
   wordPos: '',
   freshTime: moment().format('YYYY-MM-DD HH:mm:ss')
 }
+
+
 
 const contentParseForm = {
   words: '',
@@ -38,13 +63,15 @@ const defaultPageParams = {
 
 const SourceConfig = () => {
   const [loading, setLoading] = useState(false)
-  const [visible, setVisible] = useState(false)
+  const [sourceConfigvisible, setSourceConfigvisible] = useState(false)
   const [wordsForm, setWordsForm] = useState(defaultWordsForm)
   const [modalTitle, setModalTitle] = useState('新增词')
   const [viewWordsModal, setViewWordsModal] = useState(false)
-  const [parseContentModal, setParseContentModal] = useState(false)
   const [pageParams, setPageParams] = useState(defaultPageParams)
-  const [viewParseModal, setViewParseModal] = useState(contentParseForm)
+  const [configForm, setConfigForm] = useState(defaultDataSourceConfigForm)
+  const [step, setStep] = useState(0)
+  const [tableNames, setTableNames] = useState<any[]>([])
+  const [databaseConfig, setDatabaseConfig] = useState(defaultDatabaseConfig)
 
   const state: IState = useMappedState(
     useCallback((globalState: IState) => globalState, [])
@@ -67,8 +94,8 @@ const SourceConfig = () => {
     },
     {
         title: '数据库类型',
-        dataIndex: 'databaseType',
-        key: 'databaseType',
+        dataIndex: 'dbype',
+        key: 'dbType',
         width: '14&'
     },
     {
@@ -79,8 +106,8 @@ const SourceConfig = () => {
     },
     {
       title: '数据库名',
-      dataIndex: 'databaseName',
-      key: 'databaseName',
+      dataIndex: 'dbName',
+      key: 'dbName',
       width: '20%'
     },
     {
@@ -102,26 +129,15 @@ const SourceConfig = () => {
           >
             查看
           </a>
-          <Divider type="vertical" />
-          <a style={{ color: '#1890ff' }} onClick={() => editWords(record)}>
-            编辑
-          </a>
-          <Divider type="vertical" />
-          <a style={{ color: '#f5222d' }} onClick={() => deleteConirm(record)}>
-            删除
-          </a>
+          
         </div>
       )
     }
   ]
 
-  // useEffect(() => {
-  //   getWords({ pageNumber: 0, pageCount: 10 })
-  // }, [])
-
 
   useEffect(() => {
-    getWordsAndPageInfo()
+    getDataSourceList({ pageNumber: 0, pageCount: 10 })
   }, [])
 
    /**
@@ -145,22 +161,20 @@ const SourceConfig = () => {
   }
 
  /**
-   * 获取用户列表
+   * 获取配置数据源列表
    */
-  const getWords = async (param: any) => {
+  const getDataSourceList = async (param: any) => {
     setLoading(true)
     const { res } = await requestFn(dispatch, state, {
-      url: '/words/fetchWordsByTime',
+      url: '/search/config/list',
       api: API_URL,
-      method: 'post',
-      data: {
-        ...param,
-        time: moment().format('YYYY-MM-DD')
-      },
+      method: 'get'
     })
     setLoading(false)
+    console.log('getDataSourceList')
+    console.log(res)
     if (res && res.status === 200 && res.data) {
-      setData(res.data.data)
+      setData(res.data.page)
     }else{
       console.log("请求错误")
     }
@@ -206,35 +220,6 @@ const SourceConfig = () => {
     
   }
 
-  /**
-   * 新增/编辑用户请求
-   */
-  const saveWords = async (param: any) => {
-    console.log(param)
-    setLoading(true)
-    const { res } = await requestFn(dispatch, state, {
-      url: '/words/updateWord',
-      api: API_URL,
-      method: 'post',
-      data: {
-        ...param
-      }
-    })
-    setLoading(false)
-    if (res && res.status === 200 && res.data) {
-      successTips(param.id ? '编辑词表成功' : '新增词表成功', '')
-      const pageP = {
-        pageNumber: pageParams.pageNumber-1,
-        pageCount: pageParams.pageCount
-      }
-      getWords(pageP)
-    } else {
-      errorTips(
-        param.id ? '编辑词表失败' : '新增词表失败',
-        res && res.data && res.data.msg ? res.data.msg : '网络异常，请重试！'
-      )
-    }
-  }
 
   /**
    * 查看用户
@@ -244,56 +229,6 @@ const SourceConfig = () => {
     setViewWordsModal(true)
   }
 
-  /**
-   * 编辑词表
-   */
-  const editWords = (item: any) => {
-    setWordsForm(item)
-    setModalTitle('编辑词')
-    setVisible(true)
-  }
-
-  const deleteConirm = (item: any) => {
-    Modal.confirm({
-      title: '确定要删除这条记录吗?',
-      content: '删除后不可恢复',
-      onOk() {
-        deleteWords(item.word)
-      },
-      onCancel() {
-        console.log('Cancel')
-      }
-    })
-  }
-
-  /**
-   * 删除用户请求
-   */
-  const deleteWords = async (word: string) => {
-    setLoading(true)
-    const { res } = await requestFn(dispatch, state, {
-      url: `/words/deleteWord`,
-      api: API_URL,
-      method: 'post',
-      data: {
-        word: word
-      }
-    })
-    setLoading(false)
-    if (res && res.status === 200 && res.data) {
-      successTips('删除词表成功')
-      const pageP = {
-        pageNumber: pageParams.pageNumber-1,
-        pageCount: pageParams.pageCount
-      }
-      getWords(pageP)
-    } else {
-      errorTips(
-        '删除词表失败',
-        res && res.data && res.data.msg ? res.data.msg : '网络异常，请重试！'
-      )
-    }
-  }
 
   const errorTips = (message = '', description = '') => {
     notification.error({
@@ -313,87 +248,53 @@ const SourceConfig = () => {
    * 编辑用户模态窗点击取消
    */
   const handleCancel = () => {
-    setVisible(false)
+    setSourceConfigvisible(false)
   }
 
   /**
-   * 新增/编辑词表模态窗，点击确定
+   * 添加新的数据源
    */
   const handleSubmit = (params: any) => {
-    handleCancel()
+    console.log('handleSubmit')
     const param = {
-      ...params,
-      id: wordsForm.id
+      tableName:params.tableName[0],
+      ...databaseConfig
     }
-    saveWords(param)
+    saveDatabaseConfig(param)
   }
 
-  /**
-   * 新增用户
-   */
-  const addWords = () => {
-    setWordsForm(defaultWordsForm)
-    setVisible(true)
-  }
+ 
 
-  /**
-   * 展示解析文本窗口
+   /**
+   * 添加新的数据源
    */
-  const showParseTextModal = () => {
-    setParseContentModal(true)
-  }
-
-  /**
-   * 解析文本
-   */
-  const parseText = async (content: string) => {
+  const saveDatabaseConfig = async (param: any) => {
     setLoading(true)
-    console.log(content)
     const { res } = await requestFn(dispatch, state, {
-      url: `/words/parseText`,
+      url: "/search/config/save",
       api: API_URL,
       method: 'post',
       data: {
-        content: content
+        ...param
       }
     })
     setLoading(false)
-    console.log(res.data.data)
     if (res && res.status === 200 && res.data) {
-      const modal={
-        words: extractWords(res.data.data.words),
-        keyWords: extractKeysWords(res.data.data.keyWords),
-        summary: res.data.data.summary
-      }
-      setViewParseModal(modal)
+      successTips('数据源配置成功')
+      handleCancel()
+      resetDatabaseValue()
     } else {
       errorTips(
-        '解析文本失败',
+        '数据源配置失败',
         res && res.data && res.data.msg ? res.data.msg : '网络异常，请重试！'
       )
     }
   }
+  
+  const resetDatabaseValue = ()=>{
+    setDatabaseConfig(defaultDatabaseConfig)
+    setStep(0)
 
-  const extractWords= (words:any[])=>{
-    var result=''
-    words.map(i => { 
-      result+=i.word+" ,"
-    })
-    if (result.length>0){
-      result = result.substr(0,result.length-1)
-    }
-    return result
-  }
-
-  const extractKeysWords= (words:any[])=>{
-    var result=''
-    words.map(i => { 
-      result+=i+" ,"
-    })
-    if (result.length>0){
-      result = result.substr(0,result.length-1)
-    }
-    return result
   }
 
   /**
@@ -408,11 +309,58 @@ const SourceConfig = () => {
       name: pageParams.name
     }
     setPageParams(params)
-    getWords({
+    getDataSourceList({
       pageNumber: pageNumber - 1,
       pageCount: pageParams.pageCount,
       name: pageParams.name
     })
+  }
+
+  const addSourceCinfig = ()=>{
+    setSourceConfigvisible(true)
+  }
+
+  const addStep= () =>{
+    setStep(step+1)
+  }
+
+  /**
+   *   获取数据库表名
+   */
+  const getTableNames=async (param:any) =>{
+    const { res } = await requestFn(dispatch, state, {
+      url: `/search/config/dbinfo`,
+      api: API_URL,
+      method: 'post',
+      data: {
+        ...param
+      }
+    })
+    setLoading(false)
+    if (res && res.status === 200 && res.data.tables) {
+      setTableNames(formatChoiceList(res.data.tables))
+      addStep()
+    } else {
+      errorTips(
+        '数据库连接失败',
+        res && res.data && res.data.msg ? res.data.msg : '网络异常，请重试！'
+      )
+    }
+  }
+
+  const formatChoiceList=(datas:any[])=>{
+    return datas.map(v=>{
+      return {
+        key: v,
+        label:v,
+        value:v
+      }
+    })
+  }
+
+  const fetchTableNames =(param:any)=>{
+    setDatabaseConfig(param)
+    getTableNames(param)
   }
 
   return (
@@ -420,7 +368,7 @@ const SourceConfig = () => {
       <SearchComponent onSearch={search} reset={resetList} />
       <Row className={styles.buttonRow}>
         <Col span={6}>
-          <Button type="primary" icon="plus-circle" onClick={addSourceCinfig()}>
+          <Button type="primary" icon="plus-circle" onClick={addSourceCinfig}>
             配置数据源
           </Button>
         </Col>
@@ -441,11 +389,16 @@ const SourceConfig = () => {
         }}
       />
       <AddSourceConfigModal
-        visible={visible}
+        visible={sourceConfigvisible}
         title={modalTitle}
-        property={configForm}
+        formValues={configForm}
+        fetchTableNames={fetchTableNames}
+        tableNames={tableNames}
         cancel={handleCancel}
         submit={handleSubmit}
+        currentStep={step}
+        addStep={addStep}
+        getTableNames={getTableNames}
       />
     </>
   )

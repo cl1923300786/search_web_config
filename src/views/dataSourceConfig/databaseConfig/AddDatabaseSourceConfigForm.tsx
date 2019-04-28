@@ -1,19 +1,16 @@
 import React, { useState, useEffect, useCallback } from 'react'
 import { Row, Col, Input, InputNumber, Radio, Form, Modal, Button, Select, DatePicker, Steps, Switch, Spin } from 'antd'
-import { RadioChangeEvent } from 'antd/lib/radio'
-import moment from 'moment'
-import styles from './AddTaskSimple.module.less'
-import { defaultSiteTypeOptions, defaultLanguageOptions } from '../../../config/Constant'
+
+
+
+
 import { useDispatch, IState, useMappedState } from '../../../store/Store'
 import { Dispatch } from 'redux'
 import Actions from '../../../store/Actions'
-import { requestFn } from '../../../utils/request'
-import debounce from 'lodash/debounce'
-import AddDatabaseSourceConfigModal from './dadabaseConfig/AddDatabaseSourceConfigModal'
+
 
 const Option = Select.Option
 
-const defaultDayOfYearNumber: number = moment().dayOfYear()
 
 const AddDatabaseSourceConfigForm = (props: any) => {
 
@@ -23,7 +20,7 @@ const AddDatabaseSourceConfigForm = (props: any) => {
   const [dataSourceTypes, setDataSourceTypes] = useState<any[]>([])
   const [tableNames, setTableNames] = useState<any[]>([])
   
-
+  const { getFieldDecorator, getFieldsValue, validateFields } = props.form
  
 
  /**  选择数据库表
@@ -43,7 +40,7 @@ const AddDatabaseSourceConfigForm = (props: any) => {
   const renderSecondStep = ()=>{
     return [
       
-      <Form.Item key="databaseType" {...formItemLayout} label="数据库类型">
+      <Form.Item key="databaseType" label="数据库类型">
       {getFieldDecorator('dataSourceType', {
         initialValue: props.databaseType
       })(
@@ -51,8 +48,7 @@ const AddDatabaseSourceConfigForm = (props: any) => {
           style={{ width: '100%' }}
           mode="multiple"
           labelInValue
-          placeholder="请选择数据库类型"
-          notFoundContent={labelSearching ? <Spin size="small" /> : null}
+          placeholder="请选择数据库类型"  
           filterOption={false}
           // onSearch={getLabels}
           // onChange={handleLabelSelectChange}
@@ -61,31 +57,31 @@ const AddDatabaseSourceConfigForm = (props: any) => {
         </Select>
       )}
     </Form.Item>,
-     <Form.Item key="ip" {...formItemLayout} label="ip" required>
+     <Form.Item key="ip"  label="ip" required>
       {getFieldDecorator('ip', {
         rules: [{ required: true, message: '请输入ip' }],
         initialValue: props.ip
       })(<Input placeholder="请输入ip" />)}
      </Form.Item>,
-     <Form.Item key="port" {...formItemLayout} label="port" required>
+     <Form.Item key="port"  label="port" required>
       {getFieldDecorator('port', {
         rules: [{ required: true, message: '请输入port' }],
         initialValue: props.ip
       })(<Input placeholder="请输入port" />)}
      </Form.Item>,
-     <Form.Item key="databaseName" {...formItemLayout} label="databaseName" required>
+     <Form.Item key="databaseName"  label="databaseName" required>
      {getFieldDecorator('databaseName', {
        rules: [{ required: true, message: '请输入数据库名' }],
        initialValue: props.databaseName
      })(<Input placeholder="请输入数据库名" />)}
     </Form.Item>,
-      <Form.Item key="userName" {...formItemLayout} label="userName" required>
+      <Form.Item key="userName"  label="userName" required>
       {getFieldDecorator('userName', {
         rules: [{ required: true, message: '请输入用户名' }],
         initialValue: props.userName
       })(<Input placeholder="请输入用户名" />)}
      </Form.Item>,
-       <Form.Item key="password" {...formItemLayout} label="password" required>
+       <Form.Item key="password"  label="password" required>
        {getFieldDecorator('password', {
          rules: [{ required: true, message: '请输入密码' }],
          initialValue: props.password
@@ -102,7 +98,7 @@ const AddDatabaseSourceConfigForm = (props: any) => {
   const renderThirdStep = (formVal: any)=>{
     return [
       
-      <Form.Item key="tableName" {...formItemLayout} label="数据库表名">
+      <Form.Item key="tableName" label="数据库表名">
       {getFieldDecorator('tableName', {
         initialValue: formVal.tableName
       })(
@@ -110,8 +106,7 @@ const AddDatabaseSourceConfigForm = (props: any) => {
           style={{ width: '100%' }}
           mode="multiple"
           labelInValue
-          placeholder="请选择数据库表名"
-          notFoundContent={labelSearching ? <Spin size="small" /> : null}
+          placeholder="请选择数据库表名"  
           filterOption={false}
           // onSearch={getLabels}
           // onChange={handleLabelSelectChange}
@@ -135,8 +130,7 @@ const AddDatabaseSourceConfigForm = (props: any) => {
           'userName',
           'password'
         ])
-        setFormCurrentValue({ ...formCurrentValue, ...fieldValue })
-        props.goNextStep({ ...formCurrentValue, ...fieldValue })
+       
       }
     })
   }
@@ -144,6 +138,6 @@ const AddDatabaseSourceConfigForm = (props: any) => {
 
 }
 
-const AddDatabaseSourceConfigModal = Form.create({ name: 'AddDatabaseSourceConfigForm' })(AddDatabaseSourceConfigForm)
 
-export default AddDatabaseSourceConfigModal
+
+

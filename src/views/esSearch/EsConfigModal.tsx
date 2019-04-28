@@ -43,7 +43,7 @@ const EsConfigModalForm = (props: any) => {
   const handleSubmit = () => {
     props.form.validateFields((err: any, values: any) => {
       if (!err) {
-        const fieldValue = getFieldsValue(['ip', 'port', 'user', 'password', 'database', 'table'])
+        const fieldValue = getFieldsValue(['ip', 'port', 'userName', 'password', 'dbName', 'tableName'])
         props.submit(fieldValue)
       }
     })
@@ -72,9 +72,9 @@ const EsConfigModalForm = (props: any) => {
             })(<Input placeholder="请输入port" />)}
           </Form.Item>
           <Form.Item label="用户名" required>
-            {getFieldDecorator('user', {
+            {getFieldDecorator('userName', {
               rules: [{ required: true, message: '请输入用户名' }],
-              initialValue: props.property.user
+              initialValue: props.property.userName
             })(<Input placeholder="请输入用户名" />)}
           </Form.Item>
           <Form.Item label="密码" required>
@@ -84,15 +84,15 @@ const EsConfigModalForm = (props: any) => {
             })(<Input placeholder="请输入密码" />)}
           </Form.Item>
           <Form.Item label="数据库名" required>
-            {getFieldDecorator('database', {
+            {getFieldDecorator('dbName', {
               rules: [{ required: true, message: '请输入数据库名' }],
-              initialValue: props.property.database
+              initialValue: props.property.dbName
             })(<Input placeholder="请输入数据库名" />)}
           </Form.Item>
           <Form.Item label="数据库表名" required>
-            {getFieldDecorator('table', {
+            {getFieldDecorator('tableName', {
               rules: [{ required: true, message: '请输入数据库表名' }],
-              initialValue: props.property.table
+              initialValue: props.property.tableName
             })(<Input placeholder="请输入数据库表名" />)}
           </Form.Item>
         </Form>

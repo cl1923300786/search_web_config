@@ -5,44 +5,51 @@ import {
   Form,
   Modal,
   Button,
-  DatePicker,
   Select,
-  Steps
+  Steps,
+  Col
 } from 'antd'
 
+import styles from './AddSourceConfig.module.less'
+import { requestFn } from '../../utils/request';
+import { useDispatch, IState, useMappedState } from '../../store/Store'
+import { Dispatch } from 'redux'
+import Actions from '../../store/Actions'
 
+import { API_URL } from '../../config/Constant';
 
 const Option = Select.Option
 const Step = Steps.Step
 
-const AddSourceConfigForm = (props: any) => {
 
-  const defaultDataSourceConfigForm = {
-    'dataSourceType':'',
-    'current_step':0,
-    'databaseConfig':{
-      'ip':'',
-      'port':'',
-      'databaseName':'',
-      'userName':'',
-      'password':'',
-      'tableName':''
-    }
-  }
+
+const AddSourceConfigForm = (props: any) => {
   
-  const defaultDatabaseConfig = {
-      'ip':'',
-      'port':'',
-      'databaseName':'',
-      'userName':'',
-      'password':'',
-      'tableName':''
-  }
+  const steps = [
+    {
+      title: '选择数据源类型',
+      content: 'First-content'
+    },
+    {
+      title: '配置数据源',
+      content: 'Second-content'
+    },
+    {
+      title: '选择数据库表名',
+      content: 'Third-content'
+    }
+  ]
 
   const { getFieldDecorator, getFieldsValue, validateFields } = props.form
+  const [dataSourceTypes, setDataSourceTypes] = useState<any[]>([])
+
+  const state: IState = useMappedState(
+    useCallback((globalState: IState) => globalState, [])
+  )
+  const dispatch: Dispatch<Actions> = useDispatch()
 
   useEffect(() => {
-    renderDataSourceTypesOptions()
+    fetchDataSourceTypes()
   }, [])
 
   const formItemLayout = {
@@ -56,51 +63,56 @@ const AddSourceConfigForm = (props: any) => {
     }
   }
 
-  const [dataSourceConfigForm, setDataSourceConfigForm] = useState(defaultDataSourceConfigForm)
-  const [dataSourceTypes, setDataSourceTypes] = useState<any[]>([])
-  const [tableNames, setTableNames] = useState<any[]>([])
-  const [databaseConfig, setDatabaseConfig] = useState<any[]>(defaultDatabaseConfig)
-  const [databaseVisiable, setDatabaseVisiable] = useState(false)
+  
 
-
-  const renderFooter = () => {
-    return (
-      <Row>
-        <Button htmlType="reset" onClick={handleCancel}>
-          取消
-        </Button>
-        <Button type="primary" htmlType="submit" onClick={handleSubmit}>
-          保存
-        </Button>
-      </Row>
-    )
+  /**  获取数据源类型
+   */
+  const fetchDataSourceTypes = async () => {
+    const { res } = await requestFn(dispatch, state, {
+      url: '/search/config/src_types',
+      api: API_URL,
+      method: 'get'
+    })
+  
+    if (res && res.status === 200 && res.data) {
+      setDataSourceTypes(res.data.result)
+    }else{
+      console.log("请求错误")
+    }
   }
 
+
+ 
    /**  选择数据源类型
    */
   const renderDataSourceTypesOptions = () => {
+    console.log('renderDataSourceTypesOptions')
+    console.log(dataSourceTypes)
     return dataSourceTypes.map((i: any) => {
-      return <Option key={i.value}>{i.id}</Option>
+      return <Option key={i}>{i}</Option>
     })
   }
 
  /**  选择数据库表
    */
   const renderTableNamesOptions = () => {
-    return tableNames.map((i: any) => {
+    return props.tableNames.map((i: any) => {
       return <Option key={i.value}>{i.value}</Option>
     })
   }
 
   const handleCancel = () => {
-    resetFields()
+    // resetFields()
     props.cancel()
   }
 
+  /**
+   *   提交数据源配置
+   */
   const handleSubmit = () => {
     props.form.validateFields((err: any, values: any) => {
       if (!err) {
-        const fieldValue = getFieldsValue(['ip', 'port', 'user', 'password', 'database', 'table'])
+        const fieldValue = getFieldsValue(['tableName'])
         props.submit(fieldValue)
       }
     })
@@ -109,7 +121,9 @@ const AddSourceConfigForm = (props: any) => {
   /**
    *   first step
    */
-  const renderFirstStep = ()=>{
+  const renderFirstStep = (formVal:any)=>{
+    console.log('renderFirstStep')
+    console.log(formVal)
     return [
       <Form.Item key="dataSourceType" {...formItemLayout} label="数据源类型">
       {getFieldDecorator('dataSourceType', {
@@ -117,12 +131,8 @@ const AddSourceConfigForm = (props: any) => {
       })(
         <Select
           style={{ width: '100%' }}
-          mode="multiple"
-          labelInValue
           placeholder="请选择数据源类型"
           filterOption={false}
-          // onSearch={getLabels}
-          // onChange={handleLabelSelectChange}
         >
           {renderDataSourceTypesOptions()}
         </Select>
@@ -136,23 +146,18 @@ const AddSourceConfigForm = (props: any) => {
    *   目前只针对MySQL配置
    */
   const renderSecondStep = (formVal: any)=>{
+    console.log('renderSecondStep')
     return [
-      
-      <Form.Item key="databaseType" {...formItemLayout} label="数据库类型">
-      {getFieldDecorator('dataSourceType', {
-        initialValue: formVal.databaseType
+      <Form.Item key="dbType" {...formItemLayout} label="数据库类型">
+      {getFieldDecorator('dbType', {
+        initialValue: formVal.dbType
       })(
         <Select
           style={{ width: '100%' }}
-          mode="multiple"
-          labelInValue
-          placeholder="请选择数据库类型"
-        
+          placeholder="请选择数据库类型"        
           filterOption={false}
-          // onSearch={getLabels}
-          // onChange={handleLabelSelectChange}
         >
-         <Option key=''>mysql</Option>
+         <Option key='mysql'>mysql</Option>
         </Select>
       )}
     </Form.Item>,
@@ -168,16 +173,16 @@ const AddSourceConfigForm = (props: any) => {
         initialValue: formVal.ip
       })(<Input placeholder="请输入port" />)}
      </Form.Item>,
-     <Form.Item key="databaseName" {...formItemLayout} label="databaseName" required>
-     {getFieldDecorator('databaseName', {
+     <Form.Item key="dbName" {...formItemLayout} label="dbName" required>
+     {getFieldDecorator('dbName', {
        rules: [{ required: true, message: '请输入数据库名' }],
-       initialValue: formVal.databaseName
+       initialValue: formVal.dbName
      })(<Input placeholder="请输入数据库名" />)}
     </Form.Item>,
-      <Form.Item key="userName" {...formItemLayout} label="userName" required>
-      {getFieldDecorator('userName', {
+      <Form.Item key="username" {...formItemLayout} label="username" required>
+      {getFieldDecorator('username', {
         rules: [{ required: true, message: '请输入用户名' }],
-        initialValue: formVal.userName
+        initialValue: formVal.username
       })(<Input placeholder="请输入用户名" />)}
      </Form.Item>,
        <Form.Item key="password" {...formItemLayout} label="password" required>
@@ -196,20 +201,15 @@ const AddSourceConfigForm = (props: any) => {
    */
   const renderThirdStep = (formVal: any)=>{
     return [
-      
       <Form.Item key="tableName" {...formItemLayout} label="数据库表名">
       {getFieldDecorator('tableName', {
-        initialValue: formVal.tableName
+        initialValue: props.tableName
       })(
         <Select
           style={{ width: '100%' }}
           mode="multiple"
-          labelInValue
-          placeholder="请选择数据库表名"
-         
+          placeholder="请选择数据库表名"      
           filterOption={false}
-          // onSearch={getLabels}
-          // onChange={handleLabelSelectChange}
         >
         {renderTableNamesOptions()}
         </Select>
@@ -217,50 +217,39 @@ const AddSourceConfigForm = (props: any) => {
     </Form.Item>
     ]
   }
-
-  const handleFirstNextStep = () => {
-    validateFields((err: any, values: any) => {
-      if (!err) {
-        const fieldValue = getFieldsValue([
-          'dataSourceType'
-        ])
-      
-      }
-    })
-  }
-
-  
-  const handleSecondNextStep = () => {
-    validateFields((err: any, values: any) => {
-      if (!err) {
-        const fieldValue = getFieldsValue([
-          'databaseType',
-          'ip',
-          'port',
-          'databaseName',
-          'userName',
-          'password'
-        ])
-        
-      }
-    })
-  }
+ 
 
   const handleNextStep = () => {
-    
-    if(dataSourceConfigForm.surrent_step===0){
-      renderFirstStep
+    console.log('handleNextStep222')   
+    if(props.currentStep===1){
+      validateFields((err: any, values: any) => {
+        if (!err) {
+          const fieldValue = getFieldsValue([
+            'dbType',
+            'ip',
+            'port',
+            'dbName',
+            'username',
+            'password'
+          ])
+          console.log(fieldValue)  
+          props.fetchTableNames(fieldValue)         
+        }
+      })
+    }else{
+      props.addStep()
     }
-    dataSourceConfigForm.surrent_step=dataSourceConfigForm.surrent_step+1
-   }
+    
+  }
+
 
   const renderContent = (current: number, formVal: any) => {
     if (current === 0) {
-      renderFirstStep(formVal)
-    } else (current === 1){
-      renderSecondStep(formVal)
-    } else (current === 2){
-      renderThirdStep(formVal)
+      return renderFirstStep(formVal)
+    } else if(current === 1) {
+      return renderSecondStep(formVal);
+    } else if(current === 2) {
+      return renderThirdStep(formVal);
     }
   }
 
@@ -281,9 +270,9 @@ const AddSourceConfigForm = (props: any) => {
     } else {
       return (
         <Row>
-          <Col span={6} className={styles.prevStepButton}>
+          {/* <Col span={6} className={styles.prevStepButton}>
             <Button onClick={handlePreviousStep}>上一步</Button>
-          </Col>
+          </Col> */}
           <Col span={8} offset={10}>
             <Button htmlType="reset" onClick={handleCancel}>
               取消
@@ -303,27 +292,19 @@ const AddSourceConfigForm = (props: any) => {
       visible={props.visible}
       width={800}
       closable={false}
-      footer={renderFooter(props.step)}
+      footer={renderFooter(props.currentStep)}
     >
       <Row className={styles.steps}>
-        <Col offset={6} span={12}>
-          <Steps current={props.step}>
+        <Col offset={6} span={15}>
+          <Steps current={props.currentStep}>
             {steps.map(item => (
               <Step key={item.title} title={item.title} />
             ))}
           </Steps>
         </Col>
       </Row>
-      {renderContent(props.step, formCurrentValue)}
+      {renderContent(props.currentStep, props.formValues)}
     </Modal>
-
-    <AddDatabaseSourceConfigModal
-        visible={databaseVisiable}
-        title="添加数据源"
-        property={databaseConfig}
-      //   parseText={parseText}
-       close={() => setParseContentModal(databaseVisiable)}
-    />
   )
 }
 

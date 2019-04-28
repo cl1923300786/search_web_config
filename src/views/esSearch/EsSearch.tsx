@@ -14,13 +14,14 @@ import {
 import { API_URL } from '../../config/Constant'
 import { any } from 'prop-types';
 
+
 const defaultConfigForm = {
   ip: '',
   port: '',
-  user: '',
+  userName: '',
   password: '',
-  database: '',
-  table: ''
+  dbName: '',
+  tableName: ''
 }
 
 const searchedItemForm = {

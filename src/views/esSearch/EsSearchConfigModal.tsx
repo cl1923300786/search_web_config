@@ -40,11 +40,11 @@ const EsSearchConfigModal = (props: any) => {
       </Row>
       <Row className={styles.rowItem}>
         <Col span={6} className={styles.label}>密码：</Col>
-        <Col span={12}>{props.property.passwd}</Col>
+        <Col span={12}>{props.property.password}</Col>
       </Row>
       <Row className={styles.rowItem}>
         <Col span={6} className={styles.label}>数据库名：</Col>
-        <Col span={12}>{props.property.databaseName}</Col>
+        <Col span={12}>{props.property.dbName}</Col>
       </Row>
       <Row className={styles.rowItem}>
         <Col span={6} className={styles.label}>数据库表名：</Col>
