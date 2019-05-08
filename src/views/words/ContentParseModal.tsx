@@ -67,7 +67,7 @@ const ContentParseForm = (props: any) => {
       <Modal
         title={props.title}
         visible={props.visible}
-        width={1200}
+        width={1000}
         closable={false}
         footer={renderFooter()}
       >
@@ -76,12 +76,11 @@ const ContentParseForm = (props: any) => {
             {getFieldDecorator('content', {
               rules: [{ required: true, message: '请输入文本' }],
               initialValue: props.property.content
-            })(<TextArea placeholder="请输入文本" />)}
-          </Form.Item>
-        
+            })(<TextArea  placeholder="请输入文本" />)}
+          </Form.Item>        
         </Form>
 
-        <Row className={styles.buttonRow}>
+        <Row className={styles.parseButtonRow}>
             <Col span={6}>
             <Button type="primary" onClick={parseContent}>
                 解析
@@ -90,18 +89,18 @@ const ContentParseForm = (props: any) => {
         </Row>
 
        
-        <Row className={styles.rowItem}>
+        <Row className={styles.parseButtonRow}>
             <Col span={6} className={styles.label}>词：</Col>
-             <Col span={12}>{props.property.words}</Col>
-         </Row>
-        <Row className={styles.rowItem}>
-             <Col span={6} className={styles.label}>关键字：</Col>
+            <Col span={12}>{props.property.words}</Col>
+        </Row>
+        <Row className={styles.parseButtonRow}>
+            <Col span={6} className={styles.label}>关键字：</Col>
             <Col span={12}>{props.property.keyWords}</Col>
         </Row>
-        <Row className={styles.rowItem}>
-             <Col span={6} className={styles.label}>摘要：</Col>
-             <Col span={12}>{props.property.summary}</Col>
-         </Row>
+        <Row className={styles.parseButtonRow}>
+            <Col span={6} className={styles.label}>摘要：</Col>
+            <Col span={12}>{props.property.summary}</Col>
+        </Row>
 
       </Modal>
     </>

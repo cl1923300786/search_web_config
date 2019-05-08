@@ -42,6 +42,7 @@ const AddSourceConfigForm = (props: any) => {
 
   const { getFieldDecorator, getFieldsValue, validateFields } = props.form
   const [dataSourceTypes, setDataSourceTypes] = useState<any[]>([])
+  const [selectedDataSourceType, setSelectedDataSourceType] = useState("内部数据库")
 
   const state: IState = useMappedState(
     useCallback((globalState: IState) => globalState, [])
@@ -89,7 +90,7 @@ const AddSourceConfigForm = (props: any) => {
     console.log('renderDataSourceTypesOptions')
     console.log(dataSourceTypes)
     return dataSourceTypes.map((i: any) => {
-      return <Option key={i}>{i}</Option>
+      return <Option key={i} >{i}</Option>
     })
   }
 
@@ -118,6 +119,12 @@ const AddSourceConfigForm = (props: any) => {
     })
   }
 
+  const selectDataSourceType =(value:any)=>{
+    console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+    console.log(value)
+    setSelectedDataSourceType(value)
+  }
+
   /**
    *   first step
    */
@@ -133,6 +140,7 @@ const AddSourceConfigForm = (props: any) => {
           style={{ width: '100%' }}
           placeholder="请选择数据源类型"
           filterOption={false}
+          onChange={selectDataSourceType}
         >
           {renderDataSourceTypesOptions()}
         </Select>
@@ -146,7 +154,20 @@ const AddSourceConfigForm = (props: any) => {
    *   目前只针对MySQL配置
    */
   const renderSecondStep = (formVal: any)=>{
-    console.log('renderSecondStep')
+    console.log(selectedDataSourceType)
+    console.log(selectedDataSourceType=="内部数据库")
+    if (selectedDataSourceType=="内部数据库"){
+      return configDataBase(formVal)
+    }else if(selectedDataSourceType=="文件系统"){
+      return configFileSystem(formVal)
+    }
+  }
+
+  /**
+   *   配置数据库连接
+   */
+  const configDataBase=(formVal: any)=>{
+    console.log('configDataBase')
     return [
       <Form.Item key="dbType" {...formItemLayout} label="数据库类型">
       {getFieldDecorator('dbType', {
@@ -191,9 +212,59 @@ const AddSourceConfigForm = (props: any) => {
          initialValue: formVal.password
        })(<Input placeholder="请输入请输入密码" />)}
       </Form.Item>
-       
     ]
   }
+
+
+  /**
+   *   配置文件系统
+   */
+  const configFileSystem=(formVal: any)=>{
+    console.log('configFileSystem')
+    return [
+      <Form.Item key="protocol" {...formItemLayout} label="文件传输协议">
+      {getFieldDecorator('protocol', {
+        initialValue: formVal.protocol
+      })(
+        <Select
+          style={{ width: '100%' }}
+          placeholder="文件传输协议"        
+          filterOption={false}
+        >
+         <Option key='ftp'>ftp</Option>
+         <Option key='http'>http</Option>
+        </Select>
+      )}
+    </Form.Item>,
+     <Form.Item key="ip" {...formItemLayout} label="ip" required>
+      {getFieldDecorator('ip', {
+        rules: [{ required: true, message: '请输入ip' }],
+        initialValue: formVal.ip
+      })(<Input placeholder="请输入ip" />)}
+     </Form.Item>,
+     <Form.Item key="path" {...formItemLayout} label="path" required>
+      {getFieldDecorator('path', {
+        rules: [{ required: true, message: '请输入path' }],
+        initialValue: formVal.ip
+      })(<Input placeholder="请输入path" />)}
+     </Form.Item>,
+      <Form.Item key="username" {...formItemLayout} label="username" required>
+      {getFieldDecorator('username', {
+        rules: [{ required: true, message: '请输入用户名' }],
+        initialValue: formVal.username
+      })(<Input placeholder="请输入用户名" />)}
+     </Form.Item>,
+       <Form.Item key="password" {...formItemLayout} label="password" required>
+       {getFieldDecorator('password', {
+         rules: [{ required: true, message: '请输入密码' }],
+         initialValue: formVal.password
+       })(<Input placeholder="请输入请输入密码" />)}
+      </Form.Item>
+    ]
+  }
+
+
+
 
   /**
    *   third step

@@ -172,6 +172,8 @@ const Words = () => {
     console.log("###")
     console.log(res.data.data)
     if (res && res.status === 200 && res.data) {
+      pageParams.pageCount=res.data.data.length
+      pageParams.total=res.data.data.length
       setData(res.data.data)
     }else{
       console.log("请求错误")
@@ -190,6 +192,7 @@ const Words = () => {
    * 重置搜索(重置搜索条件、页码)
    */
   const resetList = () => {
+    defaultPageParams.pageCount=10
     setPageParams(defaultPageParams)
     getWordsAndPageInfo()
     

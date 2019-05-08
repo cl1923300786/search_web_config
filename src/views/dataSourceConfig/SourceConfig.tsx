@@ -94,7 +94,7 @@ const SourceConfig = () => {
     },
     {
         title: '数据库类型',
-        dataIndex: 'dbype',
+        dataIndex: 'dbType',
         key: 'dbType',
         width: '14&'
     },

@@ -113,7 +113,7 @@ const EsSearch = () => {
     setLoading(true)
     setSearchedWord(param)
     const { res } = await requestFn(dispatch, state, {
-      url: '/search/query',
+      url: '/search/queryStd',
       api: API_URL,
       method: 'get',
       params: {
