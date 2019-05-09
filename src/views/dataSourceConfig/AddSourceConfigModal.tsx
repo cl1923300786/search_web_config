@@ -40,9 +40,14 @@ const AddSourceConfigForm = (props: any) => {
     }
   ]
 
+  const dataSourceTypesEntity={
+      type: "",
+      type_name_zh:""
+  }
+
   const { getFieldDecorator, getFieldsValue, validateFields } = props.form
   const [dataSourceTypes, setDataSourceTypes] = useState<any[]>([])
-  const [selectedDataSourceType, setSelectedDataSourceType] = useState("内部数据库")
+  const [selectedDataSourceType, setSelectedDataSourceType] = useState("db")
 
   const state: IState = useMappedState(
     useCallback((globalState: IState) => globalState, [])
@@ -74,23 +79,32 @@ const AddSourceConfigForm = (props: any) => {
       api: API_URL,
       method: 'get'
     })
-  
+    console.log("fetchDataSourceTypes",res.data)
     if (res && res.status === 200 && res.data) {
-      setDataSourceTypes(res.data.result)
+      setDataSourceTypes(formatSourceDataTypes(res.data.result))
     }else{
       console.log("请求错误")
     }
   }
 
 
+  const formatSourceDataTypes=(data:any[])=>{
+      return data.map((item)=>{
+          return {
+            key: item.type,
+            label: item.type,
+            type: item.type,
+            type_name_zh: item.typeNameZh
+          }
+      })
+  }
  
    /**  选择数据源类型
    */
   const renderDataSourceTypesOptions = () => {
-    console.log('renderDataSourceTypesOptions')
-    console.log(dataSourceTypes)
+    console.log('renderDataSourceTypesOptions',dataSourceTypes)
     return dataSourceTypes.map((i: any) => {
-      return <Option key={i} >{i}</Option>
+      return <Option key={i.type} value={i.type}>{i.type_name_zh}</Option>
     })
   }
 
@@ -98,7 +112,7 @@ const AddSourceConfigForm = (props: any) => {
    */
   const renderTableNamesOptions = () => {
     return props.tableNames.map((i: any) => {
-      return <Option key={i.value}>{i.value}</Option>
+      return <Option key={i.value} value={i.value}>{i.value}</Option>
     })
   }
 
@@ -120,8 +134,7 @@ const AddSourceConfigForm = (props: any) => {
   }
 
   const selectDataSourceType =(value:any)=>{
-    console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-    console.log(value)
+    console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!",value)
     setSelectedDataSourceType(value)
   }
 
@@ -134,12 +147,13 @@ const AddSourceConfigForm = (props: any) => {
     return [
       <Form.Item key="dataSourceType" {...formItemLayout} label="数据源类型">
       {getFieldDecorator('dataSourceType', {
-        initialValue: dataSourceTypes
+        initialValue: dataSourceTypes && dataSourceTypes[0] && dataSourceTypes[0].type ? dataSourceTypes[0].type : 'db'
       })(
         <Select
           style={{ width: '100%' }}
           placeholder="请选择数据源类型"
           filterOption={false}
+          // labelInValue
           onChange={selectDataSourceType}
         >
           {renderDataSourceTypesOptions()}
@@ -155,10 +169,10 @@ const AddSourceConfigForm = (props: any) => {
    */
   const renderSecondStep = (formVal: any)=>{
     console.log(selectedDataSourceType)
-    console.log(selectedDataSourceType=="内部数据库")
-    if (selectedDataSourceType=="内部数据库"){
+    console.log(selectedDataSourceType=="file")
+    if (selectedDataSourceType=="db"){
       return configDataBase(formVal)
-    }else if(selectedDataSourceType=="文件系统"){
+    }else if(selectedDataSourceType=="file"){
       return configFileSystem(formVal)
     }
   }
@@ -188,29 +202,29 @@ const AddSourceConfigForm = (props: any) => {
         initialValue: formVal.ip
       })(<Input placeholder="请输入ip" />)}
      </Form.Item>,
-     <Form.Item key="port" {...formItemLayout} label="port" required>
+     <Form.Item key="port" {...formItemLayout} label="端口" required>
       {getFieldDecorator('port', {
-        rules: [{ required: true, message: '请输入port' }],
+        rules: [{ required: true, message: '请输入端口' }],
         initialValue: formVal.ip
-      })(<Input placeholder="请输入port" />)}
+      })(<Input placeholder="请输入端口" />)}
      </Form.Item>,
-     <Form.Item key="dbName" {...formItemLayout} label="dbName" required>
+     <Form.Item key="dbName" {...formItemLayout} label="数据库名" required>
      {getFieldDecorator('dbName', {
        rules: [{ required: true, message: '请输入数据库名' }],
        initialValue: formVal.dbName
      })(<Input placeholder="请输入数据库名" />)}
     </Form.Item>,
-      <Form.Item key="username" {...formItemLayout} label="username" required>
+      <Form.Item key="username" {...formItemLayout} label="用户名" required>
       {getFieldDecorator('username', {
         rules: [{ required: true, message: '请输入用户名' }],
         initialValue: formVal.username
       })(<Input placeholder="请输入用户名" />)}
      </Form.Item>,
-       <Form.Item key="password" {...formItemLayout} label="password" required>
+       <Form.Item key="password" {...formItemLayout} label="密码" required>
        {getFieldDecorator('password', {
          rules: [{ required: true, message: '请输入密码' }],
          initialValue: formVal.password
-       })(<Input placeholder="请输入请输入密码" />)}
+       })(<Input type='password' placeholder="请输入请输入密码" />)}
       </Form.Item>
     ]
   }
@@ -222,9 +236,9 @@ const AddSourceConfigForm = (props: any) => {
   const configFileSystem=(formVal: any)=>{
     console.log('configFileSystem')
     return [
-      <Form.Item key="protocol" {...formItemLayout} label="文件传输协议">
-      {getFieldDecorator('protocol', {
-        initialValue: formVal.protocol
+      <Form.Item key="schema" {...formItemLayout} label="文件传输协议">
+      {getFieldDecorator('schema', {
+        initialValue: formVal.schema
       })(
         <Select
           style={{ width: '100%' }}
@@ -242,19 +256,25 @@ const AddSourceConfigForm = (props: any) => {
         initialValue: formVal.ip
       })(<Input placeholder="请输入ip" />)}
      </Form.Item>,
-     <Form.Item key="path" {...formItemLayout} label="path" required>
-      {getFieldDecorator('path', {
-        rules: [{ required: true, message: '请输入path' }],
-        initialValue: formVal.ip
-      })(<Input placeholder="请输入path" />)}
+     <Form.Item key="port" {...formItemLayout} label="端口" required>
+     {getFieldDecorator('port', {
+       rules: [{ required: true, message: 'port' }],
+       initialValue: formVal.port
+     })(<Input placeholder="请输入端口" />)}
+    </Form.Item>,
+     <Form.Item key="filePath" {...formItemLayout} label="路径" required>
+      {getFieldDecorator('filePath', {
+        rules: [{ required: true, message: '请输入路径' }],
+        initialValue: formVal.filePath
+      })(<Input placeholder="请输入路径" />)}
      </Form.Item>,
-      <Form.Item key="username" {...formItemLayout} label="username" required>
+      <Form.Item key="username" {...formItemLayout} label="用户名" required>
       {getFieldDecorator('username', {
         rules: [{ required: true, message: '请输入用户名' }],
         initialValue: formVal.username
       })(<Input placeholder="请输入用户名" />)}
      </Form.Item>,
-       <Form.Item key="password" {...formItemLayout} label="password" required>
+       <Form.Item key="password" {...formItemLayout} label="密码" required>
        {getFieldDecorator('password', {
          rules: [{ required: true, message: '请输入密码' }],
          initialValue: formVal.password
@@ -290,9 +310,25 @@ const AddSourceConfigForm = (props: any) => {
   }
  
 
-  const handleNextStep = () => {
-    console.log('handleNextStep222')   
-    if(props.currentStep===1){
+  const handleNextStep = () => {  
+    console.log("handleNextStep",props.currentStep,props.selectedSourceType)
+    if(props.currentStep===1 && props.selectedSourceType==='file'){
+      validateFields((err: any, values: any) => {
+        if (!err) {
+          const fieldValue = getFieldsValue([
+            'schema',
+            'ip',
+            'port',
+            'filePath', 
+            'username',
+            'password'
+          ])
+          console.log("handleNextStep file",fieldValue)
+          props.submit(fieldValue)          
+        }
+      })
+
+    } else if(props.currentStep===1){
       validateFields((err: any, values: any) => {
         if (!err) {
           const fieldValue = getFieldsValue([
@@ -308,6 +344,11 @@ const AddSourceConfigForm = (props: any) => {
         }
       })
     }else{
+      const fieldValue = getFieldsValue([
+        'dataSourceType'
+      ])
+      console.log("handleNextStep",fieldValue.dataSourceType)
+      props.setSelectedSourceTypeAct(fieldValue.dataSourceType)
       props.addStep()
     }
     

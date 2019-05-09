@@ -12,7 +12,6 @@ import {
   IParams
 } from '../../components/search/SearchComponent'
 import { API_URL } from '../../config/Constant'
-import { any } from 'prop-types';
 
 
 const defaultConfigForm = {
@@ -26,13 +25,32 @@ const defaultConfigForm = {
 
 const searchedItemForm = {
   id: '',
-  title: '',
-  content: '',
-  freshTime: ''
+  belongs_org: '',
+  ccs_type: '',
+  eng_title: '',
+  expire_date: '',
+  ics_type: '',
+  issue_org: '',
+  issuer: '',
+  issus_date: '',
+  language_type: '',
+  publish_date: '',
+  publish_org: '',
+  record: '',
+  source: '',
+  status: '',
+  std_abs: '',
+  std_no: '',
+  std_org: '',
+  substract_std: '',
+  substracted_std: '',
+  usage_std: '',
+  used_std: '',
+  zh_title: ''
 }
 
 const defaultPageParams = {
-  pageNumber: 0,
+  pageNumber: 1,
   pageCount: 10,
   total: 1,
   name: ''
@@ -56,36 +74,60 @@ const EsSearch = () => {
 
   const columns = [
     {
-      title: 'id',
-      dataIndex: 'id',
-      key: 'id',
-      width: '14%'
-    },
-    {
-      title: '标题',
-      dataIndex: 'title',
-      key: 'title',
-      width: '14&',
+      title: '标准号',
+      dataIndex: 'std_no',
+      key: 'std_no',
+      width: '14%',
       className: styles.contentHighLight,
         render: (text: string) => (
           <div dangerouslySetInnerHTML={{__html: text}} />
         )
     },
     {
-        title: '正文',
-        dataIndex: 'content',
-        key: 'content',
-        width: '14&',
+      title: '标题',
+      dataIndex: 'zh_title',
+      key: 'zh_title',
+      width: '14%',
+      className: styles.contentHighLight,
+        render: (text: string) => (
+          <div dangerouslySetInnerHTML={{__html: text}} />
+        )
+    },
+    {
+        title: '发布单位',
+        dataIndex: 'publish_org',
+        key: 'publish_org',
+        width: '14%',
         className: styles.contentHighLight,
         render: (text: string) => (
           <div dangerouslySetInnerHTML={{__html: text}} />
         )
     },
     {
-      title: '时间',
-      dataIndex: 'freshTime',
-      key: 'freshTime',
-      width: '20%'
+      title: '备案号',
+      dataIndex: 'record',
+      key: 'record',
+      width: '14%',
+      className: styles.contentHighLight,
+      render: (text: string) => (
+        <div dangerouslySetInnerHTML={{__html: text}} />
+      )
+    },
+    {
+      title: '状态',
+      dataIndex: 'status',
+      key: 'status',
+      width: '14%',
+      className: styles.contentHighLight,
+      render: (text: string) => (
+        <div dangerouslySetInnerHTML={{__html: text}} />
+      )
+    },
+    {
+      title: '发布日期',
+      dataIndex: 'publish_date',
+      key: 'publish_date',
+      width: '14%'
     },
     {
       title: '操作',
@@ -95,7 +137,7 @@ const EsSearch = () => {
       render: (text: string, record: any) => (
         <div>
           <a
-            style={{ color: 'rgba(0, 0, 0, .45)' }}
+            style={{ color: 'rgba(56, 105, 255, .45)' }}
             onClick={() => viewItems(record)}>
             查看
           </a>
@@ -121,10 +163,13 @@ const EsSearch = () => {
       }
     })
     setLoading(false)
-    console.log("11: ")
-    console.log(res.data)
+    console.log("searchWord: ",param.pageNo,res.data)
     if (res && res.status === 200 && res.data) {
-      defaultPageParams.total=res.data.result.totalHits,
+      defaultPageParams.total=res.data.result.totalHits
+      defaultPageParams.pageNumber = param.pageNo ? param.pageNo + 1 : defaultPageParams.pageNumber
+      if(param.pageNo==0){
+        defaultPageParams.pageNumber=1
+      }
       setPageParams(defaultPageParams),
       setData(formatHits(res.data.result.hits))
     }else{
@@ -133,12 +178,34 @@ const EsSearch = () => {
   }
 
   const formatHits = (hits: any[]) => {
-    return hits.map(i => { 
+    return hits.map((i,index) => { 
       return {
         id: i.doc.id,
-        title: i.highlight.title!=null? i.highlight.title :i.doc.title,
-        content: i.highlight.content!=null? i.highlight.content :i.doc.content,
-        freshTime: i.doc.createTime
+        dataIndex:  index,
+        key:  index,
+        belongs_org: i.highlight['belongs_org.zh']!=null? i.highlight['belongs_org.zh'] :i.doc.belongs_org,
+        ccs_type: i.highlight['ccs_type.zh']!=null? i.highlight['ccs_type.zh'] :i.doc.ccs_type,
+        eng_title: i.highlight['eng_title.zh']!=null? i.highlight['eng_title.zh'] :i.doc.eng_title,
+        expire_date:  i.doc.expire_date,
+        ics_type: i.highlight['ics_type.zh']!=null? i.highlight['ics_type.zh'] :i.doc.ics_type,
+        issue_org: i.highlight['issue_org.zh']!=null? i.highlight['issue_org.zh'] :i.doc.issue_org,
+        issuer: i.highlight['issuer.zh']!=null? i.highlight['issuer.zh'] :i.doc.issuer,
+        issus_date:  i.doc.issus_date,
+        language_type: i.highlight['language_type.zh']!=null? i.highlight['language_type.zh'] :i.doc.language_type,
+        publish_date:  i.doc.publish_date,
+        publish_org: i.highlight['publish_org.zh']!=null? i.highlight['publish_org.zh'] :i.doc.publish_org,
+        record: i.highlight['record.zh']!=null? i.highlight['record.zh'] :i.doc.record,
+        source: i.highlight['source.zh']!=null? i.highlight['source.zh'] :i.doc.source,
+        status:  i.doc.status,
+        std_abs: i.highlight['std_abs.zh']!=null? i.highlight['std_abs.zh'] :i.doc.std_abs,
+        std_no: i.highlight['std_no.zh']!=null? i.highlight['std_no.zh'] :i.doc.std_no,
+        std_org: i.highlight['std_org.zh']!=null? i.highlight['std_org.zh'] :i.doc.std_org,
+        substract_std: i.highlight['substract_std.zh']!=null? i.highlight['substract_std.zh'] :i.doc.substract_std,
+        substracted_std: i.highlight['substracted_std.zh']!=null? i.highlight['substracted_std.zh'] :i.doc.substracted_std,
+        usage_std: i.highlight['usage_std.zh']!=null? i.highlight['usage_std.zh'] :i.doc.usage_std,
+        used_std: i.highlight['used_std.zh']!=null? i.highlight['used_std.zh'] :i.doc.used_std,
+        zh_title: i.highlight['zh_title.zh']!=null? i.highlight['zh_title.zh'] :i.doc.zh_title
+      
       }
     })
   }
@@ -237,8 +304,7 @@ const EsSearch = () => {
    * 列表翻页
    */
   const onPageChange = (pageNumber: number, size: number | undefined) => {
-    console.log("???")
-    console.log(searchedWord)
+    console.log("???", pageNumber)
     setLoading(true)
     const params = {
       ...pageParams,
@@ -269,7 +335,7 @@ const EsSearch = () => {
         loading={loading}
         pagination={{
           showQuickJumper: true,
-          defaultCurrent: 1,
+          // defaultCurrent: 1,
           current: pageParams.pageNumber,
           total: pageParams.total,
           pageSize: pageParams.pageCount,

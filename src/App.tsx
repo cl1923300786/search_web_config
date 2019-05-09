@@ -26,7 +26,7 @@ const CustomSider = (props: any) => {
    * 渲染二级菜单
    */
   const renderSubmenu = () => {
-    return routes.map((router) => {
+    return routes.map((router:any) => {
       if (!router.hidden && router.hasMenu) {
         if (router.children && router.children.length > 0) {
           return (
@@ -39,7 +39,7 @@ const CustomSider = (props: any) => {
                 </span>
               }
             >
-              {router.children.map((item) => {
+              {router.children.map((item:any) => {
                 return (
                   <Menu.Item key={item.path}>
                     <Link to={item.path}>
@@ -96,10 +96,10 @@ const HasMenu = () => {
    * 渲染页面主体内容,缓存中无token,则跳转登录页
    */
   const renderContent = () => {
-    return routes.map((router) => {
+    return routes.map((router:any) => {
       if (!router.hidden) {
         if (router.children && router.children.length > 0) {
-          return router.children.map((item) => {
+          return router.children.map((item:any) => {
             return (
               <Route
                 path={item.path}

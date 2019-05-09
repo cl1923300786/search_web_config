@@ -72,6 +72,8 @@ const SourceConfig = () => {
   const [step, setStep] = useState(0)
   const [tableNames, setTableNames] = useState<any[]>([])
   const [databaseConfig, setDatabaseConfig] = useState(defaultDatabaseConfig)
+  const [selectedSourceType, setSelectedSourceType] = useState()
+
 
   const state: IState = useMappedState(
     useCallback((globalState: IState) => globalState, [])
@@ -86,35 +88,35 @@ const SourceConfig = () => {
       key: 'id',
       width: '14%'
     },
-    {
-      title: '数据源类型',
-      dataIndex: 'sourceType',
-      key: 'sourceType',
-      width: '14&'
-    },
+    // {
+    //   title: '数据源类型',
+    //   dataIndex: 'sourceType',
+    //   key: 'sourceType',
+    //   width: '14%'
+    // },
     {
         title: '数据库类型',
         dataIndex: 'dbType',
         key: 'dbType',
-        width: '14&'
+        width: '14%'
     },
     {
         title: 'ip',
         dataIndex: 'ip',
         key: 'ip',
-        width: '20%'
+        width: '14%'
     },
     {
       title: '数据库名',
       dataIndex: 'dbName',
       key: 'dbName',
-      width: '20%'
+      width: '14%'
     },
     {
         title: '表名',
         dataIndex: 'tableName',
         key: 'tableName',
-        width: '20%'
+        width: '14%'
     },
     {
       title: '操作',
@@ -124,7 +126,7 @@ const SourceConfig = () => {
       render: (text: string, record: any) => (
         <div>
           <a
-            style={{ color: 'rgba(0, 0, 0, .45)' }}
+            style={{ color: 'rgba(56, 105, 255, .45)' }}
             onClick={() => viewWords(record)}
           >
             查看
@@ -166,15 +168,14 @@ const SourceConfig = () => {
   const getDataSourceList = async (param: any) => {
     setLoading(true)
     const { res } = await requestFn(dispatch, state, {
-      url: '/search/config/list',
+      url: '/search/config/db/list',
       api: API_URL,
       method: 'get'
     })
     setLoading(false)
-    console.log('getDataSourceList')
-    console.log(res)
+    console.log('getDataSourceList',res)
     if (res && res.status === 200 && res.data) {
-      setData(res.data.page)
+      setData(res.data.result)
     }else{
       console.log("请求错误")
     }
@@ -256,14 +257,45 @@ const SourceConfig = () => {
    */
   const handleSubmit = (params: any) => {
     console.log('handleSubmit')
-    const param = {
-      tableName:params.tableName[0],
-      ...databaseConfig
+    if(selectedSourceType==="db"){
+      const param = {
+        tableName:params.tableName[0],
+        ...databaseConfig
+      }
+      saveDatabaseConfig1(param)
+    }else if(selectedSourceType==="file"){
+      saveDatabaseConfig1(params)
     }
-    saveDatabaseConfig(param)
+    
   }
 
- 
+  /**
+   * 添加新的数据源
+   */
+  const saveDatabaseConfig1 = async (param: any) => {
+    setLoading(true)
+    var uri="/search/config/"+selectedSourceType+"/save"
+    console.log("saveDatabaseConfig1",uri,param)
+    const { res } = await requestFn(dispatch, state, {
+      url: uri,
+      api: API_URL,
+      method: 'post',
+      data: {
+        ...param
+      }
+    })
+    setLoading(false)
+    if (res && res.status === 200 && res.data) {
+      successTips('数据源配置成功')
+      handleCancel()
+      resetDatabaseValue()
+    } else {
+      errorTips(
+        '数据源配置失败',
+        res && res.data && res.data.msg ? res.data.msg : '网络异常，请重试！'
+      )
+    }
+  }
 
    /**
    * 添加新的数据源
@@ -363,6 +395,10 @@ const SourceConfig = () => {
     getTableNames(param)
   }
 
+  const setSelectedSourceTypeAct =(param:any)=>{
+    setSelectedSourceType(param)
+  }
+
   return (
     <>
       <SearchComponent onSearch={search} reset={resetList} />
@@ -399,6 +435,8 @@ const SourceConfig = () => {
         currentStep={step}
         addStep={addStep}
         getTableNames={getTableNames}
+        selectedSourceType={selectedSourceType}
+        setSelectedSourceTypeAct={setSelectedSourceTypeAct}
       />
     </>
   )

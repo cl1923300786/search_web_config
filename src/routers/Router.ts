@@ -14,39 +14,39 @@ const routes = [
     hasMenu: true,
     hidden: false
   },
-  {
-    component: UserLog,
-    path: '/logs',
-    iconType: 'reconciliation',
-    name: '日志管理',
-    hasMenu: true,
-    hidden: false,
-    children: [
-      {
-        component: UserLog,
-        path: '/logs/userLog',
-        name: '用户日志',
-        hasMenu: true,
-        hidden: false
-      }
-    ]
-  },
-  {
-    component: User,
-    path: '/user',
-    iconType: 'user',
-    name: '用户管理',
-    hasMenu: true,
-    hidden: false
-  },
-  {
-    component: Words,
-    path: '/words',
-    iconType: 'words',
-    name: '词表',
-    hasMenu: true,
-    hidden: false
-  },
+  // {
+  //   component: UserLog,
+  //   path: '/logs',
+  //   iconType: 'reconciliation',
+  //   name: '日志管理',
+  //   hasMenu: true,
+  //   hidden: false,
+  //   children: [
+  //     {
+  //       component: UserLog,
+  //       path: '/logs/userLog',
+  //       name: '用户日志',
+  //       hasMenu: true,
+  //       hidden: false
+  //     }
+  //   ]
+  // },
+  // {
+  //   component: User,
+  //   path: '/user',
+  //   iconType: 'user',
+  //   name: '用户管理',
+  //   hasMenu: true,
+  //   hidden: false
+  // },
+  // {
+  //   component: Words,
+  //   path: '/words',
+  //   iconType: 'words',
+  //   name: '词表',
+  //   hasMenu: true,
+  //   hidden: false
+  // },
   {
     component: EsSearch,
     path: '/esSearch',
