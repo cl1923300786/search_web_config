@@ -29,7 +29,9 @@ const EsSearchViewModal = (props: any) => {
 
       <Row className={styles.rowItem}>
         <Col span={6} className={styles.label}>标准号：</Col>
-        <Col span={12}>{props.property.std_no}</Col>
+        <Col span={12} className={styles.contentHighLight}>
+          <div dangerouslySetInnerHTML={{__html: props.property.std_no}} />
+        </Col> 
       </Row> 
       <Row className={styles.rowItem}>
         <Col span={6} className={styles.label}>中文标题：</Col>
@@ -45,7 +47,9 @@ const EsSearchViewModal = (props: any) => {
       </Row>
       <Row className={styles.rowItem}>
         <Col span={6} className={styles.label}>使用状态：</Col>
-        <Col span={12}>{props.property.status}</Col>
+        <Col span={12} className={styles.contentHighLight}>
+          <div dangerouslySetInnerHTML={{__html: props.property.status}} />
+        </Col> 
       </Row> 
       <Row className={styles.rowItem}>
         <Col span={6} className={styles.label}>截止日期：</Col>
@@ -53,11 +57,15 @@ const EsSearchViewModal = (props: any) => {
       </Row>
       <Row className={styles.rowItem}>
         <Col span={6} className={styles.label}>CCS分类列表：</Col>
-        <Col span={12}>{props.property.ccs_type}</Col>
+        <Col span={12} className={styles.contentHighLight}>
+          <div dangerouslySetInnerHTML={{__html: props.property.ccs_type}} />
+        </Col>
       </Row>
       <Row className={styles.rowItem}>
         <Col span={6} className={styles.label}>ics分类列表：</Col>
-        <Col span={12}>{props.property.ics_type}</Col>
+        <Col span={12} className={styles.contentHighLight}>
+          <div dangerouslySetInnerHTML={{__html: props.property.ics_type}} />
+        </Col>
       </Row>
       <Row className={styles.rowItem}>
         <Col span={6} className={styles.label}>归口单位：</Col>
@@ -83,7 +91,9 @@ const EsSearchViewModal = (props: any) => {
       </Row>
       <Row className={styles.rowItem}>
         <Col span={6} className={styles.label}>备案号：</Col>
-        <Col span={12}>{props.property.record}</Col>
+        <Col span={12} className={styles.contentHighLight}>
+          <div dangerouslySetInnerHTML={{__html: props.property.record}} />
+        </Col>
       </Row>
 
       <Row className={styles.rowItem}>
@@ -107,23 +117,33 @@ const EsSearchViewModal = (props: any) => {
       </Row>  
       <Row className={styles.rowItem}>
         <Col span={6} className={styles.label}>替代标准号：</Col>
-        <Col span={12}>{props.property.substract_std}</Col>
+        <Col span={12} className={styles.contentHighLight}>
+          <div dangerouslySetInnerHTML={{__html: props.property.substract_std}} />
+        </Col>
       </Row> 
        <Row className={styles.rowItem}>
         <Col span={6} className={styles.label}>被替代标准号：</Col>
-        <Col span={12}>{props.property.substracted_std}</Col>
+        <Col span={12} className={styles.contentHighLight}>
+          <div dangerouslySetInnerHTML={{__html: props.property.substracted_std}} />
+        </Col>
       </Row> 
        <Row className={styles.rowItem}>
         <Col span={6} className={styles.label}>采用的标准：</Col>
-        <Col span={12}>{props.property.usage_std}</Col>
+        <Col span={12} className={styles.contentHighLight}>
+          <div dangerouslySetInnerHTML={{__html: props.property.usage_std}} />
+        </Col>
       </Row> 
        <Row className={styles.rowItem}>
         <Col span={6} className={styles.label}>被采用的标准：</Col>
-        <Col span={12}>{props.property.used_std}</Col>
+        <Col span={12} className={styles.contentHighLight}>
+          <div dangerouslySetInnerHTML={{__html: props.property.used_std}} />
+        </Col>
       </Row> 
       <Row className={styles.rowItem}>
         <Col span={6} className={styles.label}>语言类型：</Col>
-        <Col span={12}>{props.property.language_type}</Col>
+        <Col span={12} className={styles.contentHighLight}>
+          <div dangerouslySetInnerHTML={{__html: props.property.language_type}} />
+        </Col>
       </Row>
       <Row className={styles.rowItem}>
         <Col span={6} className={styles.label}>发布日期：</Col>

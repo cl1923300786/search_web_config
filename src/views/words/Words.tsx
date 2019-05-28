@@ -14,8 +14,6 @@ import {
 } from '../../components/search/SearchComponent'
 import WordsViewModal from './WordsViewModal'
 import { API_URL } from '../../config/Constant'
-import { async } from 'q';
-import { any } from 'prop-types';
 
 const defaultWordsForm = {
   id: '',
@@ -67,11 +65,11 @@ const Words = () => {
       width: '14&'
     },
     {
-        title: '词性',
-        dataIndex: 'wordPos',
-        key: 'wordPos',
-        width: '14&'
-      },
+      title: '词性',
+      dataIndex: 'wordPos',
+      key: 'wordPos',
+      width: '14&'
+    },
     {
       title: '时间',
       dataIndex: 'freshTime',
@@ -87,8 +85,7 @@ const Words = () => {
         <div>
           <a
             style={{ color: 'rgba(0, 0, 0, .45)' }}
-            onClick={() => viewWords(record)}
-          >
+            onClick={() => viewWords(record)}>
             查看
           </a>
           <Divider type="vertical" />
@@ -108,12 +105,11 @@ const Words = () => {
   //   getWords({ pageNumber: 0, pageCount: 10 })
   // }, [])
 
-
   useEffect(() => {
     getWordsAndPageInfo()
   }, [])
 
-   /**
+  /**
    * 获取用户列表
    */
   const getWordsAndPageInfo = async () => {
@@ -126,14 +122,14 @@ const Words = () => {
     setLoading(false)
     console.log(res)
     if (res && res.status === 200 && res.data) {
-      defaultPageParams.total=res.data.data.pageInfo,
+      defaultPageParams.total = res.data.data.pageInfo
       setData(res.data.data.data)
-    }else{
-      console.log("请求错误")
+    } else {
+      console.log('请求错误')
     }
   }
 
- /**
+  /**
    * 获取用户列表
    */
   const getWords = async (param: any) => {
@@ -145,13 +141,13 @@ const Words = () => {
       data: {
         ...param,
         time: moment().format('YYYY-MM-DD')
-      },
+      }
     })
     setLoading(false)
     if (res && res.status === 200 && res.data) {
       setData(res.data.data)
-    }else{
-      console.log("请求错误")
+    } else {
+      console.log('请求错误')
     }
   }
 
@@ -166,17 +162,17 @@ const Words = () => {
       method: 'post',
       data: {
         ...param
-      },
+      }
     })
     setLoading(false)
-    console.log("###")
+    console.log('###')
     console.log(res.data.data)
     if (res && res.status === 200 && res.data) {
-      pageParams.pageCount=res.data.data.length
-      pageParams.total=res.data.data.length
+      pageParams.pageCount = res.data.data.length
+      pageParams.total = res.data.data.length
       setData(res.data.data)
-    }else{
-      console.log("请求错误")
+    } else {
+      console.log('请求错误')
     }
   }
 
@@ -184,18 +180,17 @@ const Words = () => {
    * 点击查询
    */
   const search = (searchParams: IParams) => {
-    searchWord({"word": searchParams.name})
-    defaultPageParams.total=1
+    searchWord({ word: searchParams.name })
+    defaultPageParams.total = 1
   }
 
   /**
    * 重置搜索(重置搜索条件、页码)
    */
   const resetList = () => {
-    defaultPageParams.pageCount=10
+    defaultPageParams.pageCount = 10
     setPageParams(defaultPageParams)
     getWordsAndPageInfo()
-    
   }
 
   /**
@@ -216,7 +211,7 @@ const Words = () => {
     if (res && res.status === 200 && res.data) {
       successTips(param.id ? '编辑词表成功' : '新增词表成功', '')
       const pageP = {
-        pageNumber: pageParams.pageNumber-1,
+        pageNumber: pageParams.pageNumber - 1,
         pageCount: pageParams.pageCount
       }
       getWords(pageP)
@@ -264,18 +259,18 @@ const Words = () => {
   const deleteWords = async (word: string) => {
     setLoading(true)
     const { res } = await requestFn(dispatch, state, {
-      url: `/words/deleteWord`,
+      url: '/words/deleteWord',
       api: API_URL,
       method: 'post',
       data: {
-        word: word
+        word
       }
     })
     setLoading(false)
     if (res && res.status === 200 && res.data) {
       successTips('删除词表成功')
       const pageP = {
-        pageNumber: pageParams.pageNumber-1,
+        pageNumber: pageParams.pageNumber - 1,
         pageCount: pageParams.pageCount
       }
       getWords(pageP)
@@ -342,17 +337,17 @@ const Words = () => {
     setLoading(true)
     console.log(content)
     const { res } = await requestFn(dispatch, state, {
-      url: `/words/parseText`,
+      url: '/words/parseText',
       api: API_URL,
       method: 'post',
       data: {
-        content: content
+        content
       }
     })
     setLoading(false)
     console.log(res.data.data)
     if (res && res.status === 200 && res.data) {
-      const modal={
+      const modal = {
         words: extractWords(res.data.data.words),
         keyWords: extractKeysWords(res.data.data.keyWords),
         summary: res.data.data.summary
@@ -366,24 +361,24 @@ const Words = () => {
     }
   }
 
-  const extractWords= (words:any[])=>{
-    var result=''
-    words.map(i => { 
-      result+=i.word+" ,"
+  const extractWords = (words: any[]) => {
+    let result = ''
+    words.map((i) => {
+      result += i.word + ' ,'
     })
-    if (result.length>0){
-      result = result.substr(0,result.length-1)
+    if (result.length > 0) {
+      result = result.substr(0, result.length - 1)
     }
     return result
   }
 
-  const extractKeysWords= (words:any[])=>{
-    var result=''
-    words.map(i => { 
-      result+=i+" ,"
+  const extractKeysWords = (words: any[]) => {
+    let result = ''
+    words.map((i) => {
+      result += i + ' ,'
     })
-    if (result.length>0){
-      result = result.substr(0,result.length-1)
+    if (result.length > 0) {
+      result = result.substr(0, result.length - 1)
     }
     return result
   }
@@ -395,7 +390,7 @@ const Words = () => {
     setLoading(true)
     const params = {
       ...pageParams,
-      pageNumber: pageNumber,
+      pageNumber,
       time: moment().format('YYYY-MM-DD'),
       name: pageParams.name
     }
@@ -409,7 +404,7 @@ const Words = () => {
 
   return (
     <>
-      <SearchComponent onSearch={search} reset={resetList} />
+      <SearchComponent onSearch={search} reset={resetList} type=""/>
       <Row className={styles.buttonRow}>
         <Col span={6}>
           <Button type="primary" icon="plus-circle" onClick={addWords}>
@@ -417,7 +412,7 @@ const Words = () => {
           </Button>
         </Col>
         <Col span={6}>
-          <Button type="primary"  onClick={showParseTextModal}>
+          <Button type="primary" onClick={showParseTextModal}>
             解析文本
           </Button>
         </Col>
@@ -449,7 +444,7 @@ const Words = () => {
         property={wordsForm}
         close={() => setViewWordsModal(false)}
       />
-       <ContentParseModal
+      <ContentParseModal
         visible={parseContentModal}
         title="解析文本"
         property={viewParseModal}

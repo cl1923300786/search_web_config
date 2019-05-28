@@ -8,8 +8,9 @@ export interface IParams {
 }
 
 interface IProps extends FormComponentProps {
-  onSearch: (fieldParams: IParams) => void,
+  onSearch: (fieldParams: IParams) => void
   reset: () => void
+  type: string
 }
 
 const FormComponent = (props: IProps) => {
@@ -31,12 +32,16 @@ const FormComponent = (props: IProps) => {
     props.reset()
   }
 
+  const setValue = () => {
+    return props.type ? props.type : '请输入关键字'
+  }
+
   return (
     <>
       <Form layout="inline" onSubmit={handleSubmit}>
         <Form.Item>
           {getFieldDecorator('name', {})(
-            <Input placeholder="请输入关键字" allowClear />
+            <Input placeholder={setValue()} allowClear />
           )}
         </Form.Item>
         <Form.Item>
@@ -46,8 +51,7 @@ const FormComponent = (props: IProps) => {
           <Button
             className={styles.resetButotn}
             htmlType="reset"
-            onClick={handleReset}
-          >
+            onClick={handleReset}>
             重置
           </Button>
         </Form.Item>

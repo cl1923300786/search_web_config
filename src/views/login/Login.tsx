@@ -6,6 +6,7 @@ import { Dispatch } from 'redux'
 import Actions from '../../store/Actions'
 import styles from './Login.module.less'
 import { setStore } from '../../utils/util'
+import logo from '../../assets/images/logo.png'
 
 interface IParams {
   userName: string
@@ -100,8 +101,8 @@ const LoginForm = (props: any) => {
     <Row className={styles.loginContainer}>
       <Col span={8}>
         <div className={styles.logoWrapper}>
-          <div className={styles.logo} />
-          <div className={styles.title}>XXX系统V1.0</div>
+          <img src={logo} className={styles.logo} alt="logo"/>
+          <div className={styles.title}>畅云搜索后台系统</div>
         </div>
       </Col>
       <Col span={6}>

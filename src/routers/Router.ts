@@ -1,19 +1,18 @@
 import Home from '../views/home/Home'
-import User from '../views/user/User'
-import Words from '../views/words/Words'
 import EsSearch from '../views/esSearch/EsSearch'
-import UserLog from '../views/logs/userLog/UserLog'
 import SourceConfig from '../views/dataSourceConfig/SourceConfig'
+import WordsManagement from '../views/wordsManagement/WordsManage'
+import Words from '../views/words/Words'
 const routes = [
-  {
-    component: Home,
-    path: '/',
-    exact: true,
-    iconType: 'dashboard',
-    name: '首页',
-    hasMenu: true,
-    hidden: false
-  },
+  // {
+  //   component: Home,
+  //   path: '/',
+  //   exact: true,
+  //   iconType: 'dashboard',
+  //   name: '首页',
+  //   hasMenu: true,
+  //   hidden: false
+  // },
   // {
   //   component: UserLog,
   //   path: '/logs',
@@ -47,19 +46,27 @@ const routes = [
   //   hasMenu: true,
   //   hidden: false
   // },
+  // {
+  //   component: EsSearch,
+  //   path: '/esSearch',
+  //   iconType: 'esSearch',
+  //   name: 'ES搜索',
+  //   hasMenu: true,
+  //   hidden: false
+  // },
   {
-    component: EsSearch,
-    path: '/esSearch',
-    iconType: 'esSearch',
-    name: 'ES搜索',
+    component: SourceConfig,
+    path: '/SourceConfig',
+    iconType: 'setting',
+    name: '配置数据源',
     hasMenu: true,
     hidden: false
   },
   {
-    component: SourceConfig,
-    path: '/esSeaSourceConfigch',
-    iconType: 'SourceConfig',
-    name: '配置数据源',
+    component: WordsManagement,
+    path: '/WordsManagement',
+    iconType: 'profile',
+    name: '词表管理',
     hasMenu: true,
     hidden: false
   }

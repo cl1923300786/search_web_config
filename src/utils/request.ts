@@ -63,7 +63,7 @@ export const requestFn = (
       .request({
         url: params.url,
         method: params.method || 'get',
-        baseURL: params.api,
+        baseURL: params.api ,
         params: params.params || {},
         paramsSerializer: (arg) => {
           return Qs.stringify(arg, { arrayFormat: 'brackets' })

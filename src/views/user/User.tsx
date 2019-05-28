@@ -270,7 +270,7 @@ const User = () => {
 
   return (
     <>
-      <SearchComponent onSearch={search} reset={resetList} />
+      <SearchComponent onSearch={search} reset={resetList} type=""/>
       <Row className={styles.buttonRow}>
         <Col span={6}>
           <Button type="primary" icon="plus-circle" onClick={addUser}>
