@@ -67,6 +67,7 @@ const SourceConfig = () => {
   const [viewDataSourceModal, setViewDataSourceModal] = useState(false)
   const [itemForm, setItemForm] = useState(defaultDatabaseConfig)
   const [searchedWord, setSearchedWord] = useState()
+  const [templates, setTemplates] = useState()
 
   const state: IState = useMappedState(
     useCallback((globalState: IState) => globalState, [])
@@ -81,12 +82,6 @@ const SourceConfig = () => {
       key: 'id',
       width: '14%'
     },
-    // {
-    //   title: '数据源类型',
-    //   dataIndex: 'sourceType',
-    //   key: 'sourceType',
-    //   width: '14%'
-    // },
     {
       title: '数据库类型',
       dataIndex: 'dbType',
@@ -136,7 +131,28 @@ const SourceConfig = () => {
 
   useEffect(() => {
     getDataSourceList({ pageNo: 1, pageSize: 10 })
+    fetchAllTemplates()
   }, [])
+
+
+  /**
+   *   获取所有的数据源模版
+   */
+  const fetchAllTemplates = async ()=>{
+    const { res } = await requestFn(dispatch, state, {
+      url: '/search/config/db/list',
+      api: API_URL,
+      method: 'get'
+    })
+    if (res && res.status === 200 && res.data) {
+      setTemplates(res.data.result.records)
+    } else {
+      errorTips(
+        '获取数据模版失败',
+        res && res.data && res.data.msg ? res.data.msg : '网络异常，请重试！'
+      )
+    }
+  }
 
   /**
    * 获取配置数据源列表
@@ -400,6 +416,7 @@ const SourceConfig = () => {
         getTableNames={getTableNames}
         selectedSourceType={selectedSourceType}
         setSelectedSourceTypeAct={setSelectedSourceTypeAct}
+        templates={templates}
       />
       <DataSourceViewModal
         visible={viewDataSourceModal}

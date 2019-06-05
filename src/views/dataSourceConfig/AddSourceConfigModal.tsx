@@ -40,16 +40,13 @@ const AddSourceConfigForm = (props: any) => {
 
   const { getFieldDecorator, getFieldsValue, validateFields } = props.form
   const [dataSourceTypes, setDataSourceTypes] = useState<any[]>([])
-  // const [selectedDataSourceType, setSelectedDataSourceType] = useState('db')
+  const columnNames=["dd","ss"]
 
   const state: IState = useMappedState(
     useCallback((globalState: IState) => globalState, [])
   )
   const dispatch: Dispatch<Actions> = useDispatch()
 
-  useEffect(() => {
-    fetchDataSourceTypes()
-  }, [])
 
   const formItemLayout = {
     labelCol: {
@@ -61,6 +58,13 @@ const AddSourceConfigForm = (props: any) => {
       sm: { span: 12 }
     }
   }
+
+
+  useEffect(() => {
+    fetchDataSourceTypes()
+  }, [])
+
+
 
   /**  获取数据源类型
    */
@@ -162,20 +166,6 @@ const AddSourceConfigForm = (props: any) => {
       </Form.Item>
     ]
   }
-
-  // /**
-  //  *   second step
-  //  *   目前只针对MySQL配置
-  //  */
-  // const renderSecondStep = (formVal: any) => {
-  //   console.log(selectedDataSourceType)
-  //   console.log(selectedDataSourceType === 'file')
-  //   if (selectedDataSourceType === 'db') {
-  //     return configDataBase(formVal)
-  //   } else if (selectedDataSourceType === 'file') {
-  //     return configFileSystem1(formVal)
-  //   }
-  // }
 
   const renderSecondStep = (formVal: any) => {
     console.log(props.selectedSourceType)
@@ -291,6 +281,27 @@ const AddSourceConfigForm = (props: any) => {
       </Form.Item>
     ]
   }
+
+  /**
+   *    数据库第4步，选择模版
+   */
+  const renderFourStep = ()=>{
+      return props.templates.map((item:any)=>{
+          return <a  onClick={()=>renderFiveStep()}>
+            {item.name}
+          </a>
+      })
+  }
+
+  /**
+   *    数据库第5步，模板字段匹配
+   */
+  const renderFiveStep =()=>{
+    // return columnNames.forEach(columnName=>{
+    //     if 
+    // })
+  }
+
 
   const checkFilePath = (value: any) => {
     let path = value.filePath
