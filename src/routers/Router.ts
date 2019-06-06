@@ -3,6 +3,7 @@ import EsSearch from '../views/esSearch/EsSearch'
 import SourceConfig from '../views/dataSourceConfig/SourceConfig'
 import WordsManagement from '../views/wordsManagement/WordsManage'
 import Words from '../views/words/Words'
+import Modal from '../views/modal/Modal'
 const routes = [
   // {
   //   component: Home,
@@ -67,6 +68,13 @@ const routes = [
     path: '/WordsManagement',
     iconType: 'profile',
     name: '词表管理',
+    hasMenu: true,
+    hidden: false
+  }, {
+    component: Modal,
+    path: '/modal',
+    iconType: 'snippets',
+    name: '模板管理',
     hasMenu: true,
     hidden: false
   }

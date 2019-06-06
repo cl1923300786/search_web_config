@@ -73,7 +73,7 @@ const SourceConfig = () => {
     useCallback((globalState: IState) => globalState, [])
   )
   const dispatch: Dispatch<Actions> = useDispatch()
-  const [data, setData] = useState([])
+  const [data, setData] = useState<any[]>([])
 
   const columns = [
     {
@@ -134,11 +134,10 @@ const SourceConfig = () => {
     fetchAllTemplates()
   }, [])
 
-
   /**
    *   获取所有的数据源模版
    */
-  const fetchAllTemplates = async ()=>{
+  const fetchAllTemplates = async () => {
     const { res } = await requestFn(dispatch, state, {
       url: '/search/config/db/list',
       api: API_URL,
@@ -174,13 +173,27 @@ const SourceConfig = () => {
         total: res.data.result.totalCount,
         pageNo: res.data.result.pageNo
       })
-      setData(res.data.result.records)
+      handleDataSource(res.data.result.records)
     } else {
       errorTips(
         '获取数据源列表失败',
         res && res.data && res.data.msg ? res.data.msg : '网络异常，请重试！'
       )
     }
+  }
+
+  /**
+   * 出来接口返回的数据源(主要添加dataIndex)
+   */
+  const handleDataSource = (records: any[]) => {
+    const arr = records.map((i: any) => {
+      return {
+        ...i,
+        key: i.id,
+        dataIndex: i.id
+      }
+    })
+    setData(arr)
   }
 
   /**
@@ -283,7 +296,7 @@ const SourceConfig = () => {
         successTips('数据源配置成功')
         handleCancel()
         resetDatabaseValue()
-      }else {
+      } else {
         errorTips(
           '数据源配置失败',
           res && res.data && res.data.msg ? res.data.msg : '网络异常，请重试！'
@@ -381,7 +394,11 @@ const SourceConfig = () => {
 
   return (
     <>
-      <SearchComponent onSearch={search} reset={resetList} type="请输入表名关键字"/>
+      <SearchComponent
+        onSearch={search}
+        reset={resetList}
+        type="请输入表名关键字"
+      />
       <Row className={styles.buttonRow}>
         <Col span={6}>
           <Button type="primary" icon="plus-circle" onClick={addSourceConfig}>
