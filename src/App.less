@@ -28,3 +28,26 @@
     line-height: 40px;
   }
 }
+
+.globalEditableCell {
+  position: relative;
+}
+
+.globalEditableCellValueWrap {
+  padding: 5px 12px;
+  cursor: pointer;
+}
+
+.globalEditableRow:hover .globalEditableCellValueWrap {
+  border: 1px solid #d9d9d9;
+  border-radius: 4px;
+  padding: 4px 11px;
+}
+
+.globalEditableRow {
+  .ant-form-explain {
+    position: absolute;
+    font-size: 12px;
+    margin-top: -4px;
+  }
+}
