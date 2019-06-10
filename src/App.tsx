@@ -11,7 +11,8 @@ import {
 import routes from './routers/Router'
 import LogoutButton from './components/logout/LogoutButton'
 import Login from './views/login/Login'
-import './App.css'
+// tslint:disable-next-line:no-import-side-effect
+import './App.less'
 import { createBrowserHistory } from 'history'
 import { getStore } from './utils/util'
 
@@ -26,7 +27,7 @@ const CustomSider = (props: any) => {
    * 渲染二级菜单
    */
   const renderSubmenu = () => {
-    return routes.map((router:any) => {
+    return routes.map((router: any) => {
       if (!router.hidden && router.hasMenu) {
         if (router.children && router.children.length > 0) {
           return (
@@ -37,9 +38,8 @@ const CustomSider = (props: any) => {
                   <Icon type="reconciliation" />
                   <span>{router.name}</span>
                 </span>
-              }
-            >
-              {router.children.map((item:any) => {
+              }>
+              {router.children.map((item: any) => {
                 return (
                   <Menu.Item key={item.path}>
                     <Link to={item.path}>
@@ -72,8 +72,7 @@ const CustomSider = (props: any) => {
           theme="dark"
           mode="inline"
           defaultSelectedKeys={[props.location.pathname]}
-          defaultOpenKeys={[`/${props.location.pathname.split('/')[1]}`]}
-        >
+          defaultOpenKeys={[`/${props.location.pathname.split('/')[1]}`]}>
           {renderSubmenu()}
         </Menu>
       </Sider>
@@ -96,10 +95,10 @@ const HasMenu = () => {
    * 渲染页面主体内容,缓存中无token,则跳转登录页
    */
   const renderContent = () => {
-    return routes.map((router:any) => {
+    return routes.map((router: any) => {
       if (!router.hidden) {
         if (router.children && router.children.length > 0) {
-          return router.children.map((item:any) => {
+          return router.children.map((item: any) => {
             return (
               <Route
                 path={item.path}
@@ -147,8 +146,7 @@ const HasMenu = () => {
               padding: 24,
               background: '#fff',
               minHeight: 'initial'
-            }}
-          >
+            }}>
             {renderContent()}
           </Content>
         </Layout>

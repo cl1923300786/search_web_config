@@ -53,7 +53,7 @@ const WordsManagement = () => {
     useCallback((globalState: IState) => globalState, [])
   )
   const dispatch: Dispatch<Actions> = useDispatch()
-  const [data, setData] = useState([])
+  const [data, setData] = useState<any[]>([])
 
   const columns = [
     {
@@ -152,11 +152,24 @@ const WordsManagement = () => {
         name: ''
       }
       setPageParams(pageP)
-      // defaultPageParams.total=res.data.result.totalCount,
-      setData(res.data.result.records)
+      handleWords(res.data.result.records)
     } else {
       console.log('请求错误')
     }
+  }
+  
+  /**
+   * 处理接口返回的关键词列表，主要天剑key和dataIndex
+   */
+  const handleWords = (records: any[]) => {
+    const arr = records.map((i: any) => {
+      return {
+        ...i,
+        key: i.id,
+        dataIndex: i.id
+      }
+    })
+    setData(arr)
   }
 
   /**
@@ -332,16 +345,22 @@ const WordsManagement = () => {
     }
   }
 
-  const errorTips = (message = '', description = '') => {
+  /**
+   * 错误提示
+   */
+  const errorTips = (messageString = '', description = '') => {
     notification.error({
-      message,
+      message: messageString,
       description
     })
   }
 
-  const successTips = (message = '', description = '') => {
+  /**
+   * 成功提示
+   */
+  const successTips = (messageString = '', description = '') => {
     notification.success({
-      message,
+      message: messageString,
       description
     })
   }
