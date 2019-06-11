@@ -351,12 +351,17 @@ const EditModalForm = (props: any) => {
 
   /**
    * 新增/编辑模板提交事件
+   * 模版保存提交
    */
   const handleSubmit = () => {
     validateFields((err: any, values: any) => {
       if (!err) {
         const fieldValue = getFieldsValue(['templateName', 'remark'])
-        props.submit({dataSource, ...fieldValue})
+        if(props.title==='新增模板'){
+          props.submit({dataSource, ...fieldValue})
+        }else if(props.title==='编辑模板'){        
+          props.submit({dataSource, ...fieldValue, id:props.property.id})
+        }
       }
     })
   }

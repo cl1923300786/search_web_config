@@ -1,8 +1,13 @@
-import React, { useState, useEffect } from 'react'
-import { Button, Table, Divider, Popconfirm } from 'antd'
+import React, { useState, useEffect,useCallback } from 'react'
+import { Button, Table, Divider, Popconfirm, notification } from 'antd'
 import EditModal from './editModal/EditModal'
 import styles from './Modal.module.less'
-import { SearchComponent } from '../../components/search/SearchComponent'
+import { SearchComponent,IParams } from '../../components/search/SearchComponent'
+import { API_URL } from '../../config/Constant'
+import { requestFn } from '../../utils/request';
+import { useDispatch, IState, useMappedState } from '../../store/Store'
+import { Dispatch } from 'redux'
+import Actions from '../../store/Actions'
 
 const defaultDataSource = [
   {
@@ -70,6 +75,13 @@ const defaultModalProperty: IModalProperty = {
   remark: ''
 }
 
+const defaultPageParams = {
+  pageNo: 1,
+  pageSize: 10,
+  total: 1,
+  name: ''
+}
+
 const Modal = () => {
   const [visible, setVisible] = useState(false)
   const [tableHeight, setTableHeight] = useState(window.innerHeight - 366)
@@ -78,14 +90,56 @@ const Modal = () => {
   const [modalProperty, setModalProperty] = useState(defaultModalProperty)
   const [fields, setFields] = useState<any[]>([])
   const [actionType, setActionType] = useState('view')
+  const [pageParams, setPageParams] = useState(defaultPageParams)
+  const [searchWord, setSearchWord] =useState()
+
+  const state: IState = useMappedState(
+    useCallback((globalState: IState) => globalState, [])
+  )
+  const dispatch: Dispatch<Actions> = useDispatch()
 
   useEffect(() => {
     initSetTableHeight()
     listenTableHeight()
+    getTemplates(defaultPageParams)
     return () => {
       removeListenTableHeight()
     }
   }, [])
+
+  /**
+   * 获取模版列表
+   */
+  const getTemplates = async (param: any) => {
+    console.log('getTemplates param',param)
+    const { res } = await requestFn(dispatch, state, {
+      url: '/search/template/field/list',
+      api: API_URL,
+      method: 'get',
+      params:{
+        ...param
+      }
+    })
+    console.log(res.data)
+    if (res && res.status === 200 && res.data) {
+      setPageParams({...param, total:res.data.result.totalCount})
+      parseData(res.data.result.records)
+    } else {
+      console.log('请求错误')
+    }
+  }
+
+  const parseData = (datas:any[])=>{
+    const result = datas.map((item: any,index: number)=>{
+      return {
+        ...item,
+        d: index,
+        key: index,
+        dataIndex: index,
+      }
+    })
+    setDataSource(result)
+  }
 
   const columns = [
     {
@@ -123,7 +177,23 @@ const Modal = () => {
   /**
    * 删除指定的行(指定的模板)
    */
-  const handleDelete = (record: any) => {
+  const handleDelete = async (record: any) => {
+    const { res } = await requestFn(dispatch, state, {
+      url: `/search/template/field/delete/${record.id}`,
+      api: API_URL,
+      method: 'get'
+    })
+    if (res && res.status === 200 && res.data) {
+      freshDeteleAct(record)
+    } else {
+      errorTips("删除模版失败","网络异常，请重试！")
+    }
+  }
+
+  /**
+   *  删除后，界面数据更新
+   */
+  const freshDeteleAct = (record: any)=>{
     const newDataSource = dataSource.filter((i: any) => record.id !== i.id)
     const datas = newDataSource.map((i: any, index: number) => {
       return {
@@ -133,6 +203,7 @@ const Modal = () => {
       }
     })
     setDataSource(datas)
+    setPageParams({...pageParams,total:pageParams.total-1})
   }
 
   /**
@@ -225,22 +296,95 @@ const Modal = () => {
   /**
    * 新增/编辑模板模态窗，点击确定
    */
-  const handleSubmit = (params: any) => {
-    console.log(params)
+  const handleSubmit = async (params: any) => {
+    const url = params.id ? '/search/template/field/update' : '/search/template/field/save' 
+    const indexField = params.dataSource.map((item:any)=>{
+      return {
+        name: item.name,
+        remark: item.remark,
+        type: item.type
+      }
+    })
+    const { res } = await requestFn(dispatch, state, {
+      url: url,
+      api: API_URL,
+      method: 'post',
+      data: {
+        ...params,
+        indexField: indexField
+      }
+    }) 
+    console.log('handleSubmit:',res.data)
+    if (res && res.status === 200 && res.data) {
+      successTips(params.id ? '编辑词表成功' : '新增词表成功', '')
+      if(searchWord){
+        getTemplates({...pageParams,q:searchWord})
+      }else{
+        getTemplates({...pageParams})
+      }
+    } else {
+      errorTips(
+        params.id ? '编辑词表失败' : '新增词表失败',
+        res && res.data && res.data.msg ? res.data.msg : '网络异常，请重试！'
+      )
+    }
     handleCancel()
   }
 
-  const search = () => {
-    console.log('搜索模板')
+
+  const errorTips = (message = '', description = '') => {
+    notification.error({
+      message,
+      description
+    })
+  }
+
+  const successTips = (message = '', description = '') => {
+    notification.success({
+      message,
+      description
+    })
+  }
+
+  /**
+   * 点击查询
+   */
+  const search = (searchParams: IParams) => {
+    setSearchWord(searchParams.name)
+    setPageParams(defaultPageParams)
+    const params = {
+      q: searchParams.name,
+      ...defaultPageParams
+    }
+    getTemplates(params)
   }
 
   const reset = () => {
-    console.log('重置搜索模板')
+    setDataSource([])
+    setSearchWord('')
+    getTemplates({...defaultPageParams})
   }
 
-  const loadModal = () => {
-    console.log('导入模板')
+  
+
+/**
+   * 列表翻页
+   */
+  const onPageChange = (pageNo: number, size: number | undefined) => {
+    const params = {
+      ...pageParams,
+      pageNo,
+      name: pageParams.name
+    }
+    setPageParams(params)
+    if(searchWord){
+      getTemplates({...params, q: searchWord})
+    }else{
+      getTemplates({...params})
+    }
+    
   }
+
 
   return (
     <div>
@@ -249,17 +393,25 @@ const Modal = () => {
         <Button type="primary" icon="plus-circle" ghost onClick={addModal}>
           新增模板
         </Button>
-        <Button type="primary" icon="upload" ghost onClick={loadModal}>
+        {/* <Button type="primary" icon="upload" ghost onClick={loadModal}>
           导入模板
-        </Button>
+        </Button> */}
       </div>
       <Table
         bordered
-        pagination={false}
         columns={columns}
         dataSource={dataSource}
         scroll={{ y: tableHeight }}
         className="globalTableTd"
+        pagination={{
+          showQuickJumper: true,
+          defaultCurrent: 1,
+          current: pageParams.pageNo,
+          total: pageParams.total,
+          pageSize: pageParams.pageSize,
+          showTotal: (dataCount) => `共 ${dataCount} 条数据`,
+          onChange: onPageChange
+        }}
       />
       <EditModal
         visible={visible}

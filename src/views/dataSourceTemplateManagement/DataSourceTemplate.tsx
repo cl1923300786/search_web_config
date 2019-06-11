@@ -111,21 +111,21 @@ const DataSourceTemplate = () => {
   ]
 
   useEffect(() => {
-    getWordsAndPageInfo()
+    getTemplates()
   }, [])
 
   /**
    * 获取用户列表
    */
-  const getWordsAndPageInfo = async () => {
+  const getTemplates = async () => {
     setLoading(true)
     const { res } = await requestFn(dispatch, state, {
-      url: '/words/wordsAndPageInfo',
+      url: '/search/template/list',
       api: API_URL,
       method: 'get'
     })
     setLoading(false)
-    console.log(res)
+    console.log('getTemplates:'+res)
     if (res && res.status === 200 && res.data) {
       defaultPageParams.total = res.data.data.pageInfo
       setData(res.data.data.data)
@@ -195,7 +195,7 @@ const DataSourceTemplate = () => {
   const resetList = () => {
     defaultPageParams.pageCount = 10
     setPageParams(defaultPageParams)
-    getWordsAndPageInfo()
+    getTemplates()
   }
 
   /**
