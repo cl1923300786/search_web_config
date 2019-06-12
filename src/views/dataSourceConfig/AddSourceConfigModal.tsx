@@ -8,7 +8,8 @@ import {
   Select,
   Steps,
   Col,
-  notification
+  notification,
+  Radio
 } from 'antd'
 
 import styles from './AddSourceConfig.module.less'
@@ -18,6 +19,8 @@ import { Dispatch } from 'redux'
 import Actions from '../../store/Actions'
 
 import { API_URL } from '../../config/Constant'
+import { RadioChangeEvent } from 'antd/lib/radio';
+
 
 const Option = Select.Option
 const Step = Steps.Step
@@ -35,13 +38,24 @@ const AddSourceConfigForm = (props: any) => {
     {
       title: '选择数据库表名',
       content: 'Third-content'
+    },
+    {
+      title: '选择数据源模板',
+      content: 'Four-content'
+    },
+    {
+      title: '字段映射',
+      content: 'Five-content'
+    },
+    {
+      title: '数据预览',
+      content: 'Six-content'
     }
   ]
 
   const { getFieldDecorator, getFieldsValue, validateFields } = props.form
   const [dataSourceTypes, setDataSourceTypes] = useState<any[]>([])
-  const columnNames=["dd","ss"]
-
+  
   const state: IState = useMappedState(
     useCallback((globalState: IState) => globalState, [])
   )
@@ -127,12 +141,13 @@ const AddSourceConfigForm = (props: any) => {
    *   提交数据源配置
    */
   const handleSubmit = () => {
-    props.form.validateFields((err: any, values: any) => {
-      if (!err) {
-        const fieldValue = getFieldsValue(['tableName'])
-        props.submit(fieldValue)
-      }
-    })
+    // props.form.validateFields((err: any, values: any) => {
+    //   if (!err) {
+    //     const fieldValue = getFieldsValue(['tableName'])
+    //     props.submit(fieldValue)
+    //   }
+    // })
+    props.submit({})
   }
 
   const selectDataSourceType = (value: any) => {
@@ -282,25 +297,232 @@ const AddSourceConfigForm = (props: any) => {
     ]
   }
 
+
+  const onChange = (e: RadioChangeEvent) => {
+    props.selectedTemplate(e.target.value)
+  }
+
   /**
    *    数据库第4步，选择模版
    */
-  const renderFourStep = ()=>{
-      return props.templates.map((item:any)=>{
-          return <a  onClick={()=>renderFiveStep()}>
-            {item.name}
-          </a>
-      })
+  const renderFourStep = (formVal: any) => {
+    return (
+      <>
+        <Row gutter={20} className={styles.rowItem}>
+          <Col span={4} className={styles.label}> </Col>
+          <Col span={4} className={styles.label}>   模板名  </Col>
+          <Col span={4} className={styles.label}> 模板描述 </Col>
+        </Row>
+
+        <Radio.Group onChange={onChange} >
+          {props.templates.map((item: any) => {
+            return (
+              <Radio value={item.id} key={item.id}>
+                <Row gutter={20} className={styles.rowItem}>
+                  <Col span={20}>{item.templateName} </Col>
+                  <Col span={4} className={styles.label}>  {item.remark}  </Col>
+                </Row>
+              </Radio>
+            )
+          })}
+        </Radio.Group>
+      </>
+    )
+  }
+
+  const handleChange = (value: any, item: any, data: any[]) => {
+    console.log('handleChange',value,item)
+    const newDataSource = data.map((i: any) => {
+      return {
+        ...i,
+        ...(item.columnName === i.columnName ? { columnName: props.columnNames[value] } : {})
+      }
+    })
+    console.log('handleChange',newDataSource)
+    props.setMappingData(newDataSource)
+  }
+
+  const renderSelectComponents = (data: any[]) => {
+    return data.map((item: any, index: number) => {
+      return (
+        <Row key={index} gutter={20} className={styles.rowItem}>
+          <Col span={10}>
+            <Form.Item required className={styles.formItem}>
+              {getFieldDecorator(`a_${index}`, {
+                initialValue: item.columnName
+              })(
+                <Select style={{ width: '100%' }} 
+                  onChange={(value: any) => handleChange(value, item, data)}>
+                  {renderOptions(props.columnNames)}
+                </Select>
+              )}
+            </Form.Item>
+          </Col>
+          <Col span={6}>{item.name}</Col>
+          <Col span={4} className={styles.label}> {item.type}  </Col>
+          <Col span={4} className={styles.label}> {item.remark} </Col>
+        </Row>
+      )
+    })
+  }
+
+  const renderOptions = (options: string[]) => {
+    return options.map((i: string, index: number) => {
+      return <Option key={index}>{i}</Option>
+    })
   }
 
   /**
    *    数据库第5步，模板字段匹配
    */
-  const renderFiveStep =()=>{
-    // return columnNames.forEach(columnName=>{
-    //     if 
-    // })
+  const renderFiveStep = (formVal: any) => {
+    return (
+      <>
+        <Row gutter={6} className={styles.rowItem}>
+          <Col span={6}> 数据库字段名 </Col>
+          <Col span={6}>  模板字段名  </Col>
+          <Col span={4} className={styles.label}>  模板字段类型  </Col>
+          <Col span={4} className={styles.label}>  模板字段含义  </Col>
+        </Row>
+        {renderSelectComponents(props.dbNameMappingData)}
+      </>
+    )
+  
   }
+
+
+  const renderSixStep = (formVal: any) => {
+    return (
+      <>
+        <Row gutter={6} className={styles.rowItem}>
+          <Col span={6}> 数据库表名 </Col>
+          <Col span={6}> {props.selectTableName} </Col>
+        </Row>
+        <Row gutter={6} className={styles.rowItem}>
+          <Col span={6}>  模板名  </Col>
+          <Col span={6}>
+            {props.templates.filter((item: any) => {
+              if (item.id === props.selectTemplate) {
+                return true
+              } else {
+                return false
+              }
+            })[0].templateName}
+          </Col>
+        </Row>
+        <Row gutter={6} className={styles.rowItem}>
+          <Col span={6}>   字段间的映射关系  </Col>
+        </Row>
+        <Row gutter={6} className={styles.rowItem}>
+          <Col span={6}>  数据库字段名  </Col>
+          <Col span={6}>  模板字段名    </Col>
+          <Col span={6}>  模板字段类型  </Col>
+          <Col span={6}>  模板字段含义  </Col>
+        </Row>
+        {
+          props.dbNameMappingData.map((item: any,index:number) => {
+            return (
+              <Row key={index} gutter={6} className={styles.rowItem}>
+                <Col span={6}>{item.columnName}  </Col>
+                <Col span={6}>{item.name}  </Col>
+                <Col span={6}>{item.type} </Col>
+                <Col span={6}>{item.remark} </Col>
+              </Row>
+            )
+          })
+        }
+      </>
+    )
+  }
+
+  /**
+   *   数据库字段与模板字段匹配
+   */
+  const dbNameMappingFunc = () => {
+    let datas = new Array()
+    let usedNames = new Set()
+    const popData = props.templates.find((i: any) => i.id === props.selectTemplate).indexField
+    popData.forEach((item:any) => {
+      let findFlag = false;
+      for (let i = 0; i <  props.columnNames.length; i++) {
+        const score = strSimilarity2Percent(props.columnNames[i], item.name)
+          if (score > 0.8) {
+            const mappingData = {
+              columnName: props.columnNames[i],
+              name: item.name,
+              remark: item.remark,
+              type: item.type
+            }
+            datas.push(mappingData)
+            findFlag = true
+            usedNames.add(props.columnNames[i])
+          }
+      }
+      if (!findFlag) {
+        const data = props.columnNames.filter((item: any) => {
+          console.log('tem in usedNames',item,item in usedNames)
+          if (usedNames.has(item)) {
+            return false
+          } else {
+            return true
+          }
+        }).pop()
+        console.log('data',data)
+        console.log('usedNames',usedNames)
+        const mappingData = {
+          columnName: data,
+          name: item.name,
+          remark: item.remark,
+          type: item.type
+        }
+        datas.push(mappingData)
+        usedNames.add(data)
+      }
+    })
+    props.setMappingData(datas)
+    return datas
+  }
+
+
+  const strSimilarity2Number = (s: string, t: string) => {
+    let n = s.length, m = t.length
+    let d = new Array()
+    let i, j, s_i, t_j, cost;
+    if (n == 0) return m;
+    if (m == 0) return n;
+    for (i = 0; i <= n; i++) {
+      d[i] = [];
+      d[i][0] = i;
+    }
+    for (j = 0; j <= m; j++) {
+      d[0][j] = j;
+    }
+    for (i = 1; i <= n; i++) {
+      s_i = s.charAt(i - 1);
+      for (j = 1; j <= m; j++) {
+        t_j = t.charAt(j - 1);
+        if (s_i == t_j) {
+          cost = 0;
+        } else {
+          cost = 1;
+        }
+        d[i][j] = minimum(d[i - 1][j] + 1, d[i][j - 1] + 1, d[i - 1][j - 1] + cost);
+      }
+    }
+    return d[n][m];
+  }
+
+  //两个字符串的相似程度，并返回相似度百分比
+  const strSimilarity2Percent = (s: string, t: string) => {
+    let l = s.length > t.length ? s.length : t.length
+    let d = strSimilarity2Number(s, t)
+    return 1 - d / l;
+  }
+
+  const minimum = (a: string, b: string, c: string) => {
+    return a < b ? (a < c ? a : c) : (b < c ? b : c)
+  }
+
 
 
   const checkFilePath = (value: any) => {
@@ -326,49 +548,70 @@ const AddSourceConfigForm = (props: any) => {
     }
   }
 
-  const handleNextStep1 = () => {
-    console.log('handleNextStep1', props.currentStep, props.selectedSourceType)
-    if (props.currentStep === 1 && props.selectedSourceType === 'file') {
-      validateFields((err: any, values: any) => {
-        if (!err) {
-          const fieldValue = getFieldsValue([
-            'filePath',
-            'username',
-            'password'
-          ])
-          const value = checkFilePath(fieldValue)
-          console.log('handleNextStep1', value)
-          if (value) {
-            console.log('handleNextStep1 file', fieldValue)
-            props.submit(fieldValue)
-          } else {
-            notification.error({
-              message: '参数配置错误',
-              description: '文件传输路径有误'
-            })
+  const handleNextStep = () => {
+    console.log('handleNextStep', props.currentStep, props.selectedSourceType)
+    switch (props.currentStep) {
+      case 0: {
+        const fieldValue = getFieldsValue(['dataSourceType'])
+        console.log('handleNextStep', fieldValue.dataSourceType)
+        props.setSelectedSourceTypeAct(fieldValue.dataSourceType)
+        props.addStep()
+      }; break
+      case 1: {
+        if (props.selectedSourceType === 'file') {
+          validateFields((err: any, values: any) => {
+            if (!err) {
+              const fieldValue = getFieldsValue([
+                'filePath',
+                'username',
+                'password'
+              ])
+              // 检验文件路径
+              const value = checkFilePath(fieldValue)
+              console.log('handleNextStep', value)
+              if (value) {
+                console.log('handleNextStep file', fieldValue)
+                props.submit(fieldValue)
+              } else {
+                notification.error({
+                  message: '参数配置错误',
+                  description: '文件传输路径有误'
+                })
+              }
+            }
+          })
+        } else {
+          validateFields((err: any, values: any) => {
+            if (!err) {
+              const fieldValue = getFieldsValue([
+                'dbType',
+                'host',
+                'port',
+                'dbName',
+                'username',
+                'password'
+              ])
+              props.fetchTableNames(fieldValue)
+            }
+          })
+        }
+      }; break;
+      case 2: {
+        props.form.validateFields((err: any, values: any) => {
+          if (!err) {
+            const fieldValue = getFieldsValue(['tableName'])
+            props.selectedTableName(fieldValue)
           }
+        })
+      }; break;
+      case 3: {
+        console.log('props.selectedTemplate',props.selectedTemplate)
+        if(props.selectTemplate){
+          props.addStep()
+          dbNameMappingFunc()
         }
-      })
-    } else if (props.currentStep === 1) {
-      validateFields((err: any, values: any) => {
-        if (!err) {
-          const fieldValue = getFieldsValue([
-            'dbType',
-            'host',
-            'port',
-            'dbName',
-            'username',
-            'password'
-          ])
-          console.log(fieldValue)
-          props.fetchTableNames(fieldValue)
-        }
-      })
-    } else {
-      const fieldValue = getFieldsValue(['dataSourceType'])
-      console.log('handleNextStep', fieldValue.dataSourceType)
-      props.setSelectedSourceTypeAct(fieldValue.dataSourceType)
-      props.addStep()
+      } break;
+      case 4: props.addStep(); break;
     }
   }
 
@@ -379,18 +622,24 @@ const AddSourceConfigForm = (props: any) => {
       return renderSecondStep(formVal)
     } else if (current === 2) {
       return renderThirdStep(formVal)
+    } else if (current === 3) {
+      return renderFourStep(formVal)
+    } else if (current === 4) {
+      return renderFiveStep(formVal)
+    } else if (current === 5) {
+      return renderSixStep(formVal)
     }
   }
 
   const renderFooter = (current: number) => {
-    if (current !== 2) {
+    if (current !== 5) {
       return (
         <Row>
           <Col span={8} offset={16}>
             <Button htmlType="reset" onClick={handleCancel}>
               取消
             </Button>
-            <Button type="primary" onClick={handleNextStep1}>
+            <Button type="primary" onClick={handleNextStep}>
               下一步
             </Button>
           </Col>

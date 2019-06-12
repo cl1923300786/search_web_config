@@ -55,9 +55,6 @@ const defaultPageParams = {
 const SourceConfig = () => {
   const [loading, setLoading] = useState(false)
   const [sourceConfigvisible, setSourceConfigvisible] = useState(false)
-  const [wordsForm, setWordsForm] = useState(defaultWordsForm)
-  const [modalTitle, setModalTitle] = useState('新增词')
-  const [viewWordsModal, setViewWordsModal] = useState(false)
   const [pageParams, setPageParams] = useState(defaultPageParams)
   const [configForm, setConfigForm] = useState(defaultDataSourceConfigForm)
   const [step, setStep] = useState(0)
@@ -68,6 +65,10 @@ const SourceConfig = () => {
   const [itemForm, setItemForm] = useState(defaultDatabaseConfig)
   const [searchedWord, setSearchedWord] = useState()
   const [templates, setTemplates] = useState()
+  const [selectTemplate, setSelectTemplate] = useState()
+  const [columnNames, setColumnNames] =useState()
+  const [selectTableName, setSelectTableName] =useState()
+  const [dbNameMappingData, setDbNameMappingData] = useState<any[]>([])
 
   const state: IState = useMappedState(
     useCallback((globalState: IState) => globalState, [])
@@ -139,11 +140,12 @@ const SourceConfig = () => {
    */
   const fetchAllTemplates = async () => {
     const { res } = await requestFn(dispatch, state, {
-      url: '/search/config/db/list',
+      url: '/search/template/field/list',
       api: API_URL,
       method: 'get'
     })
     if (res && res.status === 200 && res.data) {
+      console.log('fetchAllTemplates',res.data.result.records)
       setTemplates(res.data.result.records)
     } else {
       errorTips(
@@ -154,7 +156,7 @@ const SourceConfig = () => {
   }
 
   /**
-   * 获取配置数据源列表
+   * 获取配置数据源列表，分页查询配置的数据源
    */
   const getDataSourceList = async (param: any) => {
     console.log('getDataSourceList', param)
@@ -183,7 +185,7 @@ const SourceConfig = () => {
   }
 
   /**
-   * 出来接口返回的数据源(主要添加dataIndex)
+   * 配置数据源的table数据(主要添加dataIndex)
    */
   const handleDataSource = (records: any[]) => {
     const arr = records.map((i: any) => {
@@ -213,7 +215,7 @@ const SourceConfig = () => {
   }
 
   /**
-   * 查看用户
+   * 查看数据源
    */
   const viewDataSource = (item: any) => {
     setItemForm(item)
@@ -235,7 +237,7 @@ const SourceConfig = () => {
   }
 
   /**
-   * 编辑用户模态窗点击取消
+   * 编辑数据源模态窗点击取消
    */
   const handleCancel = () => {
     setSourceConfigvisible(false)
@@ -247,9 +249,22 @@ const SourceConfig = () => {
   const handleSubmit = (params: any) => {
     console.log('handleSubmit')
     if (selectedSourceType === 'db') {
+      const data = dbNameMappingData.map((item:any)=>{
+        return {
+          source: item.columnName,
+          index: item.name,
+          type: item.type,
+          remark: item.remark
+        }
+      })
       const param = {
-        tableName: params.tableName[0],
-        ...databaseConfig
+        ...databaseConfig,
+        tableName: selectTableName,
+        remark: "",
+        mappingIndex: data,
+        fieldTemplate: { 
+          id: selectTemplate
+        }
       }
       saveDatabaseConfig1(param)
     } else if (selectedSourceType === 'file') {
@@ -257,6 +272,9 @@ const SourceConfig = () => {
     }
   }
 
+  /**
+   *   添加数据源参数的格式校验
+   */
   const checkParam = (params: any) => {
     const index = params.filePath.indexOf(':')
     const path =
@@ -310,6 +328,9 @@ const SourceConfig = () => {
     }
   }
 
+  /**
+   *  重置数据源配置的参数信息
+   */
   const resetDatabaseValue = () => {
     setDatabaseConfig(defaultDatabaseConfig)
     setStep(0)
@@ -335,6 +356,9 @@ const SourceConfig = () => {
     })
   }
 
+  /**
+   *  添加数据源配置的按钮方法
+   */
   const addSourceConfig = () => {
     setStep(0)
     setTableNames([])
@@ -373,6 +397,47 @@ const SourceConfig = () => {
     }
   }
 
+
+  /**
+   *   获取数据库表的字段名
+   */
+  const getTableColumnNames = async (param: any) => {
+    const { res } = await requestFn(dispatch, state, {
+      url: '/search/config/tableinfo',
+      api: API_URL,
+      method: 'post',
+      data: {
+        ...param
+      }
+    })
+    setLoading(false)
+    console.log('getTableColumnNames', param)
+    console.log('getTableColumnNames', res)
+    if (res && res.status === 200 && res.data.columns) {
+      setColumnNames(formatColumnsList(res.data.columns))
+      addStep()
+    } else {
+      errorTips(
+        '数据库连接失败',
+        res && res.data && res.data.msg ? res.data.msg : '网络异常，请重试！'
+      )
+    }
+  }
+
+  const selectedTableName = (params:any)=>{
+    setSelectTableName(params.tableName[0])
+    getTableColumnNames({
+      ...databaseConfig,
+      tableName:params.tableName[0]
+    })
+  }
+
+  const formatColumnsList = (datas: any[]) => {
+    return datas.map((v) => {
+      return v.name
+    })
+  }
+
   const formatChoiceList = (datas: any[]) => {
     return datas.map((v) => {
       return {
@@ -383,14 +448,29 @@ const SourceConfig = () => {
     })
   }
 
+  /**
+   *  获取所有的表名
+   */
   const fetchTableNames = (param: any) => {
     setDatabaseConfig(param)
     getTableNames(param)
   }
 
+  /**
+   * 设置选择的数据源类型
+   */
   const setSelectedSourceTypeAct = (param: any) => {
     setSelectedSourceType(param)
   }
+
+  const selectedTemplate = (id:any)=>{
+    setSelectTemplate(id)
+  }
+
+  const setMappingData = (data:any)=>{
+    setDbNameMappingData(data)
+  }
+
 
   return (
     <>
@@ -422,10 +502,10 @@ const SourceConfig = () => {
       />
       <AddSourceConfigModal
         visible={sourceConfigvisible}
-        title={modalTitle}
         formValues={configForm}
         fetchTableNames={fetchTableNames}
         tableNames={tableNames}
+        columnNames={columnNames}
         cancel={handleCancel}
         submit={handleSubmit}
         currentStep={step}
@@ -434,6 +514,12 @@ const SourceConfig = () => {
         selectedSourceType={selectedSourceType}
         setSelectedSourceTypeAct={setSelectedSourceTypeAct}
         templates={templates}
+        selectedTableName={selectedTableName}
+        selectTableName={selectTableName}
+        selectTemplate={selectTemplate}
+        selectedTemplate={selectedTemplate}
+        dbNameMappingData={dbNameMappingData}
+        setMappingData={setMappingData}
       />
       <DataSourceViewModal
         visible={viewDataSourceModal}
