@@ -445,8 +445,9 @@ const AddSourceConfigForm = (props: any) => {
     popData.forEach((item:any) => {
       let findFlag = false;
       for (let i = 0; i <  props.columnNames.length; i++) {
-        const score = strSimilarity2Percent(props.columnNames[i], item.name)
-          if (score > 0.8) {
+        if(!usedNames.has(props.columnNames[i])){
+          const score = strSimilarity2Percent(props.columnNames[i], item.name)
+          if (score > 0.5) {
             const mappingData = {
               columnName: props.columnNames[i],
               name: item.name,
@@ -457,6 +458,7 @@ const AddSourceConfigForm = (props: any) => {
             findFlag = true
             usedNames.add(props.columnNames[i])
           }
+        }      
       }
       if (!findFlag) {
         const data = props.columnNames.filter((item: any) => {
@@ -605,7 +607,6 @@ const AddSourceConfigForm = (props: any) => {
         })
       }; break;
       case 3: {
-        console.log('props.selectedTemplate',props.selectedTemplate)
         if(props.selectTemplate){
           props.addStep()
           dbNameMappingFunc()
