@@ -1,14 +1,16 @@
 import React from 'react'
-import {
-  Row,
-  Input,
-  Form,
-  Modal,
-  Button,
-  DatePicker
-} from 'antd'
+import { Row, Input, Form, Modal, Button } from 'antd'
+import { FormComponentProps } from 'antd/lib/form'
 
-const EsConfigModalForm = (props: any) => {
+interface IEsConfigProps extends FormComponentProps {
+  visible: boolean
+  title: string
+  property: any
+  cancel: () => void
+  submit: (params: any) => void
+}
+
+const EsConfigModalForm = (props: IEsConfigProps) => {
   const { getFieldDecorator, getFieldsValue, resetFields } = props.form
 
   const formItemLayout = {
@@ -43,7 +45,14 @@ const EsConfigModalForm = (props: any) => {
   const handleSubmit = () => {
     props.form.validateFields((err: any, values: any) => {
       if (!err) {
-        const fieldValue = getFieldsValue(['ip', 'port', 'userName', 'password', 'dbName', 'tableName'])
+        const fieldValue = getFieldsValue([
+          'ip',
+          'port',
+          'userName',
+          'password',
+          'dbName',
+          'tableName'
+        ])
         props.submit(fieldValue)
       }
     })
@@ -56,8 +65,7 @@ const EsConfigModalForm = (props: any) => {
         visible={props.visible}
         width={800}
         closable={false}
-        footer={renderFooter()}
-      >
+        footer={renderFooter()}>
         <Form {...formItemLayout}>
           <Form.Item label="ip" required>
             {getFieldDecorator('ip', {
@@ -101,6 +109,8 @@ const EsConfigModalForm = (props: any) => {
   )
 }
 
-const EsConfigModal = Form.create({ name: 'EsConfigModalForm' })(EsConfigModalForm)
+const EsConfigModal = Form.create<IEsConfigProps>({
+  name: 'EsConfigModalForm'
+})(EsConfigModalForm)
 
 export default EsConfigModal

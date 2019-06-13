@@ -1,10 +1,13 @@
-import React, { useState, useEffect,useCallback } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { Button, Table, Divider, Popconfirm, notification } from 'antd'
 import EditModal from './editModal/EditModal'
 import styles from './Modal.module.less'
-import { SearchComponent,IParams } from '../../components/search/SearchComponent'
+import {
+  SearchComponent,
+  IParams
+} from '../../components/search/SearchComponent'
 import { API_URL } from '../../config/Constant'
-import { requestFn } from '../../utils/request';
+import { requestFn } from '../../utils/request'
 import { useDispatch, IState, useMappedState } from '../../store/Store'
 import { Dispatch } from 'redux'
 import Actions from '../../store/Actions'
@@ -60,7 +63,7 @@ const defaultDataSource = [
 
 type modalIdType = number | string
 
-interface IModalProperty {
+export interface IModalProperty {
   id: modalIdType
   templateName: string
   remark: string
@@ -91,7 +94,7 @@ const Modal = () => {
   const [fields, setFields] = useState<any[]>([])
   const [actionType, setActionType] = useState('view')
   const [pageParams, setPageParams] = useState(defaultPageParams)
-  const [searchWord, setSearchWord] =useState()
+  const [searchWord, setSearchWord] = useState()
 
   const state: IState = useMappedState(
     useCallback((globalState: IState) => globalState, [])
@@ -111,31 +114,31 @@ const Modal = () => {
    * 获取模版列表
    */
   const getTemplates = async (param: any) => {
-    console.log('getTemplates param',param)
+    console.log('getTemplates param', param)
     const { res } = await requestFn(dispatch, state, {
       url: '/search/template/field/list',
       api: API_URL,
       method: 'get',
-      params:{
+      params: {
         ...param
       }
     })
     console.log(res.data)
     if (res && res.status === 200 && res.data) {
-      setPageParams({...param, total:res.data.result.totalCount})
+      setPageParams({ ...param, total: res.data.result.totalCount })
       parseData(res.data.result.records)
     } else {
       console.log('请求错误')
     }
   }
 
-  const parseData = (datas:any[])=>{
-    const result = datas.map((item: any,index: number)=>{
+  const parseData = (datas: any[]) => {
+    const result = datas.map((item: any, index: number) => {
       return {
         ...item,
         d: index,
         key: index,
-        dataIndex: index,
+        dataIndex: index
       }
     })
     setDataSource(result)
@@ -186,14 +189,14 @@ const Modal = () => {
     if (res && res.status === 200 && res.data) {
       freshDeteleAct(record)
     } else {
-      errorTips("删除模版失败","网络异常，请重试！")
+      errorTips('删除模版失败', '网络异常，请重试！')
     }
   }
 
   /**
    *  删除后，界面数据更新
    */
-  const freshDeteleAct = (record: any)=>{
+  const freshDeteleAct = (record: any) => {
     const newDataSource = dataSource.filter((i: any) => record.id !== i.id)
     const datas = newDataSource.map((i: any, index: number) => {
       return {
@@ -203,7 +206,7 @@ const Modal = () => {
       }
     })
     setDataSource(datas)
-    setPageParams({...pageParams,total:pageParams.total-1})
+    setPageParams({ ...pageParams, total: pageParams.total - 1 })
   }
 
   /**
@@ -297,8 +300,10 @@ const Modal = () => {
    * 新增/编辑模板模态窗，点击确定
    */
   const handleSubmit = async (params: any) => {
-    const url = params.id ? '/search/template/field/update' : '/search/template/field/save' 
-    const indexField = params.dataSource.map((item:any)=>{
+    const url = params.id
+      ? '/search/template/field/update'
+      : '/search/template/field/save'
+    const indexField = params.dataSource.map((item: any) => {
       return {
         name: item.name,
         remark: item.remark,
@@ -306,21 +311,21 @@ const Modal = () => {
       }
     })
     const { res } = await requestFn(dispatch, state, {
-      url: url,
+      url,
       api: API_URL,
       method: 'post',
       data: {
         ...params,
-        indexField: indexField
+        indexField
       }
-    }) 
-    console.log('handleSubmit:',res.data)
+    })
+    console.log('handleSubmit:', res.data)
     if (res && res.status === 200 && res.data) {
       successTips(params.id ? '编辑词表成功' : '新增词表成功', '')
-      if(searchWord){
-        getTemplates({...pageParams,q:searchWord})
-      }else{
-        getTemplates({...pageParams})
+      if (searchWord) {
+        getTemplates({ ...pageParams, q: searchWord })
+      } else {
+        getTemplates({ ...pageParams })
       }
     } else {
       errorTips(
@@ -330,7 +335,6 @@ const Modal = () => {
     }
     handleCancel()
   }
-
 
   const errorTips = (message = '', description = '') => {
     notification.error({
@@ -362,12 +366,10 @@ const Modal = () => {
   const reset = () => {
     setDataSource([])
     setSearchWord('')
-    getTemplates({...defaultPageParams})
+    getTemplates({ ...defaultPageParams })
   }
 
-  
-
-/**
+  /**
    * 列表翻页
    */
   const onPageChange = (pageNo: number, size: number | undefined) => {
@@ -377,14 +379,12 @@ const Modal = () => {
       name: pageParams.name
     }
     setPageParams(params)
-    if(searchWord){
-      getTemplates({...params, q: searchWord})
-    }else{
-      getTemplates({...params})
+    if (searchWord) {
+      getTemplates({ ...params, q: searchWord })
+    } else {
+      getTemplates({ ...params })
     }
-    
   }
-
 
   return (
     <div>
@@ -426,4 +426,4 @@ const Modal = () => {
   )
 }
 
-export default Modal
+export { Modal }

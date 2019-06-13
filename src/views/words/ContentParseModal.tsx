@@ -1,18 +1,19 @@
 import React from 'react'
-import {
-  Row,
-  Input,
-  Form,
-  Modal,
-  Button,
-  Col
-} from 'antd'
+import { Row, Input, Form, Modal, Button, Col } from 'antd'
 import moment from 'moment'
 import styles from './Words.module.less'
-import TextArea from 'antd/lib/input/TextArea';
+import TextArea from 'antd/lib/input/TextArea'
+import { FormComponentProps } from 'antd/lib/form'
 
+interface IContentParseProps extends FormComponentProps {
+  visible: boolean
+  title: string
+  property: any
+  parseText: (content: any) => Promise<void>
+  close: () => void
+}
 
-const ContentParseForm = (props: any) => {
+const ContentParseForm = (props: IContentParseProps) => {
   const { getFieldDecorator, getFieldsValue, resetFields } = props.form
 
   const formItemLayout = {
@@ -32,7 +33,7 @@ const ContentParseForm = (props: any) => {
         <Button htmlType="reset" onClick={handleCancel}>
           取消
         </Button>
-        <Button type="primary" htmlType="submit" onClick={handleSubmit}>
+        <Button type="primary" htmlType="submit" onClick={handleCancel}>
           保存
         </Button>
       </Row>
@@ -48,7 +49,7 @@ const ContentParseForm = (props: any) => {
     props.form.validateFields((err: any, values: any) => {
       if (!err) {
         const fieldValue = getFieldsValue(['word', 'wordPos', 'freshTime'])
-        props.submit(fieldValue)
+        console.log(fieldValue)
       }
     })
   }
@@ -69,44 +70,49 @@ const ContentParseForm = (props: any) => {
         visible={props.visible}
         width={1000}
         closable={false}
-        footer={renderFooter()}
-      >
+        footer={renderFooter()}>
         <Form {...formItemLayout}>
           <Form.Item label="文本" required>
             {getFieldDecorator('content', {
               rules: [{ required: true, message: '请输入文本' }],
               initialValue: props.property.content
-            })(<TextArea  placeholder="请输入文本" />)}
-          </Form.Item>        
+            })(<TextArea placeholder="请输入文本" />)}
+          </Form.Item>
         </Form>
 
         <Row className={styles.parseButtonRow}>
-            <Col span={6}>
+          <Col span={6}>
             <Button type="primary" onClick={parseContent}>
-                解析
+              解析
             </Button>
-            </Col>
+          </Col>
         </Row>
 
-       
         <Row className={styles.parseButtonRow}>
-            <Col span={6} className={styles.label}>词：</Col>
-            <Col span={12}>{props.property.words}</Col>
+          <Col span={6} className={styles.label}>
+            词：
+          </Col>
+          <Col span={12}>{props.property.words}</Col>
         </Row>
         <Row className={styles.parseButtonRow}>
-            <Col span={6} className={styles.label}>关键字：</Col>
-            <Col span={12}>{props.property.keyWords}</Col>
+          <Col span={6} className={styles.label}>
+            关键字：
+          </Col>
+          <Col span={12}>{props.property.keyWords}</Col>
         </Row>
         <Row className={styles.parseButtonRow}>
-            <Col span={6} className={styles.label}>摘要：</Col>
-            <Col span={12}>{props.property.summary}</Col>
+          <Col span={6} className={styles.label}>
+            摘要：
+          </Col>
+          <Col span={12}>{props.property.summary}</Col>
         </Row>
-
       </Modal>
     </>
   )
 }
 
-const ContentParseModal = Form.create({ name: 'ContentParseForm' })(ContentParseForm)
+const ContentParseModal = Form.create<IContentParseProps>({
+  name: 'ContentParseForm'
+})(ContentParseForm)
 
 export default ContentParseModal

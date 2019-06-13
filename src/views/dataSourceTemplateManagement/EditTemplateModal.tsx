@@ -1,14 +1,17 @@
 import React from 'react'
-import {
-  Row,
-  Input,
-  Form,
-  Modal,
-  Button
-} from 'antd'
+import { Row, Input, Form, Modal, Button } from 'antd'
+import { FormComponentProps } from 'antd/lib/form'
 
-const EditTemplateForm = (props: any) => {
-  const { getFieldDecorator, getFieldsValue, resetFields } = props.form
+interface IEditTemplateProps extends FormComponentProps {
+  visible: boolean
+  title: string
+  property: any
+  close: () => void
+  parseText: (text: string) => Promise<void>
+}
+
+const EditTemplateForm = (props: IEditTemplateProps) => {
+  const { getFieldDecorator, getFieldsValue, resetFields, validateFields } = props.form
 
   const formItemLayout = {
     labelCol: {
@@ -21,7 +24,7 @@ const EditTemplateForm = (props: any) => {
     }
   }
 
-  const wordTypes =['string','numeric','date','boolean']
+  const wordTypes = ['string', 'numeric', 'date', 'boolean']
 
   const renderFooter = () => {
     return (
@@ -38,14 +41,20 @@ const EditTemplateForm = (props: any) => {
 
   const handleCancel = () => {
     resetFields()
-    props.cancel()
   }
 
   const handleSubmit = () => {
-    props.form.validateFields((err: any, values: any) => {
+    validateFields((err: any, values: any) => {
       if (!err) {
-        const fieldValue = getFieldsValue(['ip', 'port', 'userName', 'password', 'dbName', 'tableName'])
-        props.submit(fieldValue)
+        const fieldValue = getFieldsValue([
+          'ip',
+          'port',
+          'userName',
+          'password',
+          'dbName',
+          'tableName'
+        ])
+        console.log(fieldValue)
       }
     })
   }
@@ -57,8 +66,7 @@ const EditTemplateForm = (props: any) => {
         visible={props.visible}
         width={800}
         closable={false}
-        footer={renderFooter()}
-      >
+        footer={renderFooter()}>
         <Form {...formItemLayout}>
           <Form.Item label="模板名称" required>
             {getFieldDecorator('templateName', {
@@ -70,15 +78,14 @@ const EditTemplateForm = (props: any) => {
               rules: [{ required: true, message: '请输入模板描述' }]
             })(<Input placeholder="请输入模板描述" />)}
           </Form.Item>
-          
-            
-
         </Form>
       </Modal>
     </>
   )
 }
 
-const EditTemplateModal = Form.create({ name: 'EditTemplateForm' })(EditTemplateForm)
+const EditTemplateModal = Form.create<IEditTemplateProps>({
+  name: 'EditTemplateForm'
+})(EditTemplateForm)
 
 export default EditTemplateModal

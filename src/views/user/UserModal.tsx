@@ -1,13 +1,15 @@
 import React from 'react'
-import {
-  Row,
-  Input,
-  Form,
-  Modal,
-  Button,
-  DatePicker
-} from 'antd'
+import { Row, Input, Form, Modal, Button, DatePicker } from 'antd'
 import moment from 'moment'
+import { FormComponentProps } from 'antd/lib/form'
+
+interface IUserProps extends FormComponentProps {
+  visible: boolean
+  title: string
+  property: any
+  cancel: () => void
+  submit: (params: any) => void
+}
 
 const UserModalForm = (props: any) => {
   const { getFieldDecorator, getFieldsValue, resetFields } = props.form
@@ -57,8 +59,7 @@ const UserModalForm = (props: any) => {
         visible={props.visible}
         width={800}
         closable={false}
-        footer={renderFooter()}
-      >
+        footer={renderFooter()}>
         <Form {...formItemLayout}>
           <Form.Item label="姓名" required>
             {getFieldDecorator('name', {
@@ -69,12 +70,12 @@ const UserModalForm = (props: any) => {
           <Form.Item label="生日" required>
             {getFieldDecorator('birthDay', {
               rules: [{ required: true, message: '请选择生日' }],
-              initialValue: moment(props.property.birthDay, 'YYYY-MM-DD HH:mm:ss') 
+              initialValue: moment(
+                props.property.birthDay,
+                'YYYY-MM-DD HH:mm:ss'
+              )
             })(
-              <DatePicker
-                style={{width: '100%'}}
-                placeholder="请选择生日"
-              />
+              <DatePicker style={{ width: '100%' }} placeholder="请选择生日" />
             )}
           </Form.Item>
           <Form.Item label="住址" required>
@@ -89,6 +90,8 @@ const UserModalForm = (props: any) => {
   )
 }
 
-const UserModal = Form.create({ name: 'UserModalForm' })(UserModalForm)
+const UserModal = Form.create<IUserProps>({ name: 'UserModalForm' })(
+  UserModalForm
+)
 
 export default UserModal

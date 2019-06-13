@@ -8,8 +8,17 @@ import {
   DatePicker
 } from 'antd'
 import moment from 'moment'
+import { FormComponentProps } from 'antd/lib/form'
 
-const WordsModalForm = (props: any) => {
+interface IWordsProps extends FormComponentProps {
+  visible: boolean
+  title: string
+  property: any
+  cancel: () => void
+  submit: (params: any) => void
+}
+
+const WordsModalForm = (props: IWordsProps) => {
   const { getFieldDecorator, getFieldsValue, resetFields } = props.form
 
   const formItemLayout = {
@@ -89,6 +98,6 @@ const WordsModalForm = (props: any) => {
   )
 }
 
-const WordsModal = Form.create({ name: 'WordsModalForm' })(WordsModalForm)
+const WordsModal = Form.create<IWordsProps>({ name: 'WordsModalForm' })(WordsModalForm)
 
 export default WordsModal

@@ -17,7 +17,6 @@ import {
   IParams
 } from '../../components/search/SearchComponent'
 
-
 const defaultWordsForm = {
   id: '',
   word: '',
@@ -54,11 +53,9 @@ const DataSourceTemplate = () => {
   const dispatch: Dispatch<Actions> = useDispatch()
   const [data, setData] = useState([])
 
-
   // useEffect(() => {
   //   getWords({ pageNumber: 0, pageCount: 10 })
   // }, [])
-
 
   const columns = [
     {
@@ -125,7 +122,7 @@ const DataSourceTemplate = () => {
       method: 'get'
     })
     setLoading(false)
-    console.log('getTemplates:'+res)
+    console.log('getTemplates:' + res)
     if (res && res.status === 200 && res.data) {
       defaultPageParams.total = res.data.data.pageInfo
       setData(res.data.data.data)
@@ -409,7 +406,7 @@ const DataSourceTemplate = () => {
 
   return (
     <>
-      <SearchComponent onSearch={search} reset={resetList} type=""/>
+      <SearchComponent onSearch={search} reset={resetList} type="" />
       <Row className={styles.buttonRow}>
         <Col span={6}>
           <Button type="primary" icon="plus-circle" onClick={addTemplate}>

@@ -66,7 +66,7 @@ const WordsManagement = () => {
       title: '词',
       dataIndex: 'word',
       key: 'word',
-      width: '20&'
+      width: '20%'
     },
     {
       title: '插入时间',

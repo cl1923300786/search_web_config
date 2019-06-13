@@ -166,108 +166,109 @@ const EsSearch = () => {
       defaultPageParams.pageNumber = param.pageNo
         ? param.pageNo + 1
         : defaultPageParams.pageNumber
-      if (param.pageNo == 0) {
+      if (param.pageNo === 0) {
         defaultPageParams.pageNumber = 1
       }
-      setPageParams(defaultPageParams),
-        setData(formatHits(res.data.result.hits))
+      setPageParams(defaultPageParams)
+      setData(formatHits(res.data.result.hits))
     } else {
       console.log('请求错误')
     }
   }
 
   const formatHits = (hits: any[]) => {
-    return hits.map((i, index) => {
+    // tslint:disable-next-line:cyclomatic-complexity
+    return hits.map((i: any, index: number) => {
       return {
         id: i.doc.id,
         dataIndex: index,
         key: index,
         belongs_org:
-          i.highlight['belongs_org.zh'] != null
+          i.highlight['belongs_org.zh'] !== null
             ? i.highlight['belongs_org.zh']
             : i.doc.belongs_org,
         ccs_type:
-          i.highlight['ccs_type.zh'] != null
+          i.highlight['ccs_type.zh'] !== null
             ? i.highlight['ccs_type.zh']
             : i.doc.ccs_type,
         eng_title:
-          i.highlight['eng_title.zh'] != null
+          i.highlight['eng_title.zh'] !== null
             ? i.highlight['eng_title.zh']
             : i.doc.eng_title,
         expire_date:
-          i.highlight['expire_date.zh'] != null
+          i.highlight['expire_date.zh'] !== null
             ? i.highlight['expire_date.zh']
             : i.doc.expire_date,
         ics_type:
-          i.highlight['ics_type.zh'] != null
+          i.highlight['ics_type.zh'] !== null
             ? i.highlight['ics_type.zh']
             : i.doc.ics_type,
         issue_org:
-          i.highlight['issue_org.zh'] != null
+          i.highlight['issue_org.zh'] !== null
             ? i.highlight['issue_org.zh']
             : i.doc.issue_org,
         issuer:
-          i.highlight['issuer.zh'] != null
+          i.highlight['issuer.zh'] !== null
             ? i.highlight['issuer.zh']
             : i.doc.issuer,
         issus_date:
-          i.highlight['issus_date.zh'] != null
+          i.highlight['issus_date.zh'] !== null
             ? i.highlight['issus_date.zh']
             : i.doc.issus_date,
         language_type:
-          i.highlight['language_type.zh'] != null
+          i.highlight['language_type.zh'] !== null
             ? i.highlight['language_type.zh']
             : i.doc.language_type,
         publish_date:
-          i.highlight['publish_date.zh'] != null
+          i.highlight['publish_date.zh'] !== null
             ? i.highlight['publish_date.zh']
             : i.doc.publish_date,
         publish_org:
-          i.highlight['publish_org.zh'] != null
+          i.highlight['publish_org.zh'] !== null
             ? i.highlight['publish_org.zh']
             : i.doc.publish_org,
         record:
-          i.highlight['record.zh'] != null
+          i.highlight['record.zh'] !== null
             ? i.highlight['record.zh']
             : i.doc.record,
         source:
-          i.highlight['source.zh'] != null
+          i.highlight['source.zh'] !== null
             ? i.highlight['source.zh']
             : i.doc.source,
         status:
-          i.highlight['status.zh'] != null
+          i.highlight['status.zh'] !== null
             ? i.highlight['status.zh']
             : i.doc.status,
         std_abs:
-          i.highlight['std_abs.zh'] != null
+          i.highlight['std_abs.zh'] !== null
             ? i.highlight['std_abs.zh']
             : i.doc.std_abs,
         std_no:
-          i.highlight['std_no.zh'] != null
+          i.highlight['std_no.zh'] !== null
             ? i.highlight['std_no.zh']
             : i.doc.std_no,
         std_org:
-          i.highlight['std_org.zh'] != null
+          i.highlight['std_org.zh'] !== null
             ? i.highlight['std_org.zh']
             : i.doc.std_org,
         substract_std:
-          i.highlight['substract_std.zh'] != null
+          i.highlight['substract_std.zh'] !== null
             ? i.highlight['substract_std.zh']
             : i.doc.substract_std,
         substracted_std:
-          i.highlight['substracted_std.zh'] != null
+          i.highlight['substracted_std.zh'] !== null
             ? i.highlight['substracted_std.zh']
             : i.doc.substracted_std,
         usage_std:
-          i.highlight['usage_std.zh'] != null
+          i.highlight['usage_std.zh'] !== null
             ? i.highlight['usage_std.zh']
             : i.doc.usage_std,
         used_std:
-          i.highlight['used_std.zh'] != null
+          i.highlight['used_std.zh'] !== null
             ? i.highlight['used_std.zh']
             : i.doc.used_std,
         zh_title:
-          i.highlight['zh_title.zh'] != null
+          i.highlight['zh_title.zh'] !== null
             ? i.highlight['zh_title.zh']
             : i.doc.zh_title
       }
@@ -383,7 +384,7 @@ const EsSearch = () => {
 
   return (
     <>
-      <SearchComponent onSearch={search} reset={resetList} type=""/>
+      <SearchComponent onSearch={search} reset={resetList} type="" />
       {/* <Row className={styles.buttonRow}>
         <Col span={6}>
           <Button type="primary" icon="plus-circle" onClick={addDataBaseConfig}>

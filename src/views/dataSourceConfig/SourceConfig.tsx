@@ -66,8 +66,8 @@ const SourceConfig = () => {
   const [searchedWord, setSearchedWord] = useState()
   const [templates, setTemplates] = useState()
   const [selectTemplate, setSelectTemplate] = useState()
-  const [columnNames, setColumnNames] =useState()
-  const [selectTableName, setSelectTableName] =useState()
+  const [columnNames, setColumnNames] = useState()
+  const [selectTableName, setSelectTableName] = useState()
   const [dbNameMappingData, setDbNameMappingData] = useState<any[]>([])
 
   const state: IState = useMappedState(
@@ -81,50 +81,49 @@ const SourceConfig = () => {
       title: 'id',
       dataIndex: 'id',
       key: 'id',
-      width: '14%'
+      width: 100
     },
     {
       title: '数据库类型',
       dataIndex: 'dbType',
       key: 'dbType',
-      width: '14%'
+      width: 160
     },
     {
       title: 'host',
       dataIndex: 'host',
-      key: 'host',
-      width: '14%'
+      key: 'host'
     },
     {
       title: '数据库名',
       dataIndex: 'dbName',
       key: 'dbName',
-      width: '14%'
+      width: 200
     },
     {
       title: '表名',
       dataIndex: 'tableName',
       key: 'tableName',
-      width: '14%'
+      width: 200
     },
     {
       title: '发布时间',
       dataIndex: 'createTime',
       key: 'createTime',
-      width: '14%'
+      width: 240
     },
     {
       title: '操作',
       dataIndex: 'action',
       key: 'action',
-      width: '14%',
+      width: 100,
       render: (text: string, record: any) => (
         <div>
-          <a
-            style={{ color: 'rgba(56, 105, 255, .45)' }}
+          <span
+            style={{ color: '#1890ff', cursor: 'pointer' }}
             onClick={() => viewDataSource(record)}>
             查看
-          </a>
+          </span>
         </div>
       )
     }
@@ -145,7 +144,7 @@ const SourceConfig = () => {
       method: 'get'
     })
     if (res && res.status === 200 && res.data) {
-      console.log('fetchAllTemplates',res.data.result.records)
+      console.log('fetchAllTemplates', res.data.result.records)
       setTemplates(res.data.result.records)
     } else {
       errorTips(
@@ -247,9 +246,8 @@ const SourceConfig = () => {
    * 添加新的数据源
    */
   const handleSubmit = (params: any) => {
-    console.log('handleSubmit')
     if (selectedSourceType === 'db') {
-      const data = dbNameMappingData.map((item:any)=>{
+      const mappedArr = dbNameMappingData.map((item: any) => {
         return {
           source: item.columnName,
           index: item.name,
@@ -260,9 +258,9 @@ const SourceConfig = () => {
       const param = {
         ...databaseConfig,
         tableName: selectTableName,
-        remark: "",
-        mappingIndex: data,
-        fieldTemplate: { 
+        remark: '',
+        mappingIndex: mappedArr,
+        fieldTemplate: {
           id: selectTemplate
         }
       }
@@ -386,7 +384,7 @@ const SourceConfig = () => {
     setLoading(false)
     console.log('getTableNames', param)
     console.log('getTableNames', res)
-    if (res && res.status === 200 && res.data.tables) {
+    if (res && res.status === 200 && res.data) {
       setTableNames(formatChoiceList(res.data.tables))
       addStep()
     } else {
@@ -396,7 +394,6 @@ const SourceConfig = () => {
       )
     }
   }
-
 
   /**
    *   获取数据库表的字段名
@@ -424,11 +421,11 @@ const SourceConfig = () => {
     }
   }
 
-  const selectedTableName = (params:any)=>{
+  const selectedTableName = (params: any) => {
     setSelectTableName(params.tableName[0])
     getTableColumnNames({
       ...databaseConfig,
-      tableName:params.tableName[0]
+      tableName: params.tableName[0]
     })
   }
 
@@ -463,14 +460,13 @@ const SourceConfig = () => {
     setSelectedSourceType(param)
   }
 
-  const selectedTemplate = (id:any)=>{
+  const selectedTemplate = (id: any) => {
     setSelectTemplate(id)
   }
 
-  const setMappingData = (data:any)=>{
-    setDbNameMappingData(data)
+  const setMappingData = (param: any) => {
+    setDbNameMappingData(param)
   }
-
 
   return (
     <>

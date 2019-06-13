@@ -17,6 +17,26 @@ import {
   defaultNameMaxLength,
   defaultRemarkMaxLength
 } from '../../../config/Constant'
+import { FormComponentProps } from 'antd/lib/form'
+import { IModalProperty } from '../Modal'
+
+interface IEditableTableFormProps extends FormComponentProps {
+  dataSource: any[]
+  save: (datas: any[]) => void
+  type: any
+  deleteRow: (id: number) => void
+  updateDataSource: (value: any, recored: any) => void
+}
+
+interface IEditModalProps extends FormComponentProps {
+  visible: boolean
+  cancel: () => void
+  type: string
+  property: IModalProperty
+  fields: any[]
+  title: string
+  submit: (params: any) => Promise<void>
+}
 
 const { Option } = Select
 
@@ -122,7 +142,7 @@ const EditableCellForm = (props: any) => {
 
 const EditableCell = Form.create({ name: 'EditableCellForm' })(EditableCellForm)
 
-const EditableTableForm = (props: any) => {
+const EditableTableForm = (props: IEditableTableFormProps) => {
   const [tableHeight, setTableHeight] = useState(window.innerHeight - 500)
 
   useEffect(() => {
@@ -177,8 +197,7 @@ const EditableTableForm = (props: any) => {
       key: 'type',
       width: 160,
       editable: false,
-      render: (text: string, record: any) =>
-        renderTypeColnum(text, record)
+      render: (text: string, record: any) => renderTypeColnum(text, record)
     },
     {
       title: `含义${props.type !== 'view' ? '(点击单元格可编辑)' : ''}`,
@@ -210,12 +229,15 @@ const EditableTableForm = (props: any) => {
   const columns =
     props.type === 'view' ? commonColumns : [...commonColumns, operationColumn]
 
-  const components = props.type === 'view' ? {} : {
-    body: {
-      row: EditableFormRow,
-      cell: EditableCell
-    }
-  }
+  const components =
+    props.type === 'view'
+      ? {}
+      : {
+          body: {
+            row: EditableFormRow,
+            cell: EditableCell
+          }
+        }
 
   /**
    * 删除指定的行
@@ -303,13 +325,18 @@ const EditableTableForm = (props: any) => {
   )
 }
 
-const EditableTable = Form.create({ name: 'EditableTableForm' })(
-  EditableTableForm
-)
+const EditableTable = Form.create<IEditableTableFormProps>({
+  name: 'EditableTableForm'
+})(EditableTableForm)
 
-const EditModalForm = (props: any) => {
+const EditModalForm = (props: IEditModalProps) => {
   const [dataSource, setDataSource] = useState<any[]>([])
-  const { getFieldDecorator, resetFields, validateFields, getFieldsValue } = props.form
+  const {
+    getFieldDecorator,
+    resetFields,
+    validateFields,
+    getFieldsValue
+  } = props.form
 
   useEffect(() => {
     setDataSource(props.fields)
@@ -357,10 +384,10 @@ const EditModalForm = (props: any) => {
     validateFields((err: any, values: any) => {
       if (!err) {
         const fieldValue = getFieldsValue(['templateName', 'remark'])
-        if(props.title==='新增模板'){
-          props.submit({dataSource, ...fieldValue})
-        }else if(props.title==='编辑模板'){        
-          props.submit({dataSource, ...fieldValue, id:props.property.id})
+        if (props.title === '新增模板') {
+          props.submit({ dataSource, ...fieldValue })
+        } else if (props.title === '编辑模板') {
+          props.submit({ dataSource, ...fieldValue, id: props.property.id })
         }
       }
     })
@@ -514,6 +541,8 @@ const EditModalForm = (props: any) => {
   )
 }
 
-const EditModal = Form.create({ name: 'EditModalForm' })(EditModalForm)
+const EditModal = Form.create<IEditModalProps>({ name: 'EditModalForm' })(
+  EditModalForm
+)
 
 export default EditModal

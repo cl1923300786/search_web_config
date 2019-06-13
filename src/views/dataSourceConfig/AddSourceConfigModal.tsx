@@ -9,7 +9,8 @@ import {
   Steps,
   Col,
   notification,
-  Radio
+  Radio,
+  Popover
 } from 'antd'
 
 import styles from './AddSourceConfig.module.less'
@@ -19,13 +20,35 @@ import { Dispatch } from 'redux'
 import Actions from '../../store/Actions'
 
 import { API_URL } from '../../config/Constant'
-import { RadioChangeEvent } from 'antd/lib/radio';
-
+import { RadioChangeEvent } from 'antd/lib/radio'
+import { FormComponentProps } from 'antd/lib/form'
 
 const Option = Select.Option
 const Step = Steps.Step
 
-const AddSourceConfigForm = (props: any) => {
+interface IAddSourceConfigProps extends FormComponentProps {
+  visible: boolean
+  formValues: any
+  fetchTableNames: (params: any) => void
+  tableNames: any[]
+  columnNames: any
+  cancel: () => void
+  submit: (params: any) => void
+  currentStep: number
+  addStep: () => void
+  getTableNames: (params: any) => Promise<void>
+  selectedSourceType: string
+  setSelectedSourceTypeAct: (params: any) => void
+  templates: any
+  selectedTableName: (params: any) => void
+  selectTableName: any
+  selectTemplate: any
+  selectedTemplate: (id: any) => void
+  dbNameMappingData: any[]
+  setMappingData: (params: any) => void
+}
+
+const AddSourceConfigForm = (props: IAddSourceConfigProps) => {
   const steps = [
     {
       title: '选择数据源类型',
@@ -52,15 +75,14 @@ const AddSourceConfigForm = (props: any) => {
       content: 'Six-content'
     }
   ]
-
+  // const [mappingDbData, setMappingDbData] = useState(props.dbNameMappingData)
   const { getFieldDecorator, getFieldsValue, validateFields } = props.form
   const [dataSourceTypes, setDataSourceTypes] = useState<any[]>([])
-  
+
   const state: IState = useMappedState(
     useCallback((globalState: IState) => globalState, [])
   )
   const dispatch: Dispatch<Actions> = useDispatch()
-
 
   const formItemLayout = {
     labelCol: {
@@ -73,12 +95,9 @@ const AddSourceConfigForm = (props: any) => {
     }
   }
 
-
   useEffect(() => {
     fetchDataSourceTypes()
   }, [])
-
-
 
   /**  获取数据源类型
    */
@@ -192,7 +211,6 @@ const AddSourceConfigForm = (props: any) => {
     }
   }
 
-
   /**
    *   配置数据库连接
    */
@@ -283,7 +301,7 @@ const AddSourceConfigForm = (props: any) => {
     return [
       <Form.Item key="tableName" {...formItemLayout} label="数据库表名">
         {getFieldDecorator('tableName', {
-          initialValue: props.tableName
+          initialValue: props.tableNames[0].value
         })(
           <Select
             style={{ width: '100%' }}
@@ -297,9 +315,33 @@ const AddSourceConfigForm = (props: any) => {
     ]
   }
 
+  const onChange = (value: any) => {
+    props.selectedTemplate(value)
+  }
 
-  const onChange = (e: RadioChangeEvent) => {
-    props.selectedTemplate(e.target.value)
+  const renderTemplateOptions = () => {
+    return props.templates.map((i: any, index: number) => {
+      return (
+        // @ts-ignore
+        <Option key={index} value={i.id} label={i.templateName}>
+          <div>
+            <p
+              aria-label={i.templateName}
+              style={{ fontSize: '14px', marginBottom: '0' }}>
+              模板名:{i.templateName}
+            </p>
+            <p
+              style={{
+                fontSize: '12px',
+                marginBottom: '0',
+                color: 'rgba(0, 0, 0, 0.45)'
+              }}>
+              模板描述:{i.remark}
+            </p>
+          </div>
+        </Option>
+      )
+    })
   }
 
   /**
@@ -309,49 +351,53 @@ const AddSourceConfigForm = (props: any) => {
     return (
       <>
         <Row gutter={20} className={styles.rowItem}>
-          <Col span={4} className={styles.label}> </Col>
-          <Col span={4} className={styles.label}>   模板名  </Col>
-          <Col span={4} className={styles.label}> 模板描述 </Col>
+          <Col
+            offset={4}
+            span={4}
+            className={styles.label}
+            style={{ textAlign: 'left', lineHeight: '34px' }}>
+            请选择模板
+          </Col>
+          <Col span={8} className={styles.label}>
+            <Select
+              style={{ width: '100%' }}
+              placeholder="请选择模板"
+              onChange={onChange}
+              optionLabelProp="label">
+              {renderTemplateOptions()}
+            </Select>
+          </Col>
         </Row>
-
-        <Radio.Group onChange={onChange} >
-          {props.templates.map((item: any) => {
-            return (
-              <Radio value={item.id} key={item.id}>
-                <Row gutter={20} className={styles.rowItem}>
-                  <Col span={20}>{item.templateName} </Col>
-                  <Col span={4} className={styles.label}>  {item.remark}  </Col>
-                </Row>
-              </Radio>
-            )
-          })}
-        </Radio.Group>
       </>
     )
   }
 
   const handleChange = (value: any, item: any, data: any[]) => {
-    console.log('handleChange',value,item)
+    console.log('handleChange', value, item)
     const newDataSource = data.map((i: any) => {
       return {
         ...i,
-        ...(item.columnName === i.columnName ? { columnName: props.columnNames[value] } : {})
+        ...(item.columnName === i.columnName
+          ? { columnName: props.columnNames[value] }
+          : {})
       }
     })
-    console.log('handleChange',newDataSource)
+    console.log('handleChange', newDataSource)
     props.setMappingData(newDataSource)
+    // setMappingDbData(newDataSource)
   }
 
   const renderSelectComponents = (data: any[]) => {
     return data.map((item: any, index: number) => {
       return (
         <Row key={index} gutter={20} className={styles.rowItem}>
-          <Col span={10}>
+          <Col span={6}>
             <Form.Item required className={styles.formItem}>
               {getFieldDecorator(`a_${index}`, {
                 initialValue: item.columnName
               })(
-                <Select style={{ width: '100%' }} 
+                <Select
+                  style={{ width: '100%' }}
                   onChange={(value: any) => handleChange(value, item, data)}>
                   {renderOptions(props.columnNames)}
                 </Select>
@@ -359,8 +405,12 @@ const AddSourceConfigForm = (props: any) => {
             </Form.Item>
           </Col>
           <Col span={6}>{item.name}</Col>
-          <Col span={4} className={styles.label}> {item.type}  </Col>
-          <Col span={4} className={styles.label}> {item.remark} </Col>
+          <Col span={6} className={styles.rowLabel}>
+            {item.type}
+          </Col>
+          <Col span={6} className={styles.rowLabel}>
+            {item.remark}
+          </Col>
         </Row>
       )
     })
@@ -378,18 +428,20 @@ const AddSourceConfigForm = (props: any) => {
   const renderFiveStep = (formVal: any) => {
     return (
       <>
-        <Row gutter={6} className={styles.rowItem}>
+        <Row gutter={20} className={styles.rowItem}>
           <Col span={6}> 数据库字段名 </Col>
-          <Col span={6}>  模板字段名  </Col>
-          <Col span={4} className={styles.label}>  模板字段类型  </Col>
-          <Col span={4} className={styles.label}>  模板字段含义  </Col>
+          <Col span={6}> 模板字段名 </Col>
+          <Col span={6} className={styles.label}>
+            模板字段类型
+          </Col>
+          <Col span={6} className={styles.label}>
+            模板字段含义
+          </Col>
         </Row>
         {renderSelectComponents(props.dbNameMappingData)}
       </>
     )
-  
   }
-
 
   const renderSixStep = (formVal: any) => {
     return (
@@ -399,38 +451,38 @@ const AddSourceConfigForm = (props: any) => {
           <Col span={6}> {props.selectTableName} </Col>
         </Row>
         <Row gutter={6} className={styles.rowItem}>
-          <Col span={6}>  模板名  </Col>
+          <Col span={6}> 模板名 </Col>
           <Col span={6}>
-            {props.templates.filter((item: any) => {
-              if (item.id === props.selectTemplate) {
-                return true
-              } else {
-                return false
-              }
-            })[0].templateName}
+            {
+              props.templates.filter((item: any) => {
+                if (item.id === props.selectTemplate) {
+                  return true
+                } else {
+                  return false
+                }
+              })[0].templateName
+            }
           </Col>
         </Row>
         <Row gutter={6} className={styles.rowItem}>
-          <Col span={6}>   字段间的映射关系  </Col>
+          <Col span={6}> 字段间的映射关系 </Col>
         </Row>
         <Row gutter={6} className={styles.rowItem}>
-          <Col span={6}>  数据库字段名  </Col>
-          <Col span={6}>  模板字段名    </Col>
-          <Col span={6}>  模板字段类型  </Col>
-          <Col span={6}>  模板字段含义  </Col>
+          <Col span={6}> 数据库字段名 </Col>
+          <Col span={6}> 模板字段名 </Col>
+          <Col span={6}> 模板字段类型 </Col>
+          <Col span={6}> 模板字段含义 </Col>
         </Row>
-        {
-          props.dbNameMappingData.map((item: any,index:number) => {
-            return (
-              <Row key={index} gutter={6} className={styles.rowItem}>
-                <Col span={6}>{item.columnName}  </Col>
-                <Col span={6}>{item.name}  </Col>
-                <Col span={6}>{item.type} </Col>
-                <Col span={6}>{item.remark} </Col>
-              </Row>
-            )
-          })
-        }
+        {props.dbNameMappingData.map((item: any, index: number) => {
+          return (
+            <Row key={index} gutter={6} className={styles.rowItem}>
+              <Col span={6}>{item.columnName} </Col>
+              <Col span={6}>{item.name} </Col>
+              <Col span={6}>{item.type} </Col>
+              <Col span={6}>{item.remark} </Col>
+            </Row>
+          )
+        })}
       </>
     )
   }
@@ -439,38 +491,42 @@ const AddSourceConfigForm = (props: any) => {
    *   数据库字段与模板字段匹配
    */
   const dbNameMappingFunc = () => {
-    let datas = new Array()
-    let usedNames = new Set()
-    const popData = props.templates.find((i: any) => i.id === props.selectTemplate).indexField
-    popData.forEach((item:any) => {
-      let findFlag = false;
-      for (let i = 0; i <  props.columnNames.length; i++) {
-        if(!usedNames.has(props.columnNames[i])){
-          const score = strSimilarity2Percent(props.columnNames[i], item.name)
+    const datas = new Array()
+    const usedNames = new Set()
+    const popData = props.templates.find(
+      (i: any) => i.id === props.selectTemplate
+    ).indexField
+    popData.forEach((item: any) => {
+      let findFlag = false
+      for (const i of props.columnNames) {
+        if (!usedNames.has(i)) {
+          const score = strSimilarity2Percent(i, item.name)
           if (score > 0.5) {
             const mappingData = {
-              columnName: props.columnNames[i],
+              columnName: i,
               name: item.name,
               remark: item.remark,
               type: item.type
             }
             datas.push(mappingData)
             findFlag = true
-            usedNames.add(props.columnNames[i])
+            usedNames.add(i)
           }
-        }      
+        }
       }
       if (!findFlag) {
-        const data = props.columnNames.filter((item: any) => {
-          console.log('tem in usedNames',item,item in usedNames)
-          if (usedNames.has(item)) {
-            return false
-          } else {
-            return true
-          }
-        }).pop()
-        console.log('data',data)
-        console.log('usedNames',usedNames)
+        const data = props.columnNames
+          .filter((i: any) => {
+            console.log('tem in usedNames', i, i in usedNames)
+            if (usedNames.has(i)) {
+              return false
+            } else {
+              return true
+            }
+          })
+          .pop()
+        console.log('data', data)
+        console.log('usedNames', usedNames)
         const mappingData = {
           columnName: data,
           name: item.name,
@@ -481,51 +537,57 @@ const AddSourceConfigForm = (props: any) => {
         usedNames.add(data)
       }
     })
+    // setMappingDbData(datas)
     props.setMappingData(datas)
-    return datas
   }
-
 
   const strSimilarity2Number = (s: string, t: string) => {
-    let n = s.length, m = t.length
-    let d = new Array()
-    let i, j, s_i, t_j, cost;
-    if (n == 0) return m;
-    if (m == 0) return n;
+    const n = s.length
+    const m = t.length
+    const d = new Array()
+    let i = 0
+    let j = 0
+    let sj = ''
+    let tj = ''
+    let cost = 0
+    if (n === 0) return m
+    if (m === 0) return n
     for (i = 0; i <= n; i++) {
-      d[i] = [];
-      d[i][0] = i;
+      d[i] = []
+      d[i][0] = i
     }
     for (j = 0; j <= m; j++) {
-      d[0][j] = j;
+      d[0][j] = j
     }
     for (i = 1; i <= n; i++) {
-      s_i = s.charAt(i - 1);
+      sj = s.charAt(i - 1)
       for (j = 1; j <= m; j++) {
-        t_j = t.charAt(j - 1);
-        if (s_i == t_j) {
-          cost = 0;
+        tj = t.charAt(j - 1)
+        if (sj === tj) {
+          cost = 0
         } else {
-          cost = 1;
+          cost = 1
         }
-        d[i][j] = minimum(d[i - 1][j] + 1, d[i][j - 1] + 1, d[i - 1][j - 1] + cost);
+        d[i][j] = minimum(
+          d[i - 1][j] + 1,
+          d[i][j - 1] + 1,
+          d[i - 1][j - 1] + cost
+        )
       }
     }
-    return d[n][m];
+    return d[n][m]
   }
 
-  //两个字符串的相似程度，并返回相似度百分比
+  // 两个字符串的相似程度，并返回相似度百分比
   const strSimilarity2Percent = (s: string, t: string) => {
-    let l = s.length > t.length ? s.length : t.length
-    let d = strSimilarity2Number(s, t)
-    return 1 - d / l;
+    const l = s.length > t.length ? s.length : t.length
+    const d = strSimilarity2Number(s, t)
+    return 1 - d / l
   }
 
   const minimum = (a: string, b: string, c: string) => {
-    return a < b ? (a < c ? a : c) : (b < c ? b : c)
+    return a < b ? (a < c ? a : c) : b < c ? b : c
   }
-
-
 
   const checkFilePath = (value: any) => {
     let path = value.filePath
@@ -553,66 +615,76 @@ const AddSourceConfigForm = (props: any) => {
   const handleNextStep = () => {
     console.log('handleNextStep', props.currentStep, props.selectedSourceType)
     switch (props.currentStep) {
-      case 0: {
-        const fieldValue = getFieldsValue(['dataSourceType'])
-        console.log('handleNextStep', fieldValue.dataSourceType)
-        props.setSelectedSourceTypeAct(fieldValue.dataSourceType)
-        props.addStep()
-      }; break
-      case 1: {
-        if (props.selectedSourceType === 'file') {
-          validateFields((err: any, values: any) => {
-            if (!err) {
-              const fieldValue = getFieldsValue([
-                'filePath',
-                'username',
-                'password'
-              ])
-              // 检验文件路径
-              const value = checkFilePath(fieldValue)
-              console.log('handleNextStep', value)
-              if (value) {
-                console.log('handleNextStep file', fieldValue)
-                props.submit(fieldValue)
-              } else {
-                notification.error({
-                  message: '参数配置错误',
-                  description: '文件传输路径有误'
-                })
-              }
-            }
-          })
-        } else {
-          validateFields((err: any, values: any) => {
-            if (!err) {
-              const fieldValue = getFieldsValue([
-                'dbType',
-                'host',
-                'port',
-                'dbName',
-                'username',
-                'password'
-              ])
-              props.fetchTableNames(fieldValue)
-            }
-          })
-        }
-      }; break;
-      case 2: {
-        props.form.validateFields((err: any, values: any) => {
-          if (!err) {
-            const fieldValue = getFieldsValue(['tableName'])
-            props.selectedTableName(fieldValue)
-          }
-        })
-      }; break;
-      case 3: {
-        if(props.selectTemplate){
+      case 0:
+        {
+          const fieldValue = getFieldsValue(['dataSourceType'])
+          console.log('handleNextStep', fieldValue.dataSourceType)
+          props.setSelectedSourceTypeAct(fieldValue.dataSourceType)
           props.addStep()
-          dbNameMappingFunc()
         }
-      } break;
-      case 4: props.addStep(); break;
+        break
+      case 1:
+        {
+          if (props.selectedSourceType === 'file') {
+            validateFields((err: any, values: any) => {
+              if (!err) {
+                const fieldValue = getFieldsValue([
+                  'filePath',
+                  'username',
+                  'password'
+                ])
+                // 检验文件路径
+                const value = checkFilePath(fieldValue)
+                console.log('handleNextStep', value)
+                if (value) {
+                  console.log('handleNextStep file', fieldValue)
+                  props.submit(fieldValue)
+                } else {
+                  notification.error({
+                    message: '参数配置错误',
+                    description: '文件传输路径有误'
+                  })
+                }
+              }
+            })
+          } else {
+            validateFields((err: any, values: any) => {
+              if (!err) {
+                const fieldValue = getFieldsValue([
+                  'dbType',
+                  'host',
+                  'port',
+                  'dbName',
+                  'username',
+                  'password'
+                ])
+                props.fetchTableNames(fieldValue)
+              }
+            })
+          }
+        }
+        break
+      case 2:
+        {
+          validateFields((err: any, values: any) => {
+            if (!err) {
+              const fieldValue = getFieldsValue(['tableName'])
+              props.selectedTableName(fieldValue)
+            }
+          })
+        }
+        break
+      case 3:
+        {
+          if (props.selectTemplate) {
+            props.addStep()
+            dbNameMappingFunc()
+          }
+        }
+        break
+      case 4:
+        props.addStep()
+        break
     }
   }
 
@@ -649,10 +721,7 @@ const AddSourceConfigForm = (props: any) => {
     } else {
       return (
         <Row>
-          {/* <Col span={6} className={styles.prevStepButton}>
-            <Button onClick={handlePreviousStep}>上一步</Button>
-          </Col> */}
-          <Col span={8} offset={10}>
+          <Col span={8} offset={16}>
             <Button htmlType="reset" onClick={handleCancel}>
               取消
             </Button>
@@ -665,16 +734,21 @@ const AddSourceConfigForm = (props: any) => {
     }
   }
 
+  // @ts-ignore
+  const customDot = (dot: any, { status, index }) => (
+    <Popover content={<span>第 {index + 1}步</span>}>{dot}</Popover>
+  )
+
   return (
     <Modal
       title="配置数据源"
       visible={props.visible}
-      width={800}
+      width={960}
       closable={false}
       footer={renderFooter(props.currentStep)}>
       <Row className={styles.steps}>
-        <Col offset={6} span={15}>
-          <Steps current={props.currentStep}>
+        <Col span={24}>
+          <Steps current={props.currentStep} progressDot={customDot}>
             {steps.map((item) => (
               <Step key={item.title} title={item.title} />
             ))}
@@ -686,8 +760,8 @@ const AddSourceConfigForm = (props: any) => {
   )
 }
 
-const AddSourceConfigModal = Form.create({ name: 'AddSourceConfigForm' })(
-  AddSourceConfigForm
-)
+const AddSourceConfigModal = Form.create<IAddSourceConfigProps>({
+  name: 'AddSourceConfigForm'
+})(AddSourceConfigForm)
 
 export default AddSourceConfigModal

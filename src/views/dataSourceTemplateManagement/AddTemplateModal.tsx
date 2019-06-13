@@ -1,16 +1,18 @@
 import React from 'react'
-import {
-  Row,
-  Input,
-  Form,
-  Modal,
-  Button,
-  Select
-} from 'antd'
+import { Row, Input, Form, Modal, Button, Select } from 'antd'
+import { FormComponentProps } from 'antd/lib/form'
 
-const { Option } = Select;
+const { Option } = Select
 
-const AddTemplateForm = (props: any) => {
+interface IAddTemplateProps extends FormComponentProps {
+  visible: boolean
+  title: string
+  property: any
+  cancel: () => void
+  submit: (params: any) => void
+}
+
+const AddTemplateForm = (props: IAddTemplateProps) => {
   const { getFieldDecorator, getFieldsValue, resetFields } = props.form
 
   const formItemLayout = {
@@ -23,7 +25,6 @@ const AddTemplateForm = (props: any) => {
       sm: { span: 12 }
     }
   }
-
 
   const renderFooter = () => {
     return (
@@ -46,48 +47,38 @@ const AddTemplateForm = (props: any) => {
   const handleSubmit = () => {
     props.form.validateFields((err: any, values: any) => {
       if (!err) {
-        const fieldValue = getFieldsValue(['ip', 'port', 'userName', 'password', 'dbName', 'tableName'])
+        const fieldValue = getFieldsValue([
+          'ip',
+          'port',
+          'userName',
+          'password',
+          'dbName',
+          'tableName'
+        ])
         props.submit(fieldValue)
       }
     })
   }
 
-
-  const wordTypes =['string','numeric','date','boolean']
+  const wordTypes = ['string', 'numeric', 'date', 'boolean']
 
   const columns = [
     {
-        title: '字段名',
-        dataIndex: 'fieldName',
-        key: 'fieldName',
+      title: '字段名',
+      dataIndex: 'fieldName',
+      key: 'fieldName'
     },
     {
-        title: '字段类型',
-        dataIndex: 'fieldType',
-        key: 'fieldType',
+      title: '字段类型',
+      dataIndex: 'fieldType',
+      key: 'fieldType'
     },
     {
-        title: '字段含义',
-        dataIndex: 'fieldInterpreter',
-        key: 'fieldInterpreter',
-    },
+      title: '字段含义',
+      dataIndex: 'fieldInterpreter',
+      key: 'fieldInterpreter'
+    }
   ]
-
-  const renderSelectTypes = ()=>{
-     return  <Select defaultValue="string" style={{ width: 120 }}>
-                wordTypes.array.forEach(element => {
-                    <Option value='1'> element</Option>
-                });
-            </Select>
-  }
-
-  const handleAdd= ()=>{
-
-  }
-
-  const dataSource = {
-
-  }
 
   return (
     <>
@@ -96,13 +87,7 @@ const AddTemplateForm = (props: any) => {
         visible={props.visible}
         width={800}
         closable={false}
-        footer={renderFooter()}
-      >
-
-        <Button onClick={handleAdd} type="primary" style={{ marginBottom: 16 }}>
-          Add a row
-        </Button>
-
+        footer={renderFooter()}>
         <Form {...formItemLayout}>
           <Form.Item label="模板名称" required>
             {getFieldDecorator('templateName', {
@@ -125,12 +110,13 @@ const AddTemplateForm = (props: any) => {
                 />
             </div>
         ); */}
-
-     </Modal>
+      </Modal>
     </>
   )
 }
 
-const AddTemplateModal = Form.create({ name: 'AddTemplateForm' })(AddTemplateForm)
+const AddTemplateModal = Form.create<IAddTemplateProps>({
+  name: 'AddTemplateForm'
+})(AddTemplateForm)
 
 export default AddTemplateModal

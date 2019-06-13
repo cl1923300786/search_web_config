@@ -6,9 +6,17 @@ import {
   Modal,
   Button
 } from 'antd'
+import { FormComponentProps } from 'antd/lib/form'
 
+interface IWordsModalFormProps extends FormComponentProps {
+  visible: boolean
+  title: string
+  property: any
+  cancel: () => void
+  submit: (params: any) => void
+}
 
-const WordsModalForm = (props: any) => {
+const WordsModalForm = (props: IWordsModalFormProps) => {
   const { getFieldDecorator, getFieldsValue, resetFields } = props.form
 
   const formItemLayout = {
@@ -81,6 +89,6 @@ const WordsModalForm = (props: any) => {
   )
 }
 
-const WordsModalEdit = Form.create({ name: 'WordsModalForm' })(WordsModalForm)
+const WordsModalEdit = Form.create<IWordsModalFormProps>({ name: 'WordsModalForm' })(WordsModalForm)
 
 export default WordsModalEdit

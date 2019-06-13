@@ -2,7 +2,15 @@ import React from 'react'
 import { Row, Col, Modal, Button } from 'antd'
 import styles from './WordsViewModal.module.less'
 
-const WordsViewModal = (props: any) => {
+
+interface IWordsViewProps {
+  visible: boolean
+  title: string
+  property: any
+  close: () => void
+}
+
+const WordsViewModal = (props: IWordsViewProps) => {
 
   const handleClick = () => {
     props.close()

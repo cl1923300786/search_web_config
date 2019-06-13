@@ -1,14 +1,16 @@
 import React from 'react'
-import {
-  Row,
-  Input,
-  Form,
-  Modal,
-  Button
-} from 'antd'
+import { Row, Input, Form, Modal, Button } from 'antd'
+import { FormComponentProps } from 'antd/lib/form'
 
+interface IWordsProps extends FormComponentProps {
+  visible: boolean
+  title: string
+  property: any
+  cancel: () => void
+  submit: (params: any) => void
+}
 
-const WordsModalForm = (props: any) => {
+const WordsModalForm = (props: IWordsProps) => {
   const { getFieldDecorator, getFieldsValue, resetFields } = props.form
 
   const formItemLayout = {
@@ -57,8 +59,7 @@ const WordsModalForm = (props: any) => {
         visible={props.visible}
         width={800}
         closable={false}
-        footer={renderFooter()}
-      >
+        footer={renderFooter()}>
         <Form {...formItemLayout}>
           <Form.Item label="词" required>
             {getFieldDecorator('word', {
@@ -71,6 +72,8 @@ const WordsModalForm = (props: any) => {
   )
 }
 
-const WordsModal = Form.create({ name: 'WordsModalForm' })(WordsModalForm)
+const WordsModal = Form.create<IWordsProps>({ name: 'WordsModalForm' })(
+  WordsModalForm
+)
 
 export default WordsModal

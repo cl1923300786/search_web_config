@@ -1,13 +1,15 @@
 import React from 'react'
-import {
-  Row,
-  Input,
-  Form,
-  Modal,
-  Button
-} from 'antd'
+import { Row, Input, Form, Modal, Button } from 'antd'
+import { FormComponentProps } from 'antd/lib/form'
 
-const ViewTemplateForm = (props: any) => {
+interface IViewTemplateProps extends FormComponentProps {
+  visible: boolean
+  title: string
+  property: any
+  close: () => void
+}
+
+const ViewTemplateForm = (props: IViewTemplateProps) => {
   const { getFieldDecorator, getFieldsValue, resetFields } = props.form
 
   const formItemLayout = {
@@ -23,23 +25,23 @@ const ViewTemplateForm = (props: any) => {
 
   const columns = [
     {
-        title: '字段名',
-        dataIndex: 'fieldName',
-        key: 'fieldName',
+      title: '字段名',
+      dataIndex: 'fieldName',
+      key: 'fieldName'
     },
     {
-        title: '字段类型',
-        dataIndex: 'fieldType',
-        key: 'fieldType',
+      title: '字段类型',
+      dataIndex: 'fieldType',
+      key: 'fieldType'
     },
     {
-        title: '字段含义',
-        dataIndex: 'fieldInterpreter',
-        key: 'fieldInterpreter',
-    },
+      title: '字段含义',
+      dataIndex: 'fieldInterpreter',
+      key: 'fieldInterpreter'
+    }
   ]
 
-  const wordTypes =['string','numeric','date','boolean']
+  const wordTypes = ['string', 'numeric', 'date', 'boolean']
 
   const renderFooter = () => {
     return (
@@ -56,14 +58,20 @@ const ViewTemplateForm = (props: any) => {
 
   const handleCancel = () => {
     resetFields()
-    props.cancel()
   }
 
   const handleSubmit = () => {
     props.form.validateFields((err: any, values: any) => {
       if (!err) {
-        const fieldValue = getFieldsValue(['ip', 'port', 'userName', 'password', 'dbName', 'tableName'])
-        props.submit(fieldValue)
+        const fieldValue = getFieldsValue([
+          'ip',
+          'port',
+          'userName',
+          'password',
+          'dbName',
+          'tableName'
+        ])
+        console.log(fieldValue)
       }
     })
   }
@@ -75,8 +83,7 @@ const ViewTemplateForm = (props: any) => {
         visible={props.visible}
         width={800}
         closable={false}
-        footer={renderFooter()}
-      >
+        footer={renderFooter()}>
         <Form {...formItemLayout}>
           <Form.Item label="模板名称" required>
             {getFieldDecorator('templateName', {
@@ -88,15 +95,14 @@ const ViewTemplateForm = (props: any) => {
               rules: [{ required: true, message: '请输入模板描述' }]
             })(<Input placeholder="请输入模板描述" />)}
           </Form.Item>
-          
-            
-
         </Form>
       </Modal>
     </>
   )
 }
 
-const ViewTemplateModal = Form.create({ name: 'ViewTemplateForm' })(ViewTemplateForm)
+const ViewTemplateModal = Form.create<IViewTemplateProps>({
+  name: 'ViewTemplateForm'
+})(ViewTemplateForm)
 
 export default ViewTemplateModal

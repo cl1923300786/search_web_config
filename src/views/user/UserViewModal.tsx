@@ -2,8 +2,14 @@ import React from 'react'
 import { Row, Col, Modal, Button } from 'antd'
 import styles from './UserViewModal.module.less'
 
-const UserViewModal = (props: any) => {
+interface IUserViewProps {
+  visible: boolean
+  title: string
+  property: any
+  close: () => void
+}
 
+const UserViewModal = (props: IUserViewProps) => {
   const handleClick = () => {
     props.close()
   }
@@ -12,7 +18,9 @@ const UserViewModal = (props: any) => {
     return (
       <Row>
         <Col>
-          <Button type="primary" onClick={handleClick}>确定</Button>
+          <Button type="primary" onClick={handleClick}>
+            确定
+          </Button>
         </Col>
       </Row>
     )
@@ -24,22 +32,29 @@ const UserViewModal = (props: any) => {
       visible={props.visible}
       width={800}
       closable={false}
-      footer={renderFooter()}
-    >
+      footer={renderFooter()}>
       <Row>
-        <Col span={6} className={styles.label}>id：</Col>
+        <Col span={6} className={styles.label}>
+          id：
+        </Col>
         <Col span={12}>{props.property.id}</Col>
       </Row>
       <Row className={styles.rowItem}>
-        <Col span={6} className={styles.label}>姓名：</Col>
+        <Col span={6} className={styles.label}>
+          姓名：
+        </Col>
         <Col span={12}>{props.property.name}</Col>
       </Row>
       <Row className={styles.rowItem}>
-        <Col span={6} className={styles.label}>生日：</Col>
+        <Col span={6} className={styles.label}>
+          生日：
+        </Col>
         <Col span={12}>{props.property.birthDay}</Col>
       </Row>
       <Row className={styles.rowItem}>
-        <Col span={6} className={styles.label}>住址：</Col>
+        <Col span={6} className={styles.label}>
+          住址：
+        </Col>
         <Col span={12}>{props.property.city}</Col>
       </Row>
     </Modal>
