@@ -69,9 +69,9 @@ const EditableCellForm = (props: any) => {
     validateFields((error: any, values: any) => {
       if (!error) {
         toggleEdit()
-        props.handleSave({ ...props.record, ...values })
         resetFields()
       }
+      props.handleSave({ ...props.record, ...values })
     })
   }
 
@@ -348,6 +348,7 @@ const EditableTable = Form.create<IEditableTableFormProps>({
 
 const EditModalForm = (props: IEditModalProps) => {
   const [dataSource, setDataSource] = useState<any[]>([])
+  const [showTips, setShowTips] = useState(false)
   const {
     getFieldDecorator,
     resetFields,
@@ -395,7 +396,20 @@ const EditModalForm = (props: IEditModalProps) => {
    */
   const handleCancel = () => {
     resetFields()
+    setShowTips(false)
     props.cancel()
+  }
+
+  /**
+   * 保存时，校验模板字段中的字段名及含义是否为空
+   */
+  const validDataSource = (data: any[]) => {
+    if (data.length === 0) {
+      return false
+    }
+    return data.every((i: any) => {
+      return i.name !== '' && i.remark !== ''
+    })
   }
 
   /**
@@ -403,18 +417,31 @@ const EditModalForm = (props: IEditModalProps) => {
    * 模版保存提交
    */
   const handleSubmit = () => {
-    validateFields((err: any, values: any) => {
+    validateFields((err: any) => {
       if (!err) {
         const fieldValue = getFieldsValue(['templateName', 'remark'])
-        if (props.title === '新增模板') {
-          props.submit({ dataSource, ...fieldValue })
+        if (validDataSource(dataSource)) {
+          props.submit({
+            dataSource,
+            ...fieldValue,
+            ...(props.title === '编辑模板' ? { id: props.property.id } : {})
+          })
           resetFields()
-        } else if (props.title === '编辑模板') {
-          props.submit({ dataSource, ...fieldValue, id: props.property.id })
-          resetFields()
+          setShowTips(false)
+        } else {
+          setShowTips(true)
         }
       }
     })
+  }
+
+  /**
+   * 新增模板时，若没有添加字段，则显示错误信息
+   */
+  const renderErrorTips = () => {
+    if (showTips) {
+      return <span className={styles.errorTips}>请至少添加一个字段</span>
+    }
   }
 
   /**
@@ -438,6 +465,7 @@ const EditModalForm = (props: IEditModalProps) => {
       }
     })
     setDataSource(datas)
+    setShowTips(false)
   }
 
   /**
@@ -451,6 +479,7 @@ const EditModalForm = (props: IEditModalProps) => {
             <Button onClick={addRow}>新增行</Button>
           </Col>
           <Col span={8} offset={10}>
+            {renderErrorTips()}
             <Button htmlType="reset" onClick={handleCancel}>
               取消
             </Button>
