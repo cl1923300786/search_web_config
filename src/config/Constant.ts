@@ -47,11 +47,11 @@ export const filedTypeOptions: IOPtion[] = [
 ]
 
 /**
- * 默认字段名最大长度32个字符(不分中英文，统一最大长度32.实际字段只支持英文字母和下划线)
+ * 默认字段名(字段名/模板名)最大长度32个字符(不分中英文，统一最大长度32.实际字段只支持英文字母和下划线)
  */
 export const defaultNameMaxLength: number = 32
 
 /**
- * 默认字段含义最大长度32个字符(不分中英文，统一最大长度32个字符)
+ * 默认字段含义(字段含义/模板描述)最大长度32个字符(不分中英文，统一最大长度32个字符)
  */
 export const defaultRemarkMaxLength: number = 64
