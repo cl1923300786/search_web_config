@@ -293,6 +293,7 @@ const Modal = () => {
    * 编辑模板模态窗点击取消
    */
   const handleCancel = () => {
+    setModalProperty(defaultModalProperty)
     setVisible(false)
   }
 
@@ -300,13 +301,35 @@ const Modal = () => {
    * 新增/编辑模板模态窗，点击确定
    */
   const handleSubmit = async (params: any) => {
-    const length = dataSource.filter((item:any)=>{
-      return item.templateName===params.templateName
+    const set =new Set()
+    const data = params.dataSource.filter((item:any)=>{
+      if(set.has(item.name)){
+        return true
+      }else{
+        set.add(item.name)
+      }
     }).length
-    if(length>0){
-      errorTips("模版名已存在","请修改之后在添加")
-    }else{
-      const url = params.id
+    if(data>0){
+      errorTips("模版字段重复","需修改")
+      return
+    }
+    if(modalProperty.templateName!=params.templateName){
+      const length = dataSource.filter((item:any)=>{
+        return item.templateName===params.templateName
+      }).length
+      if(length>0){
+        errorTips("模版名已存在","需修改")
+        return
+      }
+    }
+    
+    submitData(params)
+    
+  }
+
+
+  const submitData = async (params: any)=>{
+    const url = params.id
       ? '/search/template/field/update'
       : '/search/template/field/save'
       const indexField = params.dataSource.map((item: any) => {
@@ -339,8 +362,7 @@ const Modal = () => {
         )
       }
       handleCancel()
-    }
-    
+     
   }
 
   const errorTips = (message = '', description = '') => {

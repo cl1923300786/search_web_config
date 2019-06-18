@@ -453,7 +453,6 @@ const EditModalForm = (props: IEditModalProps) => {
    * 渲染模板属性
    */
   const renderModalProperty = () => {
-    console.log(" props.property   ",props.property)
     if (props.type !== 'view') {
       return (
         <>
