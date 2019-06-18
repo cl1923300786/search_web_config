@@ -421,10 +421,10 @@ const SourceConfig = () => {
   }
 
   const selectedTableName = (params: any) => {
-    setSelectTableName(params.tableName[0])
+    setSelectTableName(params.tableName)
     getTableColumnNames({
       ...databaseConfig,
-      tableName: params.tableName[0]
+      tableName: params.tableName
     })
   }
 
