@@ -3,7 +3,7 @@
   line-height: 64px;
   padding: 0 24px;
   cursor: pointer;
-  transition: color .3s;
+  transition: color 0.3s;
 }
 
 .trigger:hover {
@@ -12,7 +12,7 @@
 
 .logo {
   height: 32px;
-  background: rgba(255,255,255,.2);
+  background: rgba(255, 255, 255, 0.2);
   margin: 16px;
 }
 .page-layout {
@@ -23,7 +23,8 @@
   padding-right: 20px;
 }
 .globalTableTd {
-  .ant-table-thead > tr > th, .ant-table-tbody > tr > td {
+  .ant-table-thead > tr > th,
+  .ant-table-tbody > tr > td {
     padding: 0 10px;
     line-height: 40px;
   }
@@ -35,7 +36,12 @@
 
 .globalEditableCellValueWrap {
   padding: 5px 12px;
+  box-sizing: border-box;
   cursor: pointer;
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .globalEditableRow:hover .globalEditableCellValueWrap {
@@ -50,4 +56,11 @@
     font-size: 12px;
     margin-top: -4px;
   }
+}
+
+.globalColumnEllipsis {
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }

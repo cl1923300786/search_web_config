@@ -9,7 +9,7 @@ import {
   Col,
   Select,
   Popconfirm,
-  notification
+  Tooltip
 } from 'antd'
 import styles from './EditModal.module.less'
 import {
@@ -20,7 +20,6 @@ import {
 } from '../../../config/Constant'
 import { FormComponentProps } from 'antd/lib/form'
 import { IModalProperty } from '../Modal'
-
 
 interface IEditableTableFormProps extends FormComponentProps {
   dataSource: any[]
@@ -54,7 +53,7 @@ const EditableFormRow = Form.create()(EditableRow)
 
 const EditableCellForm = (props: any) => {
   const [editing, setEditing] = useState(false)
-  const { getFieldDecorator, validateFields } = props.form
+  const { getFieldDecorator, validateFields, resetFields } = props.form
 
   /**
    * 切换编辑状态
@@ -70,8 +69,9 @@ const EditableCellForm = (props: any) => {
     validateFields((error: any, values: any) => {
       if (!error) {
         toggleEdit()
-        props.handleSave({ ...props.record, ...values })
+        resetFields()
       }
+      props.handleSave({ ...props.record, ...values })
     })
   }
 
@@ -101,7 +101,18 @@ const EditableCellForm = (props: any) => {
               }
             ],
             initialValue: props.record[props.dataIndex]
-          })(<Input onPressEnter={save} onBlur={save} autoFocus />)}
+          })(
+            <Input
+              onPressEnter={save}
+              onBlur={save}
+              autoFocus
+              maxLength={
+                props.dataIndex === 'name'
+                  ? defaultNameMaxLength
+                  : defaultRemarkMaxLength
+              }
+            />
+          )}
         </Form.Item>
       )
     } else {
@@ -122,12 +133,14 @@ const EditableCellForm = (props: any) => {
     return editing ? (
       { ...renderFormItem() }
     ) : (
-      <div
-        className="globalEditableCellValueWrap"
-        style={{ paddingRight: 24 }}
-        onClick={toggleEdit}>
-        {props.children}
-      </div>
+      <Tooltip placement="topLeft" title={props.children}>
+        <div
+          className="globalEditableCellValueWrap"
+          style={{ paddingRight: 24 }}
+          onClick={toggleEdit}>
+          {props.children}
+        </div>
+      </Tooltip>
     )
   }
 
@@ -191,7 +204,8 @@ const EditableTableForm = (props: IEditableTableFormProps) => {
       dataIndex: 'name',
       key: 'name',
       width: '26%',
-      editable: true
+      editable: true,
+      className: 'globalColumnEllipsis'
     },
     {
       title: '类型',
@@ -205,7 +219,8 @@ const EditableTableForm = (props: IEditableTableFormProps) => {
       title: `含义${props.type !== 'view' ? '(点击单元格可编辑)' : ''}`,
       dataIndex: 'remark',
       key: 'remark',
-      editable: true
+      editable: true,
+      className: 'globalColumnEllipsis'
     }
   ]
 
@@ -333,6 +348,7 @@ const EditableTable = Form.create<IEditableTableFormProps>({
 
 const EditModalForm = (props: IEditModalProps) => {
   const [dataSource, setDataSource] = useState<any[]>([])
+  const [showTips, setShowTips] = useState(false)
   const {
     getFieldDecorator,
     resetFields,
@@ -341,7 +357,12 @@ const EditModalForm = (props: IEditModalProps) => {
   } = props.form
 
   useEffect(() => {
-    setDataSource(props.fields)
+    // 关闭模态窗后，重置table中的数据源，避免行内表单校验提示不消失的问题
+    if (props.visible) {
+      setDataSource(props.fields)
+    } else {
+      setDataSource([])
+    }
   }, [props.visible, props.fields])
 
   const formItemLayout = {
@@ -375,7 +396,20 @@ const EditModalForm = (props: IEditModalProps) => {
    */
   const handleCancel = () => {
     resetFields()
+    setShowTips(false)
     props.cancel()
+  }
+
+  /**
+   * 保存时，校验模板字段中的字段名及含义是否为空
+   */
+  const validDataSource = (data: any[]) => {
+    if (data.length === 0) {
+      return false
+    }
+    return data.every((i: any) => {
+      return i.name !== '' && i.remark !== ''
+    })
   }
 
   /**
@@ -383,16 +417,31 @@ const EditModalForm = (props: IEditModalProps) => {
    * 模版保存提交
    */
   const handleSubmit = () => {
-    validateFields((err: any, values: any) => {
+    validateFields((err: any) => {
       if (!err) {
         const fieldValue = getFieldsValue(['templateName', 'remark'])
-        if (props.title === '新增模板') {
-          props.submit({ dataSource, ...fieldValue })
-        } else if (props.title === '编辑模板') {
-          props.submit({ dataSource, ...fieldValue, id: props.property.id })
-        }        
+        if (validDataSource(dataSource)) {
+          props.submit({
+            dataSource,
+            ...fieldValue,
+            ...(props.title === '编辑模板' ? { id: props.property.id } : {})
+          })
+          resetFields()
+          setShowTips(false)
+        } else {
+          setShowTips(true)
+        }
       }
     })
+  }
+
+  /**
+   * 新增模板时，若没有添加字段，则显示错误信息
+   */
+  const renderErrorTips = () => {
+    if (showTips) {
+      return <span className={styles.errorTips}>请至少添加一个字段</span>
+    }
   }
 
   /**
@@ -416,6 +465,7 @@ const EditModalForm = (props: IEditModalProps) => {
       }
     })
     setDataSource(datas)
+    setShowTips(false)
   }
 
   /**
@@ -429,6 +479,7 @@ const EditModalForm = (props: IEditModalProps) => {
             <Button onClick={addRow}>新增行</Button>
           </Col>
           <Col span={8} offset={10}>
+            {renderErrorTips()}
             <Button htmlType="reset" onClick={handleCancel}>
               取消
             </Button>

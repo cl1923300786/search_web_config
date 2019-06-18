@@ -20,8 +20,10 @@ import { Dispatch } from 'redux'
 import Actions from '../../store/Actions'
 
 import { API_URL } from '../../config/Constant'
-import { RadioChangeEvent } from 'antd/lib/radio'
 import { FormComponentProps } from 'antd/lib/form'
+import {
+  defaultNameMaxLength
+} from '../../config/Constant'
 
 const Option = Select.Option
 const Step = Steps.Step
@@ -226,31 +228,31 @@ const AddSourceConfigForm = (props: IAddSourceConfigProps) => {
         {getFieldDecorator('host', {
           rules: [{ required: true, message: '请输入host' }],
           initialValue: formVal.host
-        })(<Input placeholder="请输入host" />)}
+        })(<Input placeholder="请输入host" maxLength={defaultNameMaxLength}/>)}
       </Form.Item>,
       <Form.Item key="port" {...formItemLayout} label="端口" required>
         {getFieldDecorator('port', {
           rules: [{ required: true, message: '请输入端口' }],
           initialValue: formVal.port
-        })(<Input placeholder="请输入端口" />)}
+        })(<Input placeholder="请输入端口" maxLength={defaultNameMaxLength}/>)}
       </Form.Item>,
       <Form.Item key="dbName" {...formItemLayout} label="数据库名" required>
         {getFieldDecorator('dbName', {
           rules: [{ required: true, message: '请输入数据库名' }],
           initialValue: formVal.dbName
-        })(<Input placeholder="请输入数据库名" />)}
+        })(<Input placeholder="请输入数据库名" maxLength={defaultNameMaxLength}/>)}
       </Form.Item>,
       <Form.Item key="username" {...formItemLayout} label="用户名" required>
         {getFieldDecorator('username', {
           rules: [{ required: true, message: '请输入用户名' }],
           initialValue: formVal.username
-        })(<Input placeholder="请输入用户名" />)}
+        })(<Input placeholder="请输入用户名" maxLength={defaultNameMaxLength}/>)}
       </Form.Item>,
       <Form.Item key="password" {...formItemLayout} label="密码" required>
         {getFieldDecorator('password', {
           rules: [{ required: true, message: '请输入密码' }],
           initialValue: formVal.password
-        })(<Input type="password" placeholder="请输入请输入密码" />)}
+        })(<Input type="password" placeholder="请输入请输入密码" maxLength={defaultNameMaxLength}/>)}
       </Form.Item>
     ]
   }
@@ -297,7 +299,7 @@ const AddSourceConfigForm = (props: IAddSourceConfigProps) => {
         })(
           <Select
             style={{ width: '100%' }}
-            mode="multiple"
+            // mode="multiple"
             placeholder="请选择数据库表名"
             filterOption={false}>
             {renderTableNamesOptions()}
@@ -524,7 +526,6 @@ const AddSourceConfigForm = (props: IAddSourceConfigProps) => {
         usedNames.add(data)
       }
     })
-    // setMappingDbData(datas)
     props.setMappingData(datas)
   }
 
@@ -639,7 +640,12 @@ const AddSourceConfigForm = (props: IAddSourceConfigProps) => {
                   'username',
                   'password'
                 ])
-                props.fetchTableNames(fieldValue)
+                const password = fieldValue.password.trim()
+                if(password){
+                  props.fetchTableNames(fieldValue)
+                }else{
+                  errorTips("密码输入格式不正确")
+                }
               }
             })
           }
@@ -664,8 +670,48 @@ const AddSourceConfigForm = (props: IAddSourceConfigProps) => {
         }
         break
       case 4:
-        props.addStep()
+        if(checkMappingData()){
+          props.addStep()
+        }else{
+          errorTips("数据库字段选择重复","请重新选择")
+        }  
         break
+      // case 4:
+      //   props.addStep()
+      //   break
+    }
+  }
+
+
+  const errorTips = (message = '', description = '') => {
+    notification.error({
+      message,
+      description
+    })
+  }
+
+  const checkMappingData = ()=>{
+    const data=props.dbNameMappingData.filter((item:any)=>{
+      if (item.columnName){
+        return true
+      }else {
+        return false
+      }
+    })
+    const set=new Set()
+    const length = data.filter((item:any)=>{
+      if (set.has(item.columnName)){
+        return true
+      }else{
+        set.add(item.columnName)
+        return false 
+      }
+    }).length
+    if(length>0){
+      return false
+    }else{
+      props.setMappingData(data)
+      return true
     }
   }
 

@@ -189,7 +189,10 @@ const Modal = () => {
     if (res && res.status === 200 && res.data) {
       freshDeteleAct(record)
     } else {
-      errorTips('删除模版失败', '网络异常，请重试！')
+      errorTips(
+        '删除模版失败',
+        res && res.data && res.data.msg ? res.data.msg : '网络异常，请重试！'
+      )
     }
   }
 
@@ -349,20 +352,23 @@ const Modal = () => {
         }
       })
       if (res && res.status === 200 && res.data) {
-        successTips(params.id ? '编辑模版成功' : '新增模版成功', '')
-        if (searchWord) {
-          getTemplates({ ...pageParams, q: searchWord })
-        } else {
-          getTemplates({ ...pageParams })
-        }
+        if (res.data.code==0){
+          successTips(params.id ? '编辑模版成功' : '新增模版成功', '')
+          if (searchWord) {
+            getTemplates({ ...pageParams, q: searchWord })
+          } else {
+            getTemplates({ ...pageParams })
+          }
+          handleCancel()
+        }else{
+          errorTips(res.data.msg[0])
+        }       
       } else {
         errorTips(
           params.id ? '编辑模版失败' : '新增模版失败',
           res && res.data && res.data.msg ? res.data.msg : '网络异常，请重试！'
         )
-      }
-      handleCancel()
-     
+      }     
   }
 
   const errorTips = (message = '', description = '') => {

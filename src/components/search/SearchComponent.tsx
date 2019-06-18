@@ -2,6 +2,9 @@ import React from 'react'
 import { Form, Input, Button } from 'antd'
 import { FormComponentProps } from 'antd/lib/form'
 import styles from './SearchComponent.module.less'
+import {
+  defaultNameMaxLength
+} from '../../config/Constant'
 
 export interface IParams {
   name: string
@@ -41,7 +44,7 @@ const FormComponent = (props: IProps) => {
       <Form layout="inline" onSubmit={handleSubmit}>
         <Form.Item>
           {getFieldDecorator('name', {})(
-            <Input placeholder={setValue()} allowClear />
+            <Input placeholder={setValue()} allowClear maxLength={defaultNameMaxLength}/>
           )}
         </Form.Item>
         <Form.Item>

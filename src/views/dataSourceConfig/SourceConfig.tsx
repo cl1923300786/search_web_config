@@ -378,8 +378,15 @@ const SourceConfig = () => {
     })
     setLoading(false)
     if (res && res.status === 200 && res.data) {
-      setTableNames(formatChoiceList(res.data.tables))
-      addStep()
+      if (res.data.code===0){
+        setTableNames(formatChoiceList(res.data.tables))
+        addStep()
+      }else{
+        errorTips(
+          '数据库连接失败',
+          res && res.data && res.data.msg ? res.data.msg : '网络异常，请重试！'
+        )
+      }
     } else {
       errorTips(
         '数据库连接失败',
@@ -401,6 +408,7 @@ const SourceConfig = () => {
       }
     })
     setLoading(false)
+    console.log("getTableColumnNames",res)
     if (res && res.status === 200 && res.data.columns) {
       setColumnNames(formatColumnsList(res.data.columns))
       addStep()
