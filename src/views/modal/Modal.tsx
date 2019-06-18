@@ -189,7 +189,10 @@ const Modal = () => {
     if (res && res.status === 200 && res.data) {
       freshDeteleAct(record)
     } else {
-      errorTips('删除模版失败', '网络异常，请重试！')
+      errorTips(
+        '删除模版失败',
+        res && res.data && res.data.msg ? res.data.msg : '网络异常，请重试！'
+      )
     }
   }
 
@@ -300,15 +303,15 @@ const Modal = () => {
    * 新增/编辑模板模态窗，点击确定
    */
   const handleSubmit = async (params: any) => {
-    const length = dataSource.filter((item:any)=>{
-      return item.templateName===params.templateName
+    const length = dataSource.filter((item: any) => {
+      return item.templateName === params.templateName
     }).length
-    if(length>0){
-      errorTips("模版名已存在","请修改之后在添加")
-    }else{
+    if (length > 0) {
+      errorTips('模版名已存在', '请修改之后在添加')
+    } else {
       const url = params.id
-      ? '/search/template/field/update'
-      : '/search/template/field/save'
+        ? '/search/template/field/update'
+        : '/search/template/field/save'
       const indexField = params.dataSource.map((item: any) => {
         return {
           name: item.name,
@@ -340,7 +343,6 @@ const Modal = () => {
       }
       handleCancel()
     }
-    
   }
 
   const errorTips = (message = '', description = '') => {

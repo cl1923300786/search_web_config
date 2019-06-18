@@ -21,7 +21,6 @@ import {
 import { FormComponentProps } from 'antd/lib/form'
 import { IModalProperty } from '../Modal'
 
-
 interface IEditableTableFormProps extends FormComponentProps {
   dataSource: any[]
   save: (datas: any[]) => void
@@ -388,9 +387,11 @@ const EditModalForm = (props: IEditModalProps) => {
         const fieldValue = getFieldsValue(['templateName', 'remark'])
         if (props.title === '新增模板') {
           props.submit({ dataSource, ...fieldValue })
+          resetFields()
         } else if (props.title === '编辑模板') {
           props.submit({ dataSource, ...fieldValue, id: props.property.id })
-        }        
+          resetFields()
+        }
       }
     })
   }
@@ -453,7 +454,6 @@ const EditModalForm = (props: IEditModalProps) => {
    * 渲染模板属性
    */
   const renderModalProperty = () => {
-    console.log(" props.property   ",props.property)
     if (props.type !== 'view') {
       return (
         <>
