@@ -9,7 +9,7 @@ import {
   Col,
   Select,
   Popconfirm,
-  notification
+  Tooltip
 } from 'antd'
 import styles from './EditModal.module.less'
 import {
@@ -53,7 +53,7 @@ const EditableFormRow = Form.create()(EditableRow)
 
 const EditableCellForm = (props: any) => {
   const [editing, setEditing] = useState(false)
-  const { getFieldDecorator, validateFields } = props.form
+  const { getFieldDecorator, validateFields, resetFields } = props.form
 
   /**
    * 切换编辑状态
@@ -70,6 +70,7 @@ const EditableCellForm = (props: any) => {
       if (!error) {
         toggleEdit()
         props.handleSave({ ...props.record, ...values })
+        resetFields()
       }
     })
   }
@@ -100,7 +101,18 @@ const EditableCellForm = (props: any) => {
               }
             ],
             initialValue: props.record[props.dataIndex]
-          })(<Input onPressEnter={save} onBlur={save} autoFocus />)}
+          })(
+            <Input
+              onPressEnter={save}
+              onBlur={save}
+              autoFocus
+              maxLength={
+                props.dataIndex === 'name'
+                  ? defaultNameMaxLength
+                  : defaultRemarkMaxLength
+              }
+            />
+          )}
         </Form.Item>
       )
     } else {
@@ -121,12 +133,14 @@ const EditableCellForm = (props: any) => {
     return editing ? (
       { ...renderFormItem() }
     ) : (
-      <div
-        className="globalEditableCellValueWrap"
-        style={{ paddingRight: 24 }}
-        onClick={toggleEdit}>
-        {props.children}
-      </div>
+      <Tooltip placement="topLeft" title={props.children}>
+        <div
+          className="globalEditableCellValueWrap"
+          style={{ paddingRight: 24 }}
+          onClick={toggleEdit}>
+          {props.children}
+        </div>
+      </Tooltip>
     )
   }
 
@@ -190,7 +204,8 @@ const EditableTableForm = (props: IEditableTableFormProps) => {
       dataIndex: 'name',
       key: 'name',
       width: '26%',
-      editable: true
+      editable: true,
+      className: 'globalColumnEllipsis'
     },
     {
       title: '类型',
@@ -204,7 +219,8 @@ const EditableTableForm = (props: IEditableTableFormProps) => {
       title: `含义${props.type !== 'view' ? '(点击单元格可编辑)' : ''}`,
       dataIndex: 'remark',
       key: 'remark',
-      editable: true
+      editable: true,
+      className: 'globalColumnEllipsis'
     }
   ]
 
@@ -340,7 +356,12 @@ const EditModalForm = (props: IEditModalProps) => {
   } = props.form
 
   useEffect(() => {
-    setDataSource(props.fields)
+    // 关闭模态窗后，重置table中的数据源，避免行内表单校验提示不消失的问题
+    if (props.visible) {
+      setDataSource(props.fields)
+    } else {
+      setDataSource([])
+    }
   }, [props.visible, props.fields])
 
   const formItemLayout = {
