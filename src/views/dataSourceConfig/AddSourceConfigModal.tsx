@@ -107,7 +107,7 @@ const AddSourceConfigForm = (props: IAddSourceConfigProps) => {
       api: API_URL,
       method: 'get'
     })
-    console.log('fetchDataSourceTypes', res.data)
+    console.log("fetchDataSourceTypes",res)
     if (res && res.status === 200 && res.data) {
       setDataSourceTypes(formatSourceDataTypes(res.data.result))
     } else {
@@ -129,7 +129,6 @@ const AddSourceConfigForm = (props: IAddSourceConfigProps) => {
   /**  选择数据源类型
    */
   const renderDataSourceTypesOptions = () => {
-    console.log('renderDataSourceTypesOptions', dataSourceTypes)
     return dataSourceTypes.map((i: any) => {
       return (
         <Option key={i.type} value={i.type}>
@@ -170,7 +169,6 @@ const AddSourceConfigForm = (props: IAddSourceConfigProps) => {
   }
 
   const selectDataSourceType = (value: any) => {
-    console.log('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!', value)
     props.setSelectedSourceTypeAct(value)
   }
 
@@ -178,8 +176,6 @@ const AddSourceConfigForm = (props: IAddSourceConfigProps) => {
    *   first step
    */
   const renderFirstStep = (formVal: any) => {
-    console.log('renderFirstStep')
-    console.log(formVal)
     return [
       <Form.Item key="dataSourceType" {...formItemLayout} label="数据源类型">
         {getFieldDecorator('dataSourceType', {
@@ -202,8 +198,6 @@ const AddSourceConfigForm = (props: IAddSourceConfigProps) => {
   }
 
   const renderSecondStep = (formVal: any) => {
-    console.log(props.selectedSourceType)
-    console.log(props.selectedSourceType === 'file')
     if (props.selectedSourceType === 'db') {
       return configDataBase(formVal)
     } else if (props.selectedSourceType === 'file') {
@@ -215,7 +209,6 @@ const AddSourceConfigForm = (props: IAddSourceConfigProps) => {
    *   配置数据库连接
    */
   const configDataBase = (formVal: any) => {
-    console.log('configDataBase')
     return [
       <Form.Item key="dbType" {...formItemLayout} label="数据库类型">
         {getFieldDecorator('dbType', {
@@ -266,7 +259,6 @@ const AddSourceConfigForm = (props: IAddSourceConfigProps) => {
    *   配置文件系统
    */
   const configFileSystem1 = (formVal: any) => {
-    console.log('configFileSystem1')
     return [
       <Form.Item
         key="filePath"
@@ -373,7 +365,6 @@ const AddSourceConfigForm = (props: IAddSourceConfigProps) => {
   }
 
   const handleChange = (value: any, item: any, data: any[]) => {
-    console.log('handleChange', value, item)
     const newDataSource = data.map((i: any) => {
       return {
         ...i,
@@ -382,7 +373,6 @@ const AddSourceConfigForm = (props: IAddSourceConfigProps) => {
           : {})
       }
     })
-    console.log('handleChange', newDataSource)
     props.setMappingData(newDataSource)
     // setMappingDbData(newDataSource)
   }
@@ -517,16 +507,13 @@ const AddSourceConfigForm = (props: IAddSourceConfigProps) => {
       if (!findFlag) {
         const data = props.columnNames
           .filter((i: any) => {
-            console.log('tem in usedNames', i, i in usedNames)
             if (usedNames.has(i)) {
               return false
             } else {
               return true
             }
           })
-          .pop()
-        console.log('data', data)
-        console.log('usedNames', usedNames)
+          .pop()     
         const mappingData = {
           columnName: data,
           name: item.name,
@@ -591,14 +578,12 @@ const AddSourceConfigForm = (props: IAddSourceConfigProps) => {
 
   const checkFilePath = (value: any) => {
     let path = value.filePath
-    console.log('checkFilePath', path)
     if (path.indexOf(':') < 5) {
       path = path.substring(path.indexOf(':') + 1)
     }
     const host = path.substring(0, path.indexOf(':'))
     const port = path.substring(path.indexOf(':') + 1, path.indexOf('/'))
     const filePath = path.substring(path.indexOf('/') + 1)
-    console.log('checkFilePath', host, port, filePath)
     if (host && port) {
       return {
         host,
@@ -613,12 +598,10 @@ const AddSourceConfigForm = (props: IAddSourceConfigProps) => {
   }
 
   const handleNextStep = () => {
-    console.log('handleNextStep', props.currentStep, props.selectedSourceType)
     switch (props.currentStep) {
       case 0:
         {
           const fieldValue = getFieldsValue(['dataSourceType'])
-          console.log('handleNextStep', fieldValue.dataSourceType)
           props.setSelectedSourceTypeAct(fieldValue.dataSourceType)
           props.addStep()
         }
@@ -635,9 +618,7 @@ const AddSourceConfigForm = (props: IAddSourceConfigProps) => {
                 ])
                 // 检验文件路径
                 const value = checkFilePath(fieldValue)
-                console.log('handleNextStep', value)
                 if (value) {
-                  console.log('handleNextStep file', fieldValue)
                   props.submit(fieldValue)
                 } else {
                   notification.error({

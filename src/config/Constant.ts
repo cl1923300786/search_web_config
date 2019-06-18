@@ -23,14 +23,26 @@ export const RESPONSE_DELAY: number = 10000
  */
 export const filedTypeOptions: IOPtion[] = [
   {
-    label: 'STRING',
-    value: 'STRING'
+    label: 'text',
+    value: 'text'
   }, {
-    label: 'BOOLEAN',
-    value: 'BOOLEAN'
+    label: 'keyword',
+    value: 'keyword'
   }, {
-    label: 'INT',
-    value: 'INT'
+    label: 'integer',
+    value: 'integer'
+  }, {
+    label: 'long',
+    value: 'long'
+  }, {
+    label: 'double',
+    value: 'double'
+  }, {
+    label: 'date',
+    value: 'date'
+  }, {
+    label: 'boolean',
+    value: 'boolean'
   }
 ]
 

@@ -144,7 +144,6 @@ const SourceConfig = () => {
       method: 'get'
     })
     if (res && res.status === 200 && res.data) {
-      console.log('fetchAllTemplates', res.data.result.records)
       setTemplates(res.data.result.records)
     } else {
       errorTips(
@@ -158,7 +157,6 @@ const SourceConfig = () => {
    * 获取配置数据源列表，分页查询配置的数据源
    */
   const getDataSourceList = async (param: any) => {
-    console.log('getDataSourceList', param)
     setLoading(true)
     const { res } = await requestFn(dispatch, state, {
       url: '/search/config/db/list',
@@ -167,7 +165,6 @@ const SourceConfig = () => {
       params: param
     })
     setLoading(false)
-    console.log('getDataSourceList', res)
     if (res && res.status === 200 && res.data) {
       setPageParams({
         ...pageParams,
@@ -296,7 +293,6 @@ const SourceConfig = () => {
   const saveDatabaseConfig1 = async (param: any) => {
     setLoading(true)
     const uri = `/search/config/${selectedSourceType}/save`
-    console.log('saveDatabaseConfig1', uri, param)
     const { res } = await requestFn(dispatch, state, {
       url: uri,
       api: API_URL,
@@ -306,7 +302,6 @@ const SourceConfig = () => {
       }
     })
     setLoading(false)
-    console.log('saveDatabaseConfig1 res111', res)
     if (res && res.status === 200 && res.data) {
       if (res.data.code === 0) {
         successTips('数据源配置成功')
@@ -382,8 +377,6 @@ const SourceConfig = () => {
       }
     })
     setLoading(false)
-    console.log('getTableNames', param)
-    console.log('getTableNames', res)
     if (res && res.status === 200 && res.data) {
       setTableNames(formatChoiceList(res.data.tables))
       addStep()
@@ -408,8 +401,6 @@ const SourceConfig = () => {
       }
     })
     setLoading(false)
-    console.log('getTableColumnNames', param)
-    console.log('getTableColumnNames', res)
     if (res && res.status === 200 && res.data.columns) {
       setColumnNames(formatColumnsList(res.data.columns))
       addStep()

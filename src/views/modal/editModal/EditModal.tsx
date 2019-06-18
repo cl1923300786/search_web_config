@@ -8,7 +8,8 @@ import {
   Table,
   Col,
   Select,
-  Popconfirm
+  Popconfirm,
+  notification
 } from 'antd'
 import styles from './EditModal.module.less'
 import {
@@ -19,6 +20,7 @@ import {
 } from '../../../config/Constant'
 import { FormComponentProps } from 'antd/lib/form'
 import { IModalProperty } from '../Modal'
+
 
 interface IEditableTableFormProps extends FormComponentProps {
   dataSource: any[]
@@ -388,7 +390,7 @@ const EditModalForm = (props: IEditModalProps) => {
           props.submit({ dataSource, ...fieldValue })
         } else if (props.title === '编辑模板') {
           props.submit({ dataSource, ...fieldValue, id: props.property.id })
-        }
+        }        
       }
     })
   }
@@ -402,7 +404,7 @@ const EditModalForm = (props: IEditModalProps) => {
       key: dataSource.length + 1,
       dataIndex: dataSource.length + 1,
       name: `name_${dataSource.length}`,
-      type: 'STRING',
+      type: 'text',
       remark: `remark_${dataSource.length}`
     }
     const newDataSource = [...dataSource, tmpData]
@@ -451,6 +453,7 @@ const EditModalForm = (props: IEditModalProps) => {
    * 渲染模板属性
    */
   const renderModalProperty = () => {
+    console.log(" props.property   ",props.property)
     if (props.type !== 'view') {
       return (
         <>

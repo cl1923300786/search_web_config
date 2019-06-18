@@ -300,40 +300,47 @@ const Modal = () => {
    * 新增/编辑模板模态窗，点击确定
    */
   const handleSubmit = async (params: any) => {
-    const url = params.id
+    const length = dataSource.filter((item:any)=>{
+      return item.templateName===params.templateName
+    }).length
+    if(length>0){
+      errorTips("模版名已存在","请修改之后在添加")
+    }else{
+      const url = params.id
       ? '/search/template/field/update'
       : '/search/template/field/save'
-    const indexField = params.dataSource.map((item: any) => {
-      return {
-        name: item.name,
-        remark: item.remark,
-        type: item.type
-      }
-    })
-    const { res } = await requestFn(dispatch, state, {
-      url,
-      api: API_URL,
-      method: 'post',
-      data: {
-        ...params,
-        indexField
-      }
-    })
-    console.log('handleSubmit:', res.data)
-    if (res && res.status === 200 && res.data) {
-      successTips(params.id ? '编辑词表成功' : '新增词表成功', '')
-      if (searchWord) {
-        getTemplates({ ...pageParams, q: searchWord })
+      const indexField = params.dataSource.map((item: any) => {
+        return {
+          name: item.name,
+          remark: item.remark,
+          type: item.type
+        }
+      })
+      const { res } = await requestFn(dispatch, state, {
+        url,
+        api: API_URL,
+        method: 'post',
+        data: {
+          ...params,
+          indexField
+        }
+      })
+      if (res && res.status === 200 && res.data) {
+        successTips(params.id ? '编辑模版成功' : '新增模版成功', '')
+        if (searchWord) {
+          getTemplates({ ...pageParams, q: searchWord })
+        } else {
+          getTemplates({ ...pageParams })
+        }
       } else {
-        getTemplates({ ...pageParams })
+        errorTips(
+          params.id ? '编辑模版失败' : '新增模版失败',
+          res && res.data && res.data.msg ? res.data.msg : '网络异常，请重试！'
+        )
       }
-    } else {
-      errorTips(
-        params.id ? '编辑词表失败' : '新增词表失败',
-        res && res.data && res.data.msg ? res.data.msg : '网络异常，请重试！'
-      )
+      handleCancel()
     }
-    handleCancel()
+    
   }
 
   const errorTips = (message = '', description = '') => {
