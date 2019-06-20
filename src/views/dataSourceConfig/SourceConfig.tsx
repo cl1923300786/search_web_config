@@ -38,13 +38,6 @@ const defaultDatabaseConfig = {
   tableName: ''
 }
 
-const defaultWordsForm = {
-  id: '',
-  word: '',
-  wordPos: '',
-  freshTime: moment().format('YYYY-MM-DD HH:mm:ss')
-}
-
 const defaultPageParams = {
   pageNo: 1,
   pageSize: 10,
@@ -410,7 +403,9 @@ const SourceConfig = () => {
     setLoading(false)
     console.log("getTableColumnNames",res)
     if (res && res.status === 200 && res.data.columns) {
-      setColumnNames(formatColumnsList(res.data.columns))
+      let array= formatColumnsList(res.data.columns)
+      array.push('')
+      setColumnNames(array)
       addStep()
     } else {
       errorTips(

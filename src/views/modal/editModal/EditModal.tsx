@@ -52,7 +52,7 @@ const EditableRow = ({ form, index, ...props }: any) => (
 const EditableFormRow = Form.create()(EditableRow)
 
 const EditableCellForm = (props: any) => {
-  const [editing, setEditing] = useState(false)
+  const [ editing, setEditing] = useState(false)
   const { getFieldDecorator, validateFields, resetFields } = props.form
 
   /**
@@ -349,6 +349,7 @@ const EditableTable = Form.create<IEditableTableFormProps>({
 const EditModalForm = (props: IEditModalProps) => {
   const [dataSource, setDataSource] = useState<any[]>([])
   const [showTips, setShowTips] = useState(false)
+  const [showTrimTips, setShowTrimTips] = useState(false)
   const {
     getFieldDecorator,
     resetFields,
@@ -357,6 +358,7 @@ const EditModalForm = (props: IEditModalProps) => {
   } = props.form
 
   useEffect(() => {
+    resetFields()
     // 关闭模态窗后，重置table中的数据源，避免行内表单校验提示不消失的问题
     if (props.visible) {
       setDataSource(props.fields)
@@ -384,8 +386,8 @@ const EditModalForm = (props: IEditModalProps) => {
     const datas = newDataSource.map((i: any, index: number) => {
       return {
         ...i,
-        key: index,
-        dataIndex: index
+        key: index+1,
+        dataIndex: index+1
       }
     })
     setDataSource(datas)
@@ -403,10 +405,20 @@ const EditModalForm = (props: IEditModalProps) => {
   /**
    * 保存时，校验模板字段中的字段名及含义是否为空
    */
-  const validDataSource = (data: any[]) => {
-    if (data.length === 0) {
+  const validDataSource = (data: any[], fieldValue:any) => {
+    console.log('validDataSource',fieldValue,fieldValue.templateName.trim())
+    if (fieldValue.templateName.trim().length===0){
+      setShowTrimTips(true)
       return false
     }
+    if (fieldValue.remark.trim().length===0){
+      setShowTrimTips(true)
+      return false
+    }
+    if (data.length === 0) {
+      setShowTrimTips(true)
+      return false
+    }   
     return data.every((i: any) => {
       return i.name !== '' && i.remark !== ''
     })
@@ -420,14 +432,17 @@ const EditModalForm = (props: IEditModalProps) => {
     validateFields((err: any) => {
       if (!err) {
         const fieldValue = getFieldsValue(['templateName', 'remark'])
-        if (validDataSource(dataSource)) {
+
+        if (validDataSource(dataSource, fieldValue)) {
+          const data= formatData(fieldValue)
           props.submit({
             dataSource,
-            ...fieldValue,
+            ...data,
             ...(props.title === '编辑模板' ? { id: props.property.id } : {})
           })
-          resetFields()
-          setShowTips(false)
+          // resetFields()
+          setShowTips(false) 
+          setShowTrimTips(false)
         } else {
           setShowTips(true)
         }
@@ -435,10 +450,22 @@ const EditModalForm = (props: IEditModalProps) => {
     })
   }
 
+  const formatData = (fieldValue:any)=>{
+    const data = {
+      templateName: fieldValue.templateName.trim(),
+      remark: fieldValue.remark.trim()
+    }
+    return data
+  }
+
+
   /**
    * 新增模板时，若没有添加字段，则显示错误信息
    */
   const renderErrorTips = () => {
+    if (showTrimTips){
+      return <span className={styles.errorTips}>不能输入空格</span>
+    }
     if (showTips) {
       return <span className={styles.errorTips}>请至少添加一个字段</span>
     }
@@ -538,13 +565,13 @@ const EditModalForm = (props: IEditModalProps) => {
         <>
           <Row gutter={20} className={styles.rowItem}>
             <Col span={4} className={styles.label}>
-              模板名
+              模板名： 
             </Col>
             <Col span={20}>{props.property.templateName}</Col>
           </Row>
           <Row gutter={20} className={styles.rowItem}>
             <Col span={4} className={styles.label}>
-              模板描述
+              模板描述： 
             </Col>
             <Col span={20}>{props.property.remark}</Col>
           </Row>
@@ -567,7 +594,7 @@ const EditModalForm = (props: IEditModalProps) => {
     const newDataSource = dataSource.map((i: any) => {
       return {
         ...i,
-        ...(record.key === i.key ? { type: value } : {})
+        ...(record.key === i.key ? { type: value.trim() } : {})
       }
     })
     setDataSource(newDataSource)

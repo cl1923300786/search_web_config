@@ -79,7 +79,9 @@ const AddSourceConfigForm = (props: IAddSourceConfigProps) => {
   ]
   // const [mappingDbData, setMappingDbData] = useState(props.dbNameMappingData)
   const { getFieldDecorator, getFieldsValue, validateFields } = props.form
-  const [dataSourceTypes, setDataSourceTypes] = useState<any[]>([])
+  const [ dataSourceTypes, setDataSourceTypes] = useState<any[]>([])
+  const [ duplicatedName, setDuplicatedName] = useState()
+  // const [ mappingData, setMappingData] = useState<any[]>([])
 
   const state: IState = useMappedState(
     useCallback((globalState: IState) => globalState, [])
@@ -367,16 +369,16 @@ const AddSourceConfigForm = (props: IAddSourceConfigProps) => {
   }
 
   const handleChange = (value: any, item: any, data: any[]) => {
-    const newDataSource = data.map((i: any) => {
+    // console.log('handleChange',mappingData,item,props.columnNames[value])
+    const newDataSource = props.dbNameMappingData.map((i: any) => {
       return {
         ...i,
-        ...(item.columnName === i.columnName
+        ...(item.name === i.name
           ? { columnName: props.columnNames[value] }
           : {})
       }
     })
     props.setMappingData(newDataSource)
-    // setMappingDbData(newDataSource)
   }
 
   const renderSelectComponents = (data: any[]) => {
@@ -503,6 +505,7 @@ const AddSourceConfigForm = (props: IAddSourceConfigProps) => {
             datas.push(mappingData)
             findFlag = true
             usedNames.add(i)
+            break
           }
         }
       }
@@ -514,8 +517,7 @@ const AddSourceConfigForm = (props: IAddSourceConfigProps) => {
             } else {
               return true
             }
-          })
-          .pop()     
+          }).pop()     
         const mappingData = {
           columnName: data,
           name: item.name,
@@ -526,6 +528,7 @@ const AddSourceConfigForm = (props: IAddSourceConfigProps) => {
         usedNames.add(data)
       }
     })
+    // setMappingData(datas)
     props.setMappingData(datas)
   }
 
@@ -639,12 +642,11 @@ const AddSourceConfigForm = (props: IAddSourceConfigProps) => {
                   'dbName',
                   'username',
                   'password'
-                ])
-                const password = fieldValue.password.trim()
-                if(password){
+                ])               
+                if(validateData(fieldValue)){
                   props.fetchTableNames(fieldValue)
                 }else{
-                  errorTips("密码输入格式不正确")
+                  errorTips("不能输入空格")
                 }
               }
             })
@@ -670,10 +672,11 @@ const AddSourceConfigForm = (props: IAddSourceConfigProps) => {
         }
         break
       case 4:
-        if(checkMappingData()){
+        const data= checkMappingData()
+        if(!data){
           props.addStep()
         }else{
-          errorTips("数据库字段选择重复","请重新选择")
+          errorTips(`数据库字段  --- ${data.columnName} ---- 选择重复`,"请重新选择1")
         }  
         break
       // case 4:
@@ -682,6 +685,24 @@ const AddSourceConfigForm = (props: IAddSourceConfigProps) => {
     }
   }
 
+  const validateData = (fieldValue:any)=>{
+    if(fieldValue.host.trim().length===0){
+      return false
+    }
+    if(fieldValue.port.trim().length===0){
+      return false
+    }
+    if(fieldValue.dbName.trim().length===0){
+      return false
+    }
+    if(fieldValue.username.trim().length===0){
+      return false
+    }
+    if(fieldValue.password.trim().length===0){
+      return false
+    }
+    return true
+  }
 
   const errorTips = (message = '', description = '') => {
     notification.error({
@@ -699,20 +720,22 @@ const AddSourceConfigForm = (props: IAddSourceConfigProps) => {
       }
     })
     const set=new Set()
-    const length = data.filter((item:any)=>{
+    const duplicateData = data.filter((item:any)=>{
       if (set.has(item.columnName)){
+        setDuplicatedName(item.columnName)
         return true
       }else{
         set.add(item.columnName)
         return false 
       }
-    }).length
-    if(length>0){
-      return false
-    }else{
+    })
+    if(duplicateData.length===0){
       props.setMappingData(data)
-      return true
+      return ''
+    }else{
+      return duplicateData[0]
     }
+     
   }
 
   const renderContent = (current: number, formVal: any) => {

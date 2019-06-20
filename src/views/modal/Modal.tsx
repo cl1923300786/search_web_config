@@ -136,9 +136,9 @@ const Modal = () => {
     const result = datas.map((item: any, index: number) => {
       return {
         ...item,
-        d: index,
-        key: index,
-        dataIndex: index
+        d: index+1,
+        key: index+1,
+        dataIndex: index+1
       }
     })
     setDataSource(result)
@@ -187,7 +187,8 @@ const Modal = () => {
       method: 'get'
     })
     if (res && res.status === 200 && res.data) {
-      freshDeteleAct(record)
+      // freshDeteleAct(record)
+      getTemplates({ ...pageParams })
     } else {
       errorTips(
         '删除模版失败',
@@ -199,18 +200,18 @@ const Modal = () => {
   /**
    *  删除后，界面数据更新
    */
-  const freshDeteleAct = (record: any) => {
-    const newDataSource = dataSource.filter((i: any) => record.id !== i.id)
-    const datas = newDataSource.map((i: any, index: number) => {
-      return {
-        ...i,
-        key: index + 1,
-        dataIndex: index + 1
-      }
-    })
-    setDataSource(datas)
-    setPageParams({ ...pageParams, total: pageParams.total - 1 })
-  }
+  // const freshDeteleAct = (record: any) => {
+  //   const newDataSource = dataSource.filter((i: any) => record.id !== i.id)
+  //   const datas = newDataSource.map((i: any, index: number) => {
+  //     return {
+  //       ...i,
+  //       key: index + 1,
+  //       dataIndex: index + 1
+  //     }
+  //   })
+  //   setDataSource(datas)
+  //   setPageParams({ ...pageParams, total: pageParams.total - 1 })
+  // }
 
   /**
    * 渲染操作列按钮
