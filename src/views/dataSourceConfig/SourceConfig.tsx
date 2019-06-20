@@ -353,8 +353,20 @@ const SourceConfig = () => {
     setSourceConfigvisible(true)
   }
 
+  /**
+   *  下一步
+   */
   const addStep = () => {
     setStep(step + 1)
+  }
+
+  /**
+   *   上一步
+   */
+  const goPrefixStep=()=>{
+     if(step!==0){
+       setStep(step-1)
+     }
   }
 
   /**
@@ -500,6 +512,7 @@ const SourceConfig = () => {
         submit={handleSubmit}
         currentStep={step}
         addStep={addStep}
+        goPrefixStep={goPrefixStep}
         getTableNames={getTableNames}
         selectedSourceType={selectedSourceType}
         setSelectedSourceTypeAct={setSelectedSourceTypeAct}
@@ -510,6 +523,7 @@ const SourceConfig = () => {
         selectedTemplate={selectedTemplate}
         dbNameMappingData={dbNameMappingData}
         setMappingData={setMappingData}
+        databaseConfig={databaseConfig}
       />
       <DataSourceViewModal
         visible={viewDataSourceModal}

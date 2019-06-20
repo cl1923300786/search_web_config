@@ -344,8 +344,6 @@ const Modal = () => {
         }
       })
 
-      
-
       const { res } = await requestFn(dispatch, state, {
         url,
         api: API_URL,
@@ -376,6 +374,9 @@ const Modal = () => {
       }     
   }
 
+  /**
+   *   映射es Mapping的方法
+   */
   const indexMappingData = (params: any)=>{
     const mappingArray=params.dataSource.map((item: any) => {
       if(item.type==='text'){

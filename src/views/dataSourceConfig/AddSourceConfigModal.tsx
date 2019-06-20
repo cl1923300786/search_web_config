@@ -38,6 +38,7 @@ interface IAddSourceConfigProps extends FormComponentProps {
   submit: (params: any) => void
   currentStep: number
   addStep: () => void
+  goPrefixStep:()=>void
   getTableNames: (params: any) => Promise<void>
   selectedSourceType: string
   setSelectedSourceTypeAct: (params: any) => void
@@ -48,6 +49,7 @@ interface IAddSourceConfigProps extends FormComponentProps {
   selectedTemplate: (id: any) => void
   dbNameMappingData: any[]
   setMappingData: (params: any) => void
+  databaseConfig: any
 }
 
 const AddSourceConfigForm = (props: IAddSourceConfigProps) => {
@@ -220,7 +222,8 @@ const AddSourceConfigForm = (props: IAddSourceConfigProps) => {
         })(
           <Select
             style={{ width: '100%' }}
-            placeholder="请选择数据库类型"
+            // placeholder="请选择数据库类型"
+            defaultValue="mysql"
             filterOption={false}>
             <Option key="mysql">mysql</Option>
           </Select>
@@ -229,31 +232,31 @@ const AddSourceConfigForm = (props: IAddSourceConfigProps) => {
       <Form.Item key="host" {...formItemLayout} label="host" required>
         {getFieldDecorator('host', {
           rules: [{ required: true, message: '请输入host' }],
-          initialValue: formVal.host
+          initialValue: props.databaseConfig.host
         })(<Input placeholder="请输入host" maxLength={defaultNameMaxLength}/>)}
       </Form.Item>,
       <Form.Item key="port" {...formItemLayout} label="端口" required>
         {getFieldDecorator('port', {
           rules: [{ required: true, message: '请输入端口' }],
-          initialValue: formVal.port
+          initialValue: props.databaseConfig.port
         })(<Input placeholder="请输入端口" maxLength={defaultNameMaxLength}/>)}
       </Form.Item>,
       <Form.Item key="dbName" {...formItemLayout} label="数据库名" required>
         {getFieldDecorator('dbName', {
           rules: [{ required: true, message: '请输入数据库名' }],
-          initialValue: formVal.dbName
+          initialValue: props.databaseConfig.dbName
         })(<Input placeholder="请输入数据库名" maxLength={defaultNameMaxLength}/>)}
       </Form.Item>,
       <Form.Item key="username" {...formItemLayout} label="用户名" required>
         {getFieldDecorator('username', {
           rules: [{ required: true, message: '请输入用户名' }],
-          initialValue: formVal.username
+          initialValue: props.databaseConfig.username
         })(<Input placeholder="请输入用户名" maxLength={defaultNameMaxLength}/>)}
       </Form.Item>,
       <Form.Item key="password" {...formItemLayout} label="密码" required>
         {getFieldDecorator('password', {
           rules: [{ required: true, message: '请输入密码' }],
-          initialValue: formVal.password
+          initialValue: props.databaseConfig.password
         })(<Input type="password" placeholder="请输入请输入密码" maxLength={defaultNameMaxLength}/>)}
       </Form.Item>
     ]
@@ -601,6 +604,16 @@ const AddSourceConfigForm = (props: IAddSourceConfigProps) => {
     }
   }
 
+  /**
+   *   点击上一步按钮
+   */
+  const handlePrefixStep = ()=>{
+    props.goPrefixStep()
+  }
+
+  /**
+   *   点击下一步按钮
+   */
   const handleNextStep = () => {
     switch (props.currentStep) {
       case 0:
@@ -762,6 +775,9 @@ const AddSourceConfigForm = (props: IAddSourceConfigProps) => {
             <Button htmlType="reset" onClick={handleCancel}>
               取消
             </Button>
+            <Button type="primary" onClick={handlePrefixStep}>
+              上一步
+            </Button>
             <Button type="primary" onClick={handleNextStep}>
               下一步
             </Button>
@@ -774,6 +790,9 @@ const AddSourceConfigForm = (props: IAddSourceConfigProps) => {
           <Col span={8} offset={16}>
             <Button htmlType="reset" onClick={handleCancel}>
               取消
+            </Button>
+            <Button type="primary" htmlType="submit" onClick={handlePrefixStep}>
+              上一步
             </Button>
             <Button type="primary" htmlType="submit" onClick={handleSubmit}>
               提交
