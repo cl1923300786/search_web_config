@@ -173,7 +173,7 @@ const Modal = () => {
       title: '操作',
       dataIndex: '',
       key: 'action',
-      render: (text: string, record: any) => renderActionButtons(record)
+      render: (record: any) => renderActionButtons(record)
     }
   ]
 
@@ -188,7 +188,7 @@ const Modal = () => {
     })
     if (res && res.status === 200 && res.data) {
       // freshDeteleAct(record)
-      getTemplates({ ...pageParams })
+      getTemplates({ ...defaultPageParams })
     } else {
       errorTips(
         '删除模版失败',
@@ -378,7 +378,7 @@ const Modal = () => {
   const indexMappingData = (params: any)=>{
     const mappingArray=params.dataSource.map((item: any) => {
       if(item.type==='text'){
-        return [item.name, {
+        return [item.name.trim(), {
           type: item.type,
           analyzer: "ik_smart",
           search_analyzer: "ik_smart"
@@ -434,7 +434,7 @@ const Modal = () => {
   /**
    * 列表翻页
    */
-  const onPageChange = (pageNo: number, size: number | undefined) => {
+  const onPageChange = (pageNo: number) => {
     const params = {
       ...pageParams,
       pageNo,

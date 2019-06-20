@@ -84,7 +84,8 @@ const WordsManagement = () => {
       dataIndex: 'action',
       key: 'action',
       width: '14%',
-      render: (text: string, record: any) => (
+      //@ts-ignore
+      render: (text:String,record: any) => (
         <div>
           <a style={{ color: '#1890ff' }} onClick={() => editWord(record)}>
             编辑
@@ -408,7 +409,7 @@ const WordsManagement = () => {
   /**
    * 列表翻页
    */
-  const onPageChange = (pageNumber: number, size: number | undefined) => {
+  const onPageChange = (pageNumber: number) => {
     setLoading(true)
     const params = {
       ...pageParams,

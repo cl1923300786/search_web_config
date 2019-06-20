@@ -253,7 +253,7 @@ const User = () => {
   /**
    * 列表翻页
    */
-  const onPageChange = (pageNumber: number, size: number | undefined) => {
+  const onPageChange = (pageNumber: number) => {
     setLoading(true)
     const params = {
       ...pageParams,

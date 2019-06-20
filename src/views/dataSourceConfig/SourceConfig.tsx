@@ -38,6 +38,14 @@ const defaultDatabaseConfig = {
   tableName: ''
 }
 
+const defaultViewItem = {
+  ...defaultDatabaseConfig,
+  fieldTemplate:{
+    templateName: ''
+  },
+  mappingIndex: []
+}
+
 const defaultPageParams = {
   pageNo: 1,
   pageSize: 10,
@@ -55,13 +63,16 @@ const SourceConfig = () => {
   const [databaseConfig, setDatabaseConfig] = useState(defaultDatabaseConfig)
   const [selectedSourceType, setSelectedSourceType] = useState('db')
   const [viewDataSourceModal, setViewDataSourceModal] = useState(false)
-  const [itemForm, setItemForm] = useState(defaultDatabaseConfig)
+  const [itemForm, setItemForm] = useState(defaultViewItem)
   const [searchedWord, setSearchedWord] = useState()
   const [templates, setTemplates] = useState()
   const [selectTemplate, setSelectTemplate] = useState()
   const [columnNames, setColumnNames] = useState()
   const [selectTableName, setSelectTableName] = useState()
   const [dbNameMappingData, setDbNameMappingData] = useState<any[]>([])
+  const [returnWholeData, setReturnWholeData] = useState<any[]>([])
+
+
 
   const state: IState = useMappedState(
     useCallback((globalState: IState) => globalState, [])
@@ -100,6 +111,12 @@ const SourceConfig = () => {
       width: 200
     },
     {
+      title: '模版名',
+      dataIndex: 'templateName',
+      key: 'templateName',
+      width: 200
+    },
+    {
       title: '发布时间',
       dataIndex: 'createTime',
       key: 'createTime',
@@ -110,7 +127,8 @@ const SourceConfig = () => {
       dataIndex: 'action',
       key: 'action',
       width: 100,
-      render: ( record: any) => (
+      // @ts-ignore
+      render: (text: string, record: any) => (
         <div>
           <span
             style={{ color: '#1890ff', cursor: 'pointer' }}
@@ -158,7 +176,9 @@ const SourceConfig = () => {
       params: param
     })
     setLoading(false)
+    console.log('getDataSourceList',res)
     if (res && res.status === 200 && res.data) {
+      setReturnWholeData(res.data.result.records)
       setPageParams({
         ...pageParams,
         total: res.data.result.totalCount,
@@ -181,7 +201,8 @@ const SourceConfig = () => {
       return {
         ...i,
         key: i.id,
-        dataIndex: i.id
+        dataIndex: i.id,
+        templateName: i.fieldTemplate?i.fieldTemplate.templateName:''
       }
     })
     setData(arr)
@@ -206,7 +227,13 @@ const SourceConfig = () => {
   /**
    * 查看数据源
    */
+
   const viewDataSource = (item: any) => {
+    console.log('viewDataSource',item)
+ // @ts-ignore
+    const data= returnWholeData.filter((row:any)=>{
+      return row.id===item.id
+    })
     setItemForm(item)
     setViewDataSourceModal(true)
   }

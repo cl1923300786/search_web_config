@@ -75,7 +75,7 @@
     "webpack-dev-server": "3.2.1",
     "webpack-manifest-plugin": "2.0.4",
     "workbox-webpack-plugin": "4.2.0",
-    "caniuse-lite": "1.0.30000975"
+    "caniuse-lite": "1.0.30000974"
   },
   "scripts": {
     "start": "react-app-rewired start",
@@ -93,6 +93,10 @@
       "not op_mini all"
     ],
     "development": []
+  },
+  "resolutions": {
+    "browserslist": "4.6.3",
+    "caniuse-lite": "1.0.30000974"
   },
   "jest": {
     "collectCoverageFrom": [
@@ -154,5 +158,5 @@
     "tslint-plugin-prettier": "^2.0.1",
     "tslint-react": "^4.0.0"
   },
-  "proxy": "http://10.168.3.247:8082"
+  "proxy": "http://10.168.3.216:8082"
 }

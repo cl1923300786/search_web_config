@@ -1,8 +1,5 @@
-import React, { useState, useCallback } from 'react'
-import { Row, Col, Form, Input, Button, Icon, notification } from 'antd'
-import { useDispatch, IState, useMappedState } from '../../store/Store'
-import { Dispatch } from 'redux'
-import Actions from '../../store/Actions'
+import React, { useState } from 'react'
+import { Row, Col, Form, Input, Button, Icon } from 'antd'
 import styles from './Login.module.less'
 import { setStore } from '../../utils/util'
 import logo from '../../assets/images/logo.png'
@@ -18,7 +15,7 @@ const LoginForm = (props: any) => {
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    validateFields((err: any, values: any) => {
+    validateFields((err: any) => {
       if (!err) {
         const fieldValue = getFieldsValue(['userName', 'password'])
         setLoading(true)

@@ -133,7 +133,7 @@ const EsSearch = () => {
       dataIndex: 'action',
       key: 'action',
       width: '14%',
-      render: (text: string, record: any) => (
+      render: (record: any) => (
         <div>
           <a
             style={{ color: 'rgba(56, 105, 255, .45)' }}
@@ -358,7 +358,7 @@ const EsSearch = () => {
   /**
    * 列表翻页
    */
-  const onPageChange = (pageNumber: number, size: number | undefined) => {
+  const onPageChange = (pageNumber: number) => {
     console.log('???', pageNumber)
     setLoading(true)
     const params = {

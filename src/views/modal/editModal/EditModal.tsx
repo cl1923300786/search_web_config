@@ -231,7 +231,7 @@ const EditableTableForm = (props: IEditableTableFormProps) => {
     title: '操作',
     dataIndex: 'operation',
     width: 100,
-    render: (text: any, record: any) => (
+    render: (record: any) => (
       <Popconfirm
         title="确定要删除这一行吗?"
         onConfirm={() => handleDelete(record.key)}>
@@ -432,11 +432,11 @@ const EditModalForm = (props: IEditModalProps) => {
     validateFields((err: any) => {
       if (!err) {
         const fieldValue = getFieldsValue(['templateName', 'remark'])
-
         if (validDataSource(dataSource, fieldValue)) {
-          const data= formatData(fieldValue)
+          const data = formatData(fieldValue)
+          const datas = formatDataSource(dataSource)
           props.submit({
-            dataSource,
+            dataSource: datas,
             ...data,
             ...(props.title === '编辑模板' ? { id: props.property.id } : {})
           })
@@ -446,6 +446,16 @@ const EditModalForm = (props: IEditModalProps) => {
         } else {
           setShowTips(true)
         }
+      }
+    })
+  }
+
+  const formatDataSource = (datas:any[])=>{
+    return datas.map((item:any)=>{
+      return {
+        ...item,
+        name: item.name.trim(),
+        remark: item.remark.trim()
       }
     })
   }

@@ -44,7 +44,7 @@ const UserModalForm = (props: any) => {
   }
 
   const handleSubmit = () => {
-    props.form.validateFields((err: any, values: any) => {
+    props.form.validateFields((err: any) => {
       if (!err) {
         const fieldValue = getFieldsValue(['name', 'birthDay', 'city'])
         props.submit(fieldValue)

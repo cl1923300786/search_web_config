@@ -46,7 +46,7 @@ const ContentParseForm = (props: IContentParseProps) => {
   }
 
   const parseContent = () => {
-    props.form.validateFields((err: any, values: any) => {
+    props.form.validateFields((err: any) => {
       if (!err) {
         const fieldValue = getFieldsValue(['content'])
         props.parseText(fieldValue)
