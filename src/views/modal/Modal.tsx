@@ -343,13 +343,17 @@ const Modal = () => {
           type: item.type
         }
       })
+
+      
+
       const { res } = await requestFn(dispatch, state, {
         url,
         api: API_URL,
         method: 'post',
         data: {
           ...params,
-          indexField
+          indexField,
+          indexMappings: indexMappingData(params)
         }
       })
       if (res && res.status === 200 && res.data) {
@@ -370,6 +374,29 @@ const Modal = () => {
           res && res.data && res.data.msg ? res.data.msg : '网络异常，请重试！'
         )
       }     
+  }
+
+  const indexMappingData = (params: any)=>{
+    const mappingArray=params.dataSource.map((item: any) => {
+      if(item.type==='text'){
+        return [item.name, {
+          type: item.type,
+          analyzer: "ik_smart",
+          search_analyzer: "ik_smart"
+        }]
+      }else{
+        return [item.name, {
+          type: item.type
+        }]
+      }
+    })
+    const mappingMap=new Map(mappingArray)
+    const mappingData={
+      _doc: { 
+        properties: Object.fromEntries(mappingMap)
+      }
+    }
+    return mappingData
   }
 
   const errorTips = (message = '', description = '') => {
