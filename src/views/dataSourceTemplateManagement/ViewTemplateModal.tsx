@@ -23,25 +23,7 @@ const ViewTemplateForm = (props: IViewTemplateProps) => {
     }
   }
 
-  const columns = [
-    {
-      title: '字段名',
-      dataIndex: 'fieldName',
-      key: 'fieldName'
-    },
-    {
-      title: '字段类型',
-      dataIndex: 'fieldType',
-      key: 'fieldType'
-    },
-    {
-      title: '字段含义',
-      dataIndex: 'fieldInterpreter',
-      key: 'fieldInterpreter'
-    }
-  ]
-
-  const wordTypes = ['string', 'numeric', 'date', 'boolean']
+  
 
   const renderFooter = () => {
     return (
@@ -61,7 +43,7 @@ const ViewTemplateForm = (props: IViewTemplateProps) => {
   }
 
   const handleSubmit = () => {
-    props.form.validateFields((err: any, values: any) => {
+    props.form.validateFields((err: any) => {
       if (!err) {
         const fieldValue = getFieldsValue([
           'ip',

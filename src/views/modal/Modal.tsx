@@ -136,9 +136,9 @@ const Modal = () => {
     const result = datas.map((item: any, index: number) => {
       return {
         ...item,
-        d: index+1,
-        key: index+1,
-        dataIndex: index+1
+        d: index + 1,
+        key: index + 1,
+        dataIndex: index + 1
       }
     })
     setDataSource(result)
@@ -305,73 +305,71 @@ const Modal = () => {
    * 新增/编辑模板模态窗，点击确定
    */
   const handleSubmit = async (params: any) => {
-    const set =new Set()
-    const data = params.dataSource.filter((item:any)=>{
-      if(set.has(item.name)){
+    const set = new Set()
+    const data = params.dataSource.filter((item: any) => {
+      if (set.has(item.name)) {
         return true
-      }else{
+      } else {
         set.add(item.name)
       }
     }).length
-    if(data>0){
-      errorTips("模版字段重复","需修改")
+    if (data > 0) {
+      errorTips('模版字段重复', '需修改')
       return
     }
-    if(modalProperty.templateName!=params.templateName){
-      const length = dataSource.filter((item:any)=>{
-        return item.templateName===params.templateName
+    if (modalProperty.templateName !== params.templateName) {
+      const length = dataSource.filter((item: any) => {
+        return item.templateName === params.templateName
       }).length
-      if(length>0){
-        errorTips("模版名已存在","需修改")
+      if (length > 0) {
+        errorTips('模版名已存在', '需修改')
         return
       }
     }
-    
+
     submitData(params)
-    
   }
 
-
-  const submitData = async (params: any)=>{
+  const submitData = async (params: any) => {
     const url = params.id
       ? '/search/template/field/update'
       : '/search/template/field/save'
-      const indexField = params.dataSource.map((item: any) => {
-        return {
-          name: item.name,
-          remark: item.remark,
-          type: item.type
-        }
-      })
+    const indexField = params.dataSource.map((item: any) => {
+      return {
+        name: item.name,
+        remark: item.remark,
+        type: item.type
+      }
+    })
+    const { res } = await requestFn(dispatch, state, {
+      url,
+      api: API_URL,
+      method: 'post',
+      data: {
+        ...params,
+        indexField,
+        indexMappings: indexMappingData(params)
+      }
+    })
+    if (res && res.status === 200 && res.data) {
+      if (res.data.code === 0) {
+        successTips(params.id ? '编辑模版成功' : '新增模版成功', '')
+        if (searchWord) {
+          getTemplates({ ...pageParams, q: searchWord })
+        } else {
+          getTemplates({ ...pageParams })
 
-      const { res } = await requestFn(dispatch, state, {
-        url,
-        api: API_URL,
-        method: 'post',
-        data: {
-          ...params,
-          indexField,
-          indexMappings: indexMappingData(params)
         }
-      })
-      if (res && res.status === 200 && res.data) {
-        if (res.data.code==0){
-          successTips(params.id ? '编辑模版成功' : '新增模版成功', '')
-          if (searchWord) {
-            getTemplates({ ...pageParams, q: searchWord })
-          } else {
-            getTemplates({ ...pageParams })
-          }
-          handleCancel()
-        }else{
-          errorTips(res.data.msg[0])
-        }       
+        handleCancel()
       } else {
-        errorTips(
-          params.id ? '编辑模版失败' : '新增模版失败',
-          res && res.data && res.data.msg ? res.data.msg : '网络异常，请重试！'
-        )
-      }     
+        errorTips(res.data.msg[0])
+      }
+    } else {
+      errorTips(
+        params.id ? '编辑模版失败' : '新增模版失败',
+        res && res.data && res.data.msg ? res.data.msg : '网络异常，请重试！'
+      )
+    }
   }
 
   /**
@@ -391,9 +389,9 @@ const Modal = () => {
         }]
       }
     })
-    const mappingMap=new Map(mappingArray)
-    const mappingData={
-      _doc: { 
+    const mappingMap = new Map(mappingArray)
+    const mappingData = {
+      _doc: {
         properties: Object.fromEntries(mappingMap)
       }
     }

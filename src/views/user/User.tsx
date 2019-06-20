@@ -71,7 +71,7 @@ const User = () => {
       dataIndex: 'action',
       key: 'action',
       width: '14%',
-      render: (text: string, record: any) => (
+      render: (record: any) => (
         <div>
           <a
             style={{ color: 'rgba(0, 0, 0, .45)' }}

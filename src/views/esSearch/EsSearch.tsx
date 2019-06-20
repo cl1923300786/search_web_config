@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useCallback } from 'react'
-import { Table, notification, Button, Divider, Modal, Row, Col } from 'antd'
+import React, { useState, useCallback } from 'react'
+import { Table, notification } from 'antd'
 import { requestFn } from '../../utils/request'
 import { useDispatch, IState, useMappedState } from '../../store/Store'
 import { Dispatch } from 'redux'
@@ -58,8 +58,8 @@ const defaultPageParams = {
 const EsSearch = () => {
   const [loading, setLoading] = useState(false)
   const [visible, setVisible] = useState(false)
-  const [configForm, setConfigForm] = useState(defaultConfigForm)
-  const [modalTitle, setModalTitle] = useState('添加数据源')
+  const [configForm] = useState(defaultConfigForm)
+  const [modalTitle] = useState('添加数据源')
   const [pageParams, setPageParams] = useState(defaultPageParams)
   const [searchedWord, setSearchedWord] = useState()
   const [itemForm, setItemForm] = useState(searchedItemForm)
@@ -353,14 +353,6 @@ const EsSearch = () => {
       name: params.name
     }
     saveDatabaseConfig(param)
-  }
-
-  /**
-   * 新增数据源配置
-   */
-  const addDataBaseConfig = () => {
-    setConfigForm(defaultConfigForm)
-    setVisible(true)
   }
 
   /**

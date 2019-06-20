@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react'
-import { Table, notification, Button, Divider, Modal, Row, Col } from 'antd'
+import { Table, notification, Button, Row, Col } from 'antd'
 import { requestFn } from '../../utils/request'
 import { useDispatch, IState, useMappedState } from '../../store/Store'
 import { Dispatch } from 'redux'
@@ -49,7 +49,7 @@ const SourceConfig = () => {
   const [loading, setLoading] = useState(false)
   const [sourceConfigvisible, setSourceConfigvisible] = useState(false)
   const [pageParams, setPageParams] = useState(defaultPageParams)
-  const [configForm, setConfigForm] = useState(defaultDataSourceConfigForm)
+  const [configForm] = useState(defaultDataSourceConfigForm)
   const [step, setStep] = useState(0)
   const [tableNames, setTableNames] = useState<any[]>([])
   const [databaseConfig, setDatabaseConfig] = useState(defaultDatabaseConfig)
@@ -110,7 +110,7 @@ const SourceConfig = () => {
       dataIndex: 'action',
       key: 'action',
       width: 100,
-      render: (text: string, record: any) => (
+      render: ( record: any) => (
         <div>
           <span
             style={{ color: '#1890ff', cursor: 'pointer' }}
@@ -325,7 +325,7 @@ const SourceConfig = () => {
   /**
    * 列表翻页
    */
-  const onPageChange = (pageNo: number, size: number | undefined) => {
+  const onPageChange = (pageNo: number) => {
     setLoading(true)
     const params = {
       ...pageParams,

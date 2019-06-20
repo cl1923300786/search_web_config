@@ -19,8 +19,7 @@ import styles from './WordsManage.module.less'
 import WordsModal from './WordsModal'
 import WordsModalEdit from './WordsModalEdit'
 import {
-  SearchComponent,
-  IParams
+  SearchComponent
 } from '../../components/search/SearchComponent'
 
 import { API_URL } from '../../config/Constant'

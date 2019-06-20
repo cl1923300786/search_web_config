@@ -1,8 +1,6 @@
 import React from 'react'
-import { Row, Input, Form, Modal, Button, Select } from 'antd'
+import { Row, Input, Form, Modal, Button } from 'antd'
 import { FormComponentProps } from 'antd/lib/form'
-
-const { Option } = Select
 
 interface IAddTemplateProps extends FormComponentProps {
   visible: boolean
@@ -45,7 +43,7 @@ const AddTemplateForm = (props: IAddTemplateProps) => {
   }
 
   const handleSubmit = () => {
-    props.form.validateFields((err: any, values: any) => {
+    props.form.validateFields((err: any) => {
       if (!err) {
         const fieldValue = getFieldsValue([
           'ip',
@@ -60,25 +58,9 @@ const AddTemplateForm = (props: IAddTemplateProps) => {
     })
   }
 
-  const wordTypes = ['string', 'numeric', 'date', 'boolean']
+  
 
-  const columns = [
-    {
-      title: '字段名',
-      dataIndex: 'fieldName',
-      key: 'fieldName'
-    },
-    {
-      title: '字段类型',
-      dataIndex: 'fieldType',
-      key: 'fieldType'
-    },
-    {
-      title: '字段含义',
-      dataIndex: 'fieldInterpreter',
-      key: 'fieldInterpreter'
-    }
-  ]
+  
 
   return (
     <>

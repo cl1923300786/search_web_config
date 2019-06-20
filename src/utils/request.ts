@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { API_URL, REQUEST_TIME_OUT } from '../config/Constant'
+import {  REQUEST_TIME_OUT } from '../config/Constant'
 import Qs from 'qs'
 import Actions from '../store/Actions'
 import { IState } from '../store/Store'

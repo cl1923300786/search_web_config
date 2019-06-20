@@ -1,6 +1,6 @@
 import React from 'react'
-import { Row, Input, Form, Modal, Button, Col } from 'antd'
-import moment from 'moment'
+import { Row, Form, Modal, Button, Col } from 'antd'
+
 import styles from './Words.module.less'
 import TextArea from 'antd/lib/input/TextArea'
 import { FormComponentProps } from 'antd/lib/form'
@@ -43,15 +43,6 @@ const ContentParseForm = (props: IContentParseProps) => {
   const handleCancel = () => {
     resetFields()
     props.close()
-  }
-
-  const handleSubmit = () => {
-    props.form.validateFields((err: any, values: any) => {
-      if (!err) {
-        const fieldValue = getFieldsValue(['word', 'wordPos', 'freshTime'])
-        console.log(fieldValue)
-      }
-    })
   }
 
   const parseContent = () => {

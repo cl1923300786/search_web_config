@@ -1,8 +1,8 @@
-import Home from '../views/home/Home'
-import EsSearch from '../views/esSearch/EsSearch'
+// import Home from '../views/home/Home'
+// import EsSearch from '../views/esSearch/EsSearch'
 import SourceConfig from '../views/dataSourceConfig/SourceConfig'
 import WordsManagement from '../views/wordsManagement/WordsManage'
-import Words from '../views/words/Words'
+// import Words from '../views/words/Words'
 import { Modal } from '../views/modal/Modal'
 const routes = [
   // {

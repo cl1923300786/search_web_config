@@ -87,7 +87,7 @@ const DataSourceTemplate = () => {
       dataIndex: 'action',
       key: 'action',
       width: '14%',
-      render: (text: string, record: any) => (
+      render: ( record: any) => (
         <div>
           <a
             style={{ color: 'rgba(0, 0, 0, .45)' }}
@@ -388,7 +388,7 @@ const DataSourceTemplate = () => {
   /**
    * 列表翻页
    */
-  const onPageChange = (pageNumber: number, size: number | undefined) => {
+  const onPageChange = (pageNumber: number) => {
     setLoading(true)
     const params = {
       ...pageParams,

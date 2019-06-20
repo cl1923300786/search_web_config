@@ -24,8 +24,6 @@ const EditTemplateForm = (props: IEditTemplateProps) => {
     }
   }
 
-  const wordTypes = ['string', 'numeric', 'date', 'boolean']
-
   const renderFooter = () => {
     return (
       <Row>
@@ -44,7 +42,7 @@ const EditTemplateForm = (props: IEditTemplateProps) => {
   }
 
   const handleSubmit = () => {
-    validateFields((err: any, values: any) => {
+    validateFields((err: any) => {
       if (!err) {
         const fieldValue = getFieldsValue([
           'ip',

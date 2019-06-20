@@ -9,7 +9,6 @@ import {
   Steps,
   Col,
   notification,
-  Radio,
   Popover
 } from 'antd'
 
@@ -82,7 +81,7 @@ const AddSourceConfigForm = (props: IAddSourceConfigProps) => {
   // const [mappingDbData, setMappingDbData] = useState(props.dbNameMappingData)
   const { getFieldDecorator, getFieldsValue, validateFields } = props.form
   const [ dataSourceTypes, setDataSourceTypes] = useState<any[]>([])
-  const [ duplicatedName, setDuplicatedName] = useState()
+  // const [ duplicatedName, setDuplicatedName] = useState()
   // const [ mappingData, setMappingData] = useState<any[]>([])
 
   const state: IState = useMappedState(
@@ -181,7 +180,7 @@ const AddSourceConfigForm = (props: IAddSourceConfigProps) => {
   /**
    *   first step
    */
-  const renderFirstStep = (formVal: any) => {
+  const renderFirstStep = () => {
     return [
       <Form.Item key="dataSourceType" {...formItemLayout} label="数据源类型">
         {getFieldDecorator('dataSourceType', {
@@ -296,7 +295,7 @@ const AddSourceConfigForm = (props: IAddSourceConfigProps) => {
    *   third step
    *   目前只针对MySQL配置
    */
-  const renderThirdStep = (formVal: any) => {
+  const renderThirdStep = () => {
     return [
       <Form.Item key="tableName" {...formItemLayout} label="数据库表名">
         {getFieldDecorator('tableName', {
@@ -346,7 +345,7 @@ const AddSourceConfigForm = (props: IAddSourceConfigProps) => {
   /**
    *    数据库第4步，选择模版
    */
-  const renderFourStep = (formVal: any) => {
+  const renderFourStep = () => {
     return (
       <>
         <Row gutter={20} className={styles.rowItem}>
@@ -371,7 +370,7 @@ const AddSourceConfigForm = (props: IAddSourceConfigProps) => {
     )
   }
 
-  const handleChange = (value: any, item: any, data: any[]) => {
+  const handleChange = (value: any, item: any) => {
     // console.log('handleChange',mappingData,item,props.columnNames[value])
     const newDataSource = props.dbNameMappingData.map((i: any) => {
       return {
@@ -395,7 +394,7 @@ const AddSourceConfigForm = (props: IAddSourceConfigProps) => {
               })(
                 <Select
                   style={{ width: '100%' }}
-                  onChange={(value: any) => handleChange(value, item, data)}>
+                  onChange={(value: any) => handleChange(value, item)}>
                   {renderOptions(props.columnNames)}
                 </Select>
               )}
@@ -422,7 +421,7 @@ const AddSourceConfigForm = (props: IAddSourceConfigProps) => {
   /**
    *    数据库第5步，模板字段匹配
    */
-  const renderFiveStep = (formVal: any) => {
+  const renderFiveStep = () => {
     return (
       <>
         <Row gutter={20} className={styles.rowItem}>
@@ -440,7 +439,7 @@ const AddSourceConfigForm = (props: IAddSourceConfigProps) => {
     )
   }
 
-  const renderSixStep = (formVal: any) => {
+  const renderSixStep = () => {
     return (
       <>
         <Row gutter={6} className={styles.rowItem}>
@@ -626,7 +625,7 @@ const AddSourceConfigForm = (props: IAddSourceConfigProps) => {
       case 1:
         {
           if (props.selectedSourceType === 'file') {
-            validateFields((err: any, values: any) => {
+            validateFields((err: any) => {
               if (!err) {
                 const fieldValue = getFieldsValue([
                   'filePath',
@@ -646,7 +645,7 @@ const AddSourceConfigForm = (props: IAddSourceConfigProps) => {
               }
             })
           } else {
-            validateFields((err: any, values: any) => {
+            validateFields((err: any) => {
               if (!err) {
                 const fieldValue = getFieldsValue([
                   'dbType',
@@ -668,7 +667,7 @@ const AddSourceConfigForm = (props: IAddSourceConfigProps) => {
         break
       case 2:
         {
-          validateFields((err: any, values: any) => {
+          validateFields((err: any) => {
             if (!err) {
               const fieldValue = getFieldsValue(['tableName'])
               props.selectedTableName(fieldValue)
@@ -735,7 +734,7 @@ const AddSourceConfigForm = (props: IAddSourceConfigProps) => {
     const set=new Set()
     const duplicateData = data.filter((item:any)=>{
       if (set.has(item.columnName)){
-        setDuplicatedName(item.columnName)
+        // setDuplicatedName(item.columnName)
         return true
       }else{
         set.add(item.columnName)
@@ -753,17 +752,17 @@ const AddSourceConfigForm = (props: IAddSourceConfigProps) => {
 
   const renderContent = (current: number, formVal: any) => {
     if (current === 0) {
-      return renderFirstStep(formVal)
+      return renderFirstStep()
     } else if (current === 1) {
       return renderSecondStep(formVal)
     } else if (current === 2) {
-      return renderThirdStep(formVal)
+      return renderThirdStep()
     } else if (current === 3) {
-      return renderFourStep(formVal)
+      return renderFourStep()
     } else if (current === 4) {
-      return renderFiveStep(formVal)
+      return renderFiveStep()
     } else if (current === 5) {
-      return renderSixStep(formVal)
+      return renderSixStep()
     }
   }
 

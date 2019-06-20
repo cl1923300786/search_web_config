@@ -43,7 +43,7 @@ const EsConfigModalForm = (props: IEsConfigProps) => {
   }
 
   const handleSubmit = () => {
-    props.form.validateFields((err: any, values: any) => {
+    props.form.validateFields((err: any) => {
       if (!err) {
         const fieldValue = getFieldsValue([
           'ip',

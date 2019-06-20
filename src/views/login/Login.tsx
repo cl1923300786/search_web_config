@@ -1,6 +1,5 @@
 import React, { useState, useCallback } from 'react'
 import { Row, Col, Form, Input, Button, Icon, notification } from 'antd'
-import { requestFn } from '../../utils/request'
 import { useDispatch, IState, useMappedState } from '../../store/Store'
 import { Dispatch } from 'redux'
 import Actions from '../../store/Actions'
@@ -15,10 +14,6 @@ interface IParams {
 
 const LoginForm = (props: any) => {
   const [loading, setLoading] = useState(false)
-  const state: IState = useMappedState(
-    useCallback((globalState: IState) => globalState, [])
-  )
-  const dispatch: Dispatch<Actions> = useDispatch()
   const { getFieldDecorator, getFieldsValue, validateFields } = props.form
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -57,6 +52,7 @@ const LoginForm = (props: any) => {
   // }
 
   const LoginRequest = (fieldValue: IParams) => {
+    console.log('LoginRequest',fieldValue)
     setStore('user', 'user')
     setStore('token', 'token')
     props.history.push('/')
@@ -90,12 +86,7 @@ const LoginForm = (props: any) => {
   //   })
   }
 
-  const successTips = (message = '', description = '') => {
-    notification.success({
-      message,
-      description
-    })
-  }
+  
 
   return (
     <Row className={styles.loginContainer}>

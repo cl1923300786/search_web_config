@@ -9,7 +9,7 @@ import zh_CN from 'antd/lib/locale-provider/zh_CN'
 import moment from 'moment'
 // tslint:disable-next-line:no-import-side-effect
 import 'moment/locale/zh-cn'
-import Mock from './mock/mock'
+// import Mock from './mock/mock'
 
 moment.locale('zh-cn')
 // mock请求启动，若有接口，可注释此行。请求代理在package.json中proxy字段
