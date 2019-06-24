@@ -358,7 +358,6 @@ const Modal = () => {
           getTemplates({ ...pageParams, q: searchWord })
         } else {
           getTemplates({ ...pageParams })
-
         }
         handleCancel()
       } else {
@@ -375,18 +374,24 @@ const Modal = () => {
   /**
    *   映射es Mapping的方法
    */
-  const indexMappingData = (params: any)=>{
-    const mappingArray=params.dataSource.map((item: any) => {
-      if(item.type==='text'){
-        return [item.name.trim(), {
-          type: item.type,
-          analyzer: "ik_smart",
-          search_analyzer: "ik_smart"
-        }]
-      }else{
-        return [item.name, {
-          type: item.type
-        }]
+  const indexMappingData = (params: any) => {
+    const mappingArray = params.dataSource.map((item: any) => {
+      if (item.type === 'text') {
+        return [
+          item.name.trim(),
+          {
+            type: item.type,
+            analyzer: 'ik_smart',
+            search_analyzer: 'ik_smart'
+          }
+        ]
+      } else {
+        return [
+          item.name,
+          {
+            type: item.type
+          }
+        ]
       }
     })
     const mappingMap = new Map(mappingArray)

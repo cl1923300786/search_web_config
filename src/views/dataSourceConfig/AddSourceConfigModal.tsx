@@ -11,21 +11,30 @@ import {
   notification,
   Popover
 } from 'antd'
-
 import styles from './AddSourceConfig.module.less'
 import { requestFn } from '../../utils/request'
 import { useDispatch, IState, useMappedState } from '../../store/Store'
 import { Dispatch } from 'redux'
 import Actions from '../../store/Actions'
-
-import { API_URL } from '../../config/Constant'
+import { API_URL, defaultNameMaxLength } from '../../config/Constant'
 import { FormComponentProps } from 'antd/lib/form'
-import {
-  defaultNameMaxLength
-} from '../../config/Constant'
 
 const Option = Select.Option
 const Step = Steps.Step
+
+/**
+ * 处理ant-design的Select组件定制回填内容功能在TypeScript下的类型定义
+ *
+ * ant-design bug
+ *
+ * https://github.com/ant-design/ant-design/issues/17087
+ */
+declare module 'antd/lib/select' {
+  // tslint:disable-next-line:interface-name
+  export interface OptionProps {
+    label?: string
+  }
+}
 
 interface IAddSourceConfigProps extends FormComponentProps {
   visible: boolean
@@ -37,7 +46,7 @@ interface IAddSourceConfigProps extends FormComponentProps {
   submit: (params: any) => void
   currentStep: number
   addStep: () => void
-  goPrefixStep:()=>void
+  goPrefixStep: () => void
   getTableNames: (params: any) => Promise<void>
   selectedSourceType: string
   setSelectedSourceTypeAct: (params: any) => void
@@ -80,7 +89,7 @@ const AddSourceConfigForm = (props: IAddSourceConfigProps) => {
   ]
   // const [mappingDbData, setMappingDbData] = useState(props.dbNameMappingData)
   const { getFieldDecorator, getFieldsValue, validateFields } = props.form
-  const [ dataSourceTypes, setDataSourceTypes] = useState<any[]>([])
+  const [dataSourceTypes, setDataSourceTypes] = useState<any[]>([])
   // const [ duplicatedName, setDuplicatedName] = useState()
   // const [ mappingData, setMappingData] = useState<any[]>([])
 
@@ -112,7 +121,7 @@ const AddSourceConfigForm = (props: IAddSourceConfigProps) => {
       api: API_URL,
       method: 'get'
     })
-    console.log("fetchDataSourceTypes",res)
+    console.log('fetchDataSourceTypes', res)
     if (res && res.status === 200 && res.data) {
       setDataSourceTypes(formatSourceDataTypes(res.data.result))
     } else {
@@ -178,7 +187,7 @@ const AddSourceConfigForm = (props: IAddSourceConfigProps) => {
   }
 
   /**
-   *   first step
+   * first step
    */
   const renderFirstStep = () => {
     return [
@@ -193,7 +202,6 @@ const AddSourceConfigForm = (props: IAddSourceConfigProps) => {
             style={{ width: '100%' }}
             placeholder="请选择数据源类型"
             filterOption={false}
-            // labelInValue
             onChange={selectDataSourceType}>
             {renderDataSourceTypesOptions()}
           </Select>
@@ -202,9 +210,12 @@ const AddSourceConfigForm = (props: IAddSourceConfigProps) => {
     ]
   }
 
+  /**
+   * second step
+   */
   const renderSecondStep = (formVal: any) => {
     if (props.selectedSourceType === 'db') {
-      return configDataBase(formVal)
+      return configDataBase()
     } else if (props.selectedSourceType === 'file') {
       return configFileSystem1(formVal)
     }
@@ -213,16 +224,14 @@ const AddSourceConfigForm = (props: IAddSourceConfigProps) => {
   /**
    *   配置数据库连接
    */
-  const configDataBase = (formVal: any) => {
+  const configDataBase = () => {
     return [
       <Form.Item key="dbType" {...formItemLayout} label="数据库类型">
         {getFieldDecorator('dbType', {
-          initialValue: formVal.dbType
+          initialValue:  props.databaseConfig.dbType
         })(
           <Select
             style={{ width: '100%' }}
-            // placeholder="请选择数据库类型"
-            defaultValue="mysql"
             filterOption={false}>
             <Option key="mysql">mysql</Option>
           </Select>
@@ -232,31 +241,44 @@ const AddSourceConfigForm = (props: IAddSourceConfigProps) => {
         {getFieldDecorator('host', {
           rules: [{ required: true, message: '请输入host' }],
           initialValue: props.databaseConfig.host
-        })(<Input placeholder="请输入host" maxLength={defaultNameMaxLength}/>)}
+        })(<Input placeholder="请输入host" maxLength={defaultNameMaxLength} />)}
       </Form.Item>,
       <Form.Item key="port" {...formItemLayout} label="端口" required>
         {getFieldDecorator('port', {
           rules: [{ required: true, message: '请输入端口' }],
           initialValue: props.databaseConfig.port
-        })(<Input placeholder="请输入端口" maxLength={defaultNameMaxLength}/>)}
+        })(<Input placeholder="请输入端口" maxLength={defaultNameMaxLength} />)}
       </Form.Item>,
       <Form.Item key="dbName" {...formItemLayout} label="数据库名" required>
         {getFieldDecorator('dbName', {
           rules: [{ required: true, message: '请输入数据库名' }],
           initialValue: props.databaseConfig.dbName
-        })(<Input placeholder="请输入数据库名" maxLength={defaultNameMaxLength}/>)}
+        })(
+          <Input
+            placeholder="请输入数据库名"
+            maxLength={defaultNameMaxLength}
+          />
+        )}
       </Form.Item>,
       <Form.Item key="username" {...formItemLayout} label="用户名" required>
         {getFieldDecorator('username', {
           rules: [{ required: true, message: '请输入用户名' }],
           initialValue: props.databaseConfig.username
-        })(<Input placeholder="请输入用户名" maxLength={defaultNameMaxLength}/>)}
+        })(
+          <Input placeholder="请输入用户名" maxLength={defaultNameMaxLength} />
+        )}
       </Form.Item>,
       <Form.Item key="password" {...formItemLayout} label="密码" required>
         {getFieldDecorator('password', {
           rules: [{ required: true, message: '请输入密码' }],
           initialValue: props.databaseConfig.password
-        })(<Input type="password" placeholder="请输入请输入密码" maxLength={defaultNameMaxLength}/>)}
+        })(
+          <Input
+            type="password"
+            placeholder="请输入请输入密码"
+            maxLength={defaultNameMaxLength}
+          />
+        )}
       </Form.Item>
     ]
   }
@@ -317,10 +339,12 @@ const AddSourceConfigForm = (props: IAddSourceConfigProps) => {
     props.selectedTemplate(value)
   }
 
+  /**
+   * 渲染数据库字段名下拉选项
+   */
   const renderTemplateOptions = () => {
     return props.templates.map((i: any, index: number) => {
       return (
-        // @ts-ignore
         <Option key={index} value={i.id} label={i.templateName}>
           <div>
             <p
@@ -383,6 +407,9 @@ const AddSourceConfigForm = (props: IAddSourceConfigProps) => {
     props.setMappingData(newDataSource)
   }
 
+  /**
+   * 渲染第五步中每一行的数据库字段映射关系
+   */
   const renderSelectComponents = (data: any[]) => {
     return data.map((item: any, index: number) => {
       return (
@@ -394,13 +421,14 @@ const AddSourceConfigForm = (props: IAddSourceConfigProps) => {
               })(
                 <Select
                   style={{ width: '100%' }}
-                  onChange={(value: any) => handleChange(value, item)}>
+                  onChange={(value: any) => handleChange(value, item)}
+                  allowClear>
                   {renderOptions(props.columnNames)}
                 </Select>
               )}
             </Form.Item>
           </Col>
-          <Col span={6}>{item.name}</Col>
+          <Col span={6} className={styles.rowLabel}>{item.name}</Col>
           <Col span={6} className={styles.rowLabel}>
             {item.type}
           </Col>
@@ -419,18 +447,18 @@ const AddSourceConfigForm = (props: IAddSourceConfigProps) => {
   }
 
   /**
-   *    数据库第5步，模板字段匹配
+   * 数据库第5步，模板字段匹配
    */
   const renderFiveStep = () => {
     return (
       <>
         <Row gutter={20} className={styles.rowItem}>
-          <Col span={6}> 数据库字段名 </Col>
-          <Col span={6}> 模板字段名 </Col>
-          <Col span={6} className={styles.label}>
+          <Col span={6}>数据库字段名</Col>
+          <Col span={6}>模板字段名</Col>
+          <Col span={6}>
             模板字段类型
           </Col>
-          <Col span={6} className={styles.label}>
+          <Col span={6}>
             模板字段含义
           </Col>
         </Row>
@@ -519,7 +547,8 @@ const AddSourceConfigForm = (props: IAddSourceConfigProps) => {
             } else {
               return true
             }
-          }).pop()     
+          })
+          .pop()
         const mappingData = {
           columnName: data,
           name: item.name,
@@ -606,7 +635,7 @@ const AddSourceConfigForm = (props: IAddSourceConfigProps) => {
   /**
    *   点击上一步按钮
    */
-  const handlePrefixStep = ()=>{
+  const handlePrefixStep = () => {
     props.goPrefixStep()
   }
 
@@ -654,11 +683,11 @@ const AddSourceConfigForm = (props: IAddSourceConfigProps) => {
                   'dbName',
                   'username',
                   'password'
-                ])               
-                if(validateData(fieldValue)){
+                ])
+                if (validateData(fieldValue)) {
                   props.fetchTableNames(fieldValue)
-                }else{
-                  errorTips("不能输入空格")
+                } else {
+                  errorTips('不能输入空格')
                 }
               }
             })
@@ -684,12 +713,15 @@ const AddSourceConfigForm = (props: IAddSourceConfigProps) => {
         }
         break
       case 4:
-        const data= checkMappingData()
-        if(!data){
+        const data = checkMappingData()
+        if (!data) {
           props.addStep()
-        }else{
-          errorTips(`数据库字段  --- ${data.columnName} ---- 选择重复`,"请重新选择1")
-        }  
+        } else {
+          errorTips(
+            `数据库字段  --- ${data.columnName} ---- 选择重复`,
+            '请重新选择1'
+          )
+        }
         break
       // case 4:
       //   props.addStep()
@@ -697,20 +729,20 @@ const AddSourceConfigForm = (props: IAddSourceConfigProps) => {
     }
   }
 
-  const validateData = (fieldValue:any)=>{
-    if(fieldValue.host.trim().length===0){
+  const validateData = (fieldValue: any) => {
+    if (fieldValue.host.trim().length === 0) {
       return false
     }
-    if(fieldValue.port.trim().length===0){
+    if (fieldValue.port.trim().length === 0) {
       return false
     }
-    if(fieldValue.dbName.trim().length===0){
+    if (fieldValue.dbName.trim().length === 0) {
       return false
     }
-    if(fieldValue.username.trim().length===0){
+    if (fieldValue.username.trim().length === 0) {
       return false
     }
-    if(fieldValue.password.trim().length===0){
+    if (fieldValue.password.trim().length === 0) {
       return false
     }
     return true
@@ -723,31 +755,30 @@ const AddSourceConfigForm = (props: IAddSourceConfigProps) => {
     })
   }
 
-  const checkMappingData = ()=>{
-    const data=props.dbNameMappingData.filter((item:any)=>{
-      if (item.columnName){
+  const checkMappingData = () => {
+    const data = props.dbNameMappingData.filter((item: any) => {
+      if (item.columnName) {
         return true
-      }else {
+      } else {
         return false
       }
     })
-    const set=new Set()
-    const duplicateData = data.filter((item:any)=>{
-      if (set.has(item.columnName)){
+    const set = new Set()
+    const duplicateData = data.filter((item: any) => {
+      if (set.has(item.columnName)) {
         // setDuplicatedName(item.columnName)
         return true
-      }else{
+      } else {
         set.add(item.columnName)
-        return false 
+        return false
       }
     })
-    if(duplicateData.length===0){
+    if (duplicateData.length === 0) {
       props.setMappingData(data)
       return ''
-    }else{
+    } else {
       return duplicateData[0]
     }
-     
   }
 
   const renderContent = (current: number, formVal: any) => {

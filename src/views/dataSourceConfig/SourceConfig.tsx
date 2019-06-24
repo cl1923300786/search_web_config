@@ -29,7 +29,7 @@ const defaultDataSourceConfigForm = {
 }
 
 const defaultDatabaseConfig = {
-  dbType: '',
+  dbType: 'mysql',
   host: '',
   port: '',
   dbName: '',
@@ -40,7 +40,7 @@ const defaultDatabaseConfig = {
 
 const defaultViewItem = {
   ...defaultDatabaseConfig,
-  fieldTemplate:{
+  fieldTemplate: {
     templateName: ''
   },
   mappingIndex: []
@@ -70,9 +70,6 @@ const SourceConfig = () => {
   const [columnNames, setColumnNames] = useState()
   const [selectTableName, setSelectTableName] = useState()
   const [dbNameMappingData, setDbNameMappingData] = useState<any[]>([])
-  const [returnWholeData, setReturnWholeData] = useState<any[]>([])
-
-
 
   const state: IState = useMappedState(
     useCallback((globalState: IState) => globalState, [])
@@ -176,9 +173,8 @@ const SourceConfig = () => {
       params: param
     })
     setLoading(false)
-    console.log('getDataSourceList',res)
+    console.log('getDataSourceList', res)
     if (res && res.status === 200 && res.data) {
-      setReturnWholeData(res.data.result.records)
       setPageParams({
         ...pageParams,
         total: res.data.result.totalCount,
@@ -202,7 +198,7 @@ const SourceConfig = () => {
         ...i,
         key: i.id,
         dataIndex: i.id,
-        templateName: i.fieldTemplate?i.fieldTemplate.templateName:''
+        templateName: i.fieldTemplate ? i.fieldTemplate.templateName : ''
       }
     })
     setData(arr)
@@ -229,11 +225,6 @@ const SourceConfig = () => {
    */
 
   const viewDataSource = (item: any) => {
-    console.log('viewDataSource',item)
- // @ts-ignore
-    const data= returnWholeData.filter((row:any)=>{
-      return row.id===item.id
-    })
     setItemForm(item)
     setViewDataSourceModal(true)
   }
@@ -390,10 +381,10 @@ const SourceConfig = () => {
   /**
    *   上一步
    */
-  const goPrefixStep=()=>{
-     if(step!==0){
-       setStep(step-1)
-     }
+  const goPrefixStep = () => {
+    if (step !== 0) {
+      setStep(step - 1)
+    }
   }
 
   /**
@@ -410,10 +401,10 @@ const SourceConfig = () => {
     })
     setLoading(false)
     if (res && res.status === 200 && res.data) {
-      if (res.data.code===0){
+      if (res.data.code === 0) {
         setTableNames(formatChoiceList(res.data.tables))
         addStep()
-      }else{
+      } else {
         errorTips(
           '数据库连接失败',
           res && res.data && res.data.msg ? res.data.msg : '网络异常，请重试！'
@@ -440,9 +431,9 @@ const SourceConfig = () => {
       }
     })
     setLoading(false)
-    console.log("getTableColumnNames",res)
+    console.log('getTableColumnNames', res)
     if (res && res.status === 200 && res.data.columns) {
-      let array= formatColumnsList(res.data.columns)
+      const array = formatColumnsList(res.data.columns)
       array.push('')
       setColumnNames(array)
       addStep()
@@ -482,7 +473,11 @@ const SourceConfig = () => {
    *  获取所有的表名
    */
   const fetchTableNames = (param: any) => {
-    setDatabaseConfig(param)
+    const newDataBaseConfig = {
+      ...databaseConfig,
+      ...param
+    }
+    setDatabaseConfig(newDataBaseConfig)
     getTableNames(param)
   }
 
