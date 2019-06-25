@@ -20,11 +20,13 @@ const defaultDataSource = [
     templateName: '模板1',
     indexField: [
       {
+        keyName: 'name',
         name: 'name',
         remark: '姓名',
         type: 'STRING'
       },
       {
+        keyName: 'age',
         name: 'age',
         remark: '年龄',
         type: 'INT'
@@ -43,11 +45,13 @@ const defaultDataSource = [
     templateName: '模板2',
     indexField: [
       {
+        keyName: 'test1',
         name: 'test1',
         remark: 'test1',
         type: 'STRING'
       },
       {
+        keyName: 'test11',
         name: 'test11',
         remark: 'test11',
         type: 'STRING'
@@ -198,22 +202,6 @@ const Modal = () => {
   }
 
   /**
-   *  删除后，界面数据更新
-   */
-  // const freshDeteleAct = (record: any) => {
-  //   const newDataSource = dataSource.filter((i: any) => record.id !== i.id)
-  //   const datas = newDataSource.map((i: any, index: number) => {
-  //     return {
-  //       ...i,
-  //       key: index + 1,
-  //       dataIndex: index + 1
-  //     }
-  //   })
-  //   setDataSource(datas)
-  //   setPageParams({ ...pageParams, total: pageParams.total - 1 })
-  // }
-
-  /**
    * 渲染操作列按钮
    */
   const renderActionButtons = (record: any) => {
@@ -330,12 +318,16 @@ const Modal = () => {
     submitData(params)
   }
 
+  /**
+   *   新增、更新的数据提交 
+   */
   const submitData = async (params: any) => {
     const url = params.id
       ? '/search/template/field/update'
       : '/search/template/field/save'
     const indexField = params.dataSource.map((item: any) => {
       return {
+        keyName: item.keyName,
         name: item.name,
         remark: item.remark,
         type: item.type

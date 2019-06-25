@@ -13,10 +13,11 @@ const DataSourceViewModal = (props: any) => {
       return props.property.mappingIndex.map((item:any, index:number)=>{
         return (
           <Row key={index} gutter={6} className={styles.rowItem}>
-            <Col span={6}>{item.source} </Col>
-            <Col span={6}>{item.index} </Col>
-            <Col span={6}>{item.type} </Col>
-            <Col span={6}>{item.remark} </Col>
+            <Col span={4}>{item.source} </Col>
+            <Col span={4}>{item.index} </Col>
+            <Col span={4}>{item.indexName} </Col>
+            <Col span={4}>{item.type} </Col>
+            <Col span={4}>{item.remark} </Col>
           </Row>
         )
       })
@@ -84,10 +85,11 @@ const DataSourceViewModal = (props: any) => {
         <Col span={6} className={styles.label}>数据库字段映射详情</Col>
       </Row> 
       <Row className={styles.rowItem}>
-        <Col span={6} className={styles.label}>数据库字段名</Col>
-        <Col span={6} className={styles.label}>模版字段名</Col>
-        <Col span={6} className={styles.label}>模版类型</Col>
-        <Col span={6} className={styles.label}>模版描述</Col>
+        <Col span={4} className={styles.label}>数据库字段名</Col>
+        <Col span={4} className={styles.label}>模版字段</Col>
+        <Col span={4} className={styles.label}>模版字段名</Col>
+        <Col span={4} className={styles.label}>模版类型</Col>
+        <Col span={4} className={styles.label}>模版描述</Col>
       </Row> 
       
       {  renderContent()  }

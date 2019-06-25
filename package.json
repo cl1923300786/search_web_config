@@ -158,5 +158,5 @@
     "tslint-plugin-prettier": "^2.0.1",
     "tslint-react": "^4.0.0"
   },
-  "proxy": "http://10.168.3.216:8082"
+  "proxy": "http://10.168.3.247:8082"
 }

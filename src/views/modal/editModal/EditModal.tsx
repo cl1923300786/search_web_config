@@ -197,10 +197,18 @@ const EditableTableForm = (props: IEditableTableFormProps) => {
       title: '序号',
       dataIndex: 'key',
       key: 'key',
-      width: 100
+      width: 80
     },
     {
-      title: `字段${props.type !== 'view' ? '(点击单元格可编辑)' : ''}`,
+      title: `模版字段${props.type !== 'view' ? '(点击单元格可编辑)' : ''}`,
+      dataIndex: 'keyName',
+      key: 'keyName',
+      width: '26%',
+      editable: true,
+      className: 'globalColumnEllipsis'
+    },
+    {
+      title: `字段名称${props.type !== 'view' ? '(点击单元格可编辑)' : ''}`,
       dataIndex: 'name',
       key: 'name',
       width: '26%',
@@ -208,7 +216,7 @@ const EditableTableForm = (props: IEditableTableFormProps) => {
       className: 'globalColumnEllipsis'
     },
     {
-      title: '类型',
+      title: '模版类型',
       dataIndex: 'type',
       key: 'type',
       width: 160,
@@ -216,7 +224,7 @@ const EditableTableForm = (props: IEditableTableFormProps) => {
       render: (text: string, record: any) => renderTypeColnum(text, record)
     },
     {
-      title: `含义${props.type !== 'view' ? '(点击单元格可编辑)' : ''}`,
+      title: `模版含义${props.type !== 'view' ? '(点击单元格可编辑)' : ''}`,
       dataIndex: 'remark',
       key: 'remark',
       editable: true,
@@ -406,7 +414,6 @@ const EditModalForm = (props: IEditModalProps) => {
    * 保存时，校验模板字段中的字段名及含义是否为空
    */
   const validDataSource = (data: any[], fieldValue:any) => {
-    console.log('validDataSource',fieldValue,fieldValue.templateName.trim())
     if (fieldValue.templateName.trim().length===0){
       setShowTrimTips(true)
       return false
@@ -489,6 +496,7 @@ const EditModalForm = (props: IEditModalProps) => {
       id: dataSource.length + 1,
       key: dataSource.length + 1,
       dataIndex: dataSource.length + 1,
+      keyName: `name_${dataSource.length}`,
       name: `name_${dataSource.length}`,
       type: 'text',
       remark: `remark_${dataSource.length}`

@@ -259,6 +259,7 @@ const SourceConfig = () => {
         return {
           source: item.columnName,
           index: item.name,
+          indexName: item.keyName,
           type: item.type,
           remark: item.remark
         }

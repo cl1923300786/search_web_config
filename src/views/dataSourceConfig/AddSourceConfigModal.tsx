@@ -87,11 +87,9 @@ const AddSourceConfigForm = (props: IAddSourceConfigProps) => {
       content: 'Six-content'
     }
   ]
-  // const [mappingDbData, setMappingDbData] = useState(props.dbNameMappingData)
+
   const { getFieldDecorator, getFieldsValue, validateFields } = props.form
   const [dataSourceTypes, setDataSourceTypes] = useState<any[]>([])
-  // const [ duplicatedName, setDuplicatedName] = useState()
-  // const [ mappingData, setMappingData] = useState<any[]>([])
 
   const state: IState = useMappedState(
     useCallback((globalState: IState) => globalState, [])
@@ -165,7 +163,6 @@ const AddSourceConfigForm = (props: IAddSourceConfigProps) => {
   }
 
   const handleCancel = () => {
-    // resetFields()
     props.cancel()
   }
 
@@ -173,12 +170,6 @@ const AddSourceConfigForm = (props: IAddSourceConfigProps) => {
    *   提交数据源配置
    */
   const handleSubmit = () => {
-    // props.form.validateFields((err: any, values: any) => {
-    //   if (!err) {
-    //     const fieldValue = getFieldsValue(['tableName'])
-    //     props.submit(fieldValue)
-    //   }
-    // })
     props.submit({})
   }
 
@@ -395,7 +386,6 @@ const AddSourceConfigForm = (props: IAddSourceConfigProps) => {
   }
 
   const handleChange = (value: any, item: any) => {
-    // console.log('handleChange',mappingData,item,props.columnNames[value])
     const newDataSource = props.dbNameMappingData.map((i: any) => {
       return {
         ...i,
@@ -414,7 +404,7 @@ const AddSourceConfigForm = (props: IAddSourceConfigProps) => {
     return data.map((item: any, index: number) => {
       return (
         <Row key={index} gutter={20} className={styles.rowItem}>
-          <Col span={6}>
+          <Col span={4}>
             <Form.Item required className={styles.formItem}>
               {getFieldDecorator(`a_${index}`, {
                 initialValue: item.columnName
@@ -428,13 +418,10 @@ const AddSourceConfigForm = (props: IAddSourceConfigProps) => {
               )}
             </Form.Item>
           </Col>
-          <Col span={6} className={styles.rowLabel}>{item.name}</Col>
-          <Col span={6} className={styles.rowLabel}>
-            {item.type}
-          </Col>
-          <Col span={6} className={styles.rowLabel}>
-            {item.remark}
-          </Col>
+          <Col span={4} className={styles.rowLabel}>{item.keyName} </Col>
+          <Col span={4} className={styles.rowLabel}>{item.name} </Col>
+          <Col span={4} className={styles.rowLabel}> {item.type}  </Col>
+          <Col span={4} className={styles.rowLabel}> {item.remark} </Col>
         </Row>
       )
     })
@@ -453,14 +440,11 @@ const AddSourceConfigForm = (props: IAddSourceConfigProps) => {
     return (
       <>
         <Row gutter={20} className={styles.rowItem}>
-          <Col span={6}>数据库字段名</Col>
-          <Col span={6}>模板字段名</Col>
-          <Col span={6}>
-            模板字段类型
-          </Col>
-          <Col span={6}>
-            模板字段含义
-          </Col>
+          <Col span={4}>数据库字段</Col>
+          <Col span={4}>数据库字段名</Col>
+          <Col span={4}>模板字段名</Col>
+          <Col span={4}>模板字段类型</Col>
+          <Col span={4}>模板字段含义</Col>
         </Row>
         {renderSelectComponents(props.dbNameMappingData)}
       </>
@@ -470,13 +454,13 @@ const AddSourceConfigForm = (props: IAddSourceConfigProps) => {
   const renderSixStep = () => {
     return (
       <>
-        <Row gutter={6} className={styles.rowItem}>
-          <Col span={6}> 数据库表名 </Col>
-          <Col span={6}> {props.selectTableName} </Col>
+        <Row gutter={5} className={styles.rowItem}>
+          <Col span={5}> 数据库表名 </Col>
+          <Col span={5}> {props.selectTableName} </Col>
         </Row>
-        <Row gutter={6} className={styles.rowItem}>
-          <Col span={6}> 模板名 </Col>
-          <Col span={6}>
+        <Row gutter={5} className={styles.rowItem}>
+          <Col span={5}> 模板名 </Col>
+          <Col span={5}>
             {
               props.templates.filter((item: any) => {
                 if (item.id === props.selectTemplate) {
@@ -488,22 +472,24 @@ const AddSourceConfigForm = (props: IAddSourceConfigProps) => {
             }
           </Col>
         </Row>
-        <Row gutter={6} className={styles.rowItem}>
-          <Col span={6}> 字段间的映射关系 </Col>
+        <Row gutter={5} className={styles.rowItem}>
+          <Col span={5}> 字段间的映射关系 </Col>
         </Row>
-        <Row gutter={6} className={styles.rowItem}>
-          <Col span={6}> 数据库字段名 </Col>
-          <Col span={6}> 模板字段名 </Col>
-          <Col span={6}> 模板字段类型 </Col>
-          <Col span={6}> 模板字段含义 </Col>
+        <Row gutter={5} className={styles.rowItem}>
+          <Col span={4}> 数据库字段名 </Col>
+          <Col span={4}> 模板字段 </Col>
+          <Col span={4}> 模板字段名 </Col>
+          <Col span={4}> 模板字段类型 </Col>
+          <Col span={4}> 模板字段含义 </Col>
         </Row>
         {props.dbNameMappingData.map((item: any, index: number) => {
           return (
             <Row key={index} gutter={6} className={styles.rowItem}>
-              <Col span={6}>{item.columnName} </Col>
-              <Col span={6}>{item.name} </Col>
-              <Col span={6}>{item.type} </Col>
-              <Col span={6}>{item.remark} </Col>
+              <Col span={4}>{item.columnName} </Col>
+              <Col span={4}>{item.keyName} </Col>
+              <Col span={4}>{item.name} </Col>
+              <Col span={4}>{item.type} </Col>
+              <Col span={4}>{item.remark} </Col>
             </Row>
           )
         })}
@@ -528,9 +514,10 @@ const AddSourceConfigForm = (props: IAddSourceConfigProps) => {
           if (score > 0.5) {
             const mappingData = {
               columnName: i,
-              name: item.name,
-              remark: item.remark,
-              type: item.type
+              ...item
+              // name: item.name,
+              // remark: item.remark,
+              // type: item.type
             }
             datas.push(mappingData)
             findFlag = true
@@ -551,15 +538,16 @@ const AddSourceConfigForm = (props: IAddSourceConfigProps) => {
           .pop()
         const mappingData = {
           columnName: data,
-          name: item.name,
-          remark: item.remark,
-          type: item.type
+          ...item
+          // keyName: item.keyName,
+          // name: item.name,
+          // remark: item.remark,
+          // type: item.type
         }
         datas.push(mappingData)
         usedNames.add(data)
       }
     })
-    // setMappingData(datas)
     props.setMappingData(datas)
   }
 
