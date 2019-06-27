@@ -8,7 +8,11 @@ import moment from 'moment'
 import AddSourceConfigModal from './AddSourceConfigModal'
 import styles from './SourceConfig.module.less'
 import DataSourceViewModal from './DataSourceViewModal'
-import { SearchComponent, IParams } from '../../components/search/SearchComponent'
+import {
+  SearchComponent,
+  IParams
+} from '../../components/search/SearchComponent'
+import { withRouter } from 'react-router-dom'
 
 import { API_URL } from '../../config/Constant'
 
@@ -50,7 +54,7 @@ const defaultPageParams = {
   name: ''
 }
 
-const SourceConfig = () => {
+const SourceConfigModal = (props: any) => {
   const [loading, setLoading] = useState(false)
   const [sourceConfigvisible, setSourceConfigvisible] = useState(false)
   const [pageParams, setPageParams] = useState(defaultPageParams)
@@ -68,7 +72,9 @@ const SourceConfig = () => {
   const [selectTableName, setSelectTableName] = useState()
   const [dbNameMappingData, setDbNameMappingData] = useState<any[]>([])
 
-  const state: IState = useMappedState(useCallback((globalState: IState) => globalState, []))
+  const state: IState = useMappedState(
+    useCallback((globalState: IState) => globalState, [])
+  )
   const dispatch: Dispatch<Actions> = useDispatch()
   const [data, setData] = useState<any[]>([])
 
@@ -122,7 +128,9 @@ const SourceConfig = () => {
       // @ts-ignore
       render: (text: string, record: any) => (
         <div>
-          <span style={{ color: '#1890ff', cursor: 'pointer' }} onClick={() => viewDataSource(record)}>
+          <span
+            style={{ color: '#1890ff', cursor: 'pointer' }}
+            onClick={() => viewDataSource(record)}>
             查看
           </span>
         </div>
@@ -147,7 +155,10 @@ const SourceConfig = () => {
     if (res && res.status === 200 && res.data) {
       setTemplates(res.data.result.records)
     } else {
-      errorTips('获取数据模版失败', res && res.data && res.data.msg ? res.data.msg : '网络异常，请重试！')
+      errorTips(
+        '获取数据模版失败',
+        res && res.data && res.data.msg ? res.data.msg : '网络异常，请重试！'
+      )
     }
   }
 
@@ -172,7 +183,10 @@ const SourceConfig = () => {
       })
       handleDataSource(res.data.result.records)
     } else {
-      errorTips('获取数据源列表失败', res && res.data && res.data.msg ? res.data.msg : '网络异常，请重试！')
+      errorTips(
+        '获取数据源列表失败',
+        res && res.data && res.data.msg ? res.data.msg : '网络异常，请重试！'
+      )
     }
   }
 
@@ -271,7 +285,8 @@ const SourceConfig = () => {
    */
   const checkParam = (params: any) => {
     const index = params.filePath.indexOf(':')
-    const path = index < 5 ? params.filePath.substring(index + 1) : params.filePath
+    const path =
+      index < 5 ? params.filePath.substring(index + 1) : params.filePath
     const host = path.substring(0, path.indexOf(':'))
     const path1 = path.substring(path.indexOf(':') + 1)
     const port = path1.substring(0, path1.indexOf('/'))
@@ -306,10 +321,16 @@ const SourceConfig = () => {
         handleCancel()
         resetDatabaseValue()
       } else {
-        errorTips('数据源配置失败', res && res.data && res.data.msg ? res.data.msg : '网络异常，请重试！')
+        errorTips(
+          '数据源配置失败',
+          res && res.data && res.data.msg ? res.data.msg : '网络异常，请重试！'
+        )
       }
     } else {
-      errorTips('数据源配置失败', res && res.data && res.data.msg ? res.data.msg : '网络异常，请重试！')
+      errorTips(
+        '数据源配置失败',
+        res && res.data && res.data.msg ? res.data.msg : '网络异常，请重试！'
+      )
     }
   }
 
@@ -345,11 +366,7 @@ const SourceConfig = () => {
    *  添加数据源配置的按钮方法
    */
   const addSourceConfig = () => {
-    setStep(0)
-    setTableNames([])
-    setDatabaseConfig(defaultDatabaseConfig)
-    setSelectedSourceType('db')
-    setSourceConfigvisible(true)
+    props.history.push('/ConfigDataSource')
   }
 
   /**
@@ -386,10 +403,16 @@ const SourceConfig = () => {
         setTableNames(formatChoiceList(res.data.tables))
         addStep()
       } else {
-        errorTips('数据库连接失败', res && res.data && res.data.msg ? res.data.msg : '网络异常，请重试！')
+        errorTips(
+          '数据库连接失败',
+          res && res.data && res.data.msg ? res.data.msg : '网络异常，请重试！'
+        )
       }
     } else {
-      errorTips('数据库连接失败', res && res.data && res.data.msg ? res.data.msg : '网络异常，请重试！')
+      errorTips(
+        '数据库连接失败',
+        res && res.data && res.data.msg ? res.data.msg : '网络异常，请重试！'
+      )
     }
   }
 
@@ -413,7 +436,10 @@ const SourceConfig = () => {
       setColumnNames(array)
       addStep()
     } else {
-      errorTips('数据库连接失败', res && res.data && res.data.msg ? res.data.msg : '网络异常，请重试！')
+      errorTips(
+        '数据库连接失败',
+        res && res.data && res.data.msg ? res.data.msg : '网络异常，请重试！'
+      )
     }
   }
 
@@ -426,13 +452,13 @@ const SourceConfig = () => {
   }
 
   const formatColumnsList = (datas: any[]) => {
-    return datas.map(v => {
+    return datas.map((v) => {
       return v.name
     })
   }
 
   const formatChoiceList = (datas: any[]) => {
-    return datas.map(v => {
+    return datas.map((v) => {
       return {
         key: v,
         label: v,
@@ -470,7 +496,11 @@ const SourceConfig = () => {
 
   return (
     <>
-      <SearchComponent onSearch={search} reset={resetList} type="请输入表名关键字" />
+      <SearchComponent
+        onSearch={search}
+        reset={resetList}
+        type="请输入表名关键字"
+      />
       <Row className={styles.buttonRow}>
         <Col span={6}>
           <Button type="primary" icon="plus-circle" onClick={addSourceConfig}>
@@ -488,7 +518,7 @@ const SourceConfig = () => {
           current: pageParams.pageNo,
           total: pageParams.total,
           pageSize: pageParams.pageSize,
-          showTotal: dataCount => `共 ${dataCount} 条数据`,
+          showTotal: (dataCount) => `共 ${dataCount} 条数据`,
           onChange: onPageChange
         }}
       />
@@ -525,4 +555,6 @@ const SourceConfig = () => {
   )
 }
 
-export default SourceConfig
+
+const SourceConfig1 = withRouter(SourceConfigModal)
+export default SourceConfig1

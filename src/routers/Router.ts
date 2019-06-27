@@ -1,9 +1,11 @@
 // import Home from '../views/home/Home'
 // import EsSearch from '../views/esSearch/EsSearch'
-import SourceConfig from '../views/dataSourceConfig/SourceConfig'
+import SourceConfig from '../views/dataSourceConfig/SourceConfig1'
+import ConfigDataSource from '../views/dataSourceConfig/ConfigDataSource'
 import WordsManagement from '../views/wordsManagement/WordsManage'
 // import Words from '../views/words/Words'
 import { Modal } from '../views/modal/Modal'
+
 const routes = [
   // {
   //   component: Home,
@@ -61,6 +63,14 @@ const routes = [
     iconType: 'setting',
     name: '配置数据源',
     hasMenu: true,
+    hidden: false
+  },
+  {
+    component: ConfigDataSource,
+    path: '/ConfigDataSource',
+    iconType: 'setting',
+    name: '配置数据源1',
+    hasMenu: false,
     hidden: false
   },
   {
