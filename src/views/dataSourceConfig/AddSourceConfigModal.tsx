@@ -219,11 +219,9 @@ const AddSourceConfigForm = (props: IAddSourceConfigProps) => {
     return [
       <Form.Item key="dbType" {...formItemLayout} label="数据库类型">
         {getFieldDecorator('dbType', {
-          initialValue:  props.databaseConfig.dbType
+          initialValue: props.databaseConfig.dbType
         })(
-          <Select
-            style={{ width: '100%' }}
-            filterOption={false}>
+          <Select style={{ width: '100%' }} filterOption={false}>
             <Option key="mysql">mysql</Option>
           </Select>
         )}
@@ -418,10 +416,20 @@ const AddSourceConfigForm = (props: IAddSourceConfigProps) => {
               )}
             </Form.Item>
           </Col>
-          <Col span={4} className={styles.rowLabel}>{item.keyName} </Col>
-          <Col span={4} className={styles.rowLabel}>{item.name} </Col>
-          <Col span={4} className={styles.rowLabel}> {item.type}  </Col>
-          <Col span={4} className={styles.rowLabel}> {item.remark} </Col>
+          <Col span={4} className={styles.rowLabel}>
+            {item.keyName}{' '}
+          </Col>
+          <Col span={4} className={styles.rowLabel}>
+            {item.name}{' '}
+          </Col>
+          <Col span={4} className={styles.rowLabel}>
+            {' '}
+            {item.type}{' '}
+          </Col>
+          <Col span={4} className={styles.rowLabel}>
+            {' '}
+            {item.remark}{' '}
+          </Col>
         </Row>
       )
     })
